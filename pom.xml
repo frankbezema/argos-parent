@@ -34,6 +34,7 @@
 		<module>argos-test</module>
 		<module>argos-jenkins-base</module>
 		<module>argos-service-domain</module>
+		<module>argos-maven-yaml-merge-plugin</module>
 	</modules>
 	<groupId>com.rabobank.argos</groupId>
 	<artifactId>argos-parent</artifactId>
@@ -149,7 +150,10 @@
 					<excludes>
 						<exclude>target/**</exclude>
 						<exclude>drone.yml</exclude>
-                        <exclude>**/*.txt</exclude>
+						<exclude>**/info/*.yml</exclude>
+						<exclude>**/paths/*.yml</exclude>
+						<exclude>**/components/**/*.yml</exclude>
+						<exclude>**/*.txt</exclude>
 						<exclude>**/publickey</exclude>
 						<exclude>**/testkey.pub</exclude>
 						<exclude>**/bob</exclude>

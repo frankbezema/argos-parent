@@ -56,6 +56,25 @@
     </properties>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>com.rabobank.argos</groupId>
+                <artifactId>argos-maven-yaml-merge-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>mergeOpenApi</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>merge-yaml</goal>
+                        </goals>
+                        <configuration>
+                            <inputFile>${project.basedir}/src/main/resources/index.yml</inputFile>
+                            <outPutFile>${project.basedir}/api-composed.yml</outPutFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <resources>
             <resource>
                 <directory>${project.basedir}</directory>

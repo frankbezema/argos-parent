@@ -1,0 +1,57 @@
+/supplychain/{supplyChainId}/link:
+  get:
+    summary: find link
+    operationId: findLink
+    tags:
+      - link
+    parameters:
+      - name: supplyChainId
+        in: path
+        description: supply chain id
+        required: true
+        schema:
+          type: string
+      - name: hash
+        in: query
+        description: hash of product or material
+        required: false
+        schema:
+          type: string
+    responses:
+      '200':
+        description: array of links
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/LinkMetaBlock"
+      '500':
+        $ref: '#/components/responses/Error'
+  post:
+    summary: Create a link
+    operationId: createLink
+    tags:
+      - link
+    security:
+      - basicAuth: []
+      - bearerAuth: []
+    parameters:
+      - name: supplyChainId
+        in: path
+        description: supply chain id
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/LinkMetaBlock"
+    responses:
+      '204':
+        description: no content
+      '400':
+        $ref: '#/components/responses/ValidationError'
+      '500':
+        $ref: '#/components/responses/Error'

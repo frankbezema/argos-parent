@@ -1,0 +1,111 @@
+/supplychain:
+  post:
+    summary: create a supplychain
+    operationId: createSupplyChain
+    tags:
+      - supplychain
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SupplyChain"
+    responses:
+      '201':
+        description: created
+        headers:
+          Location:
+            schema:
+              type: string
+              format: uri
+            description: location where the created supplychain can be found
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupplyChain"
+      '400':
+        $ref: '#/components/responses/ValidationError'
+      '500':
+        $ref: '#/components/responses/Error'
+  get:
+    summary: get supply chain by path to root
+    operationId: getSupplyChainByPathToRoot
+    tags:
+      - supplychain
+    parameters:
+      - name: supplyChainName
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: pathToRoot
+        in: query
+        style: simple
+        explode: true
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: array
+          items:
+            type: string
+    responses:
+      '200':
+        description: the supply chain
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupplyChain"
+      '404':
+        description: not found
+      '500':
+        $ref: '#/components/responses/Error'
+/supplychain/{supplyChainId}:
+  get:
+    summary: get a supplychain
+    operationId: getSupplyChain
+    tags:
+      - supplychain
+    parameters:
+      - name: supplyChainId
+        in: path
+        description: supply chain id
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: the supply chain item
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupplyChain"
+      '500':
+        $ref: '#/components/responses/Error'
+  put:
+    summary: update supplychain by id
+    operationId: updateSupplyChain
+    tags:
+      - supplychain
+    parameters:
+      - name: supplyChainId
+        in: path
+        description: supply chain id
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SupplyChain"
+    responses:
+      '200':
+        description: updated supply chain
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyChain'
+      '400':
+        $ref: '#/components/responses/ValidationError'
+      '500':
+        $ref: '#/components/responses/Error'
