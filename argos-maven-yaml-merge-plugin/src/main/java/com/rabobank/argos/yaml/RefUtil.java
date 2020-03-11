@@ -17,34 +17,28 @@ package com.rabobank.argos.yaml;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class RefUtil {
-    public static final String REF = "$ref";
-    public static final String SINGLE_QUOTE = "'";
-    public static final String DOUBLE_QUOTE = "\"";
-    public static final String HASH_SLASH = "#/";
-    public static final String COLON = ":";
-    public static final String DOT = ".";
+class RefUtil {
+    private static final String REF = "$ref";
+    private static final String SINGLE_QUOTE = "'";
+    private static final String DOUBLE_QUOTE = "\"";
+    private static final String HASH_SLASH = "#/";
+    private static final String COLON = ":";
+    private static final String DOT = ".";
 
     private RefUtil() {
     }
 
     /**
      * This checks if the line without indentation starts with $ref
-     *
-     * @param line
-     * @return
      */
-    public static boolean isStartWithRef(String line) {
+    static boolean isStartWithRef(String line) {
         return StringUtils.trim(line).startsWith(REF);
     }
 
     /**
      * This returns the indentation of the $ref line.
-     *
-     * @param line
-     * @return
      */
-    public static String getIndentation(String line) {
+    static String getIndentation(String line) {
         return StringUtils.substringBefore(line, REF);
     }
 
@@ -58,11 +52,8 @@ public class RefUtil {
      * <p>
      * local path
      * $ref: '#/definitions/Info'
-     *
-     * @param refLine
-     * @return true if it is remote path
      */
-    public static boolean isRemoteFilepath(String refLine) {
+    static boolean isRemoteFilepath(String refLine) {
         String refPath = StringUtils.substringAfter(refLine, COLON);
         String refPathWithoutQuotes = removeQuotes(refPath);
         return !StringUtils.startsWith(refPathWithoutQuotes, HASH_SLASH);
@@ -74,9 +65,6 @@ public class RefUtil {
      * $ref: './baseobject.yaml'
      * $ref: "/baseobject.yaml"
      * $ref: /baseobject.yaml
-     *
-     * @param refPathValue
-     * @return
      */
     private static String removeQuotes(String refPathValue) {
         String ret;
@@ -95,7 +83,7 @@ public class RefUtil {
 
 
     //Get the remote
-    public static String getRemoteRelativeFilePath(String refLine) {
+    static String getRemoteRelativeFilePath(String refLine) {
         String relFileString;
         String refPath = StringUtils.substringAfter(refLine, COLON);
         relFileString = removeQuotes(refPath);

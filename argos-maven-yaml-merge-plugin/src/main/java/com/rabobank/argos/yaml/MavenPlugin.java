@@ -29,6 +29,7 @@ import java.nio.file.Path;
 @Slf4j
 @Mojo(name = "merge-yaml")
 public class MavenPlugin extends AbstractMojo {
+    private static final String ERROR_MESSAGE = "an error occurred while merging yaml files";
     @Parameter(property = "merge-yaml.inputFile", readonly = true, required = true)
     private File inputFile;
     @Parameter(property = "merge-yaml.outPutFile", readonly = true, required = true)
@@ -42,8 +43,8 @@ public class MavenPlugin extends AbstractMojo {
         try {
             yamlMerger.merge();
         } catch (IOException e) {
-            getLog().error("an error occurred while merging yaml files", e);
-            throw new MojoFailureException("an error occurred while merging yaml files");
+            getLog().error(ERROR_MESSAGE, e);
+            throw new MojoFailureException(ERROR_MESSAGE);
         }
     }
 }
