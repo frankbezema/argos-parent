@@ -69,7 +69,7 @@
                         </goals>
                         <configuration>
                             <inputFile>${project.basedir}/src/main/resources/index.yml</inputFile>
-                            <outPutFile>${project.basedir}/api-composed.yml</outPutFile>
+                            <outPutFile>${project.basedir}/target/generated-sources/api-composed.yml</outPutFile>
                         </configuration>
                     </execution>
                 </executions>
