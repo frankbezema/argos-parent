@@ -9,7 +9,7 @@ It also explains the basic mechanics of using `git`, `maven`.
 * [Running Tests Locally](#running-tests-locally)
 * [Create a Release](#create-a-release)
 
-See the [contribution guidelines](https://github.com/rabobank/argos/blob/master/CONTRIBUTING.md)
+See the [contribution guidelines](https://github.com/argosnotary/argos-parent/blob/master/CONTRIBUTING.md)
 if you'd like to contribute to Argos.
 
 ## Prerequisite Software
@@ -35,7 +35,7 @@ Fork and clone the Argos repository:
 1. Login to your GitHub account or create one by following the instructions given
    [here](https://github.com/signup/free).
 2. [Fork](http://help.github.com/forking) the [main Argos
-   repository](https://github.com/rabobank/argos).
+   repository](https://github.com/argosnotary/argos).
 3. Clone your fork of the Argos repository and define an `upstream` remote pointing back to
    the Argos repository that you forked in the first place.
 
@@ -47,7 +47,7 @@ git clone git@github.com:<github username>/argos.git
 cd argos
 
 # Add the main Argos repository as an upstream remote to your repository:
-git remote add upstream https://github.com/rabobank/argos.git
+git remote add upstream https://github.com/argosnotary/argos.git
 ```
 
 ## Building

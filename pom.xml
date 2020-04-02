@@ -37,9 +37,9 @@
 	</modules>
 	<groupId>com.rabobank.argos</groupId>
 	<artifactId>argos-parent</artifactId>
-	<version>0.0.1-RC4</version>
+	<version>0.0.1-RC5-SNAPSHOT</version>
 	<description>Argos Supply Chain Notary</description>
-	<url>https://github.com/rabobank/argos</url>
+	<url>https://github.com/argosnotary/argos</url>
 
 	<licenses>
 		<license>
@@ -67,18 +67,12 @@
 			<organization>Rabobank</organization>
 			<organizationUrl>https://www.rabobank.com</organizationUrl>
 		</developer>
-		<developer>
-			<name>Geert van der Sterre</name>
-			<email>geert.van.der.sterre@rabobank.nl</email>
-			<organization>Rabobank</organization>
-			<organizationUrl>https://www.rabobank.com</organizationUrl>
-		</developer>
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/rabobank/argos.git</connection>
-		<developerConnection>scm:git:https://github.com/rabobank/argos.git</developerConnection>
-		<url>https://github.com/rabobank/argos/tree/master</url>
+		<connection>scm:git:https://github.com/argosnotary/argos.git</connection>
+		<developerConnection>scm:git:https://github.com/argosnotary/argos.git</developerConnection>
+		<url>https://github.com/argosnotary/argos-parent/tree/master</url>
 	</scm>
 
 	<properties>
@@ -145,7 +139,7 @@
 					<failIfMissing>true</failIfMissing>
 					<strictCheck>true</strictCheck>
 					<aggregate>false</aggregate>
-                    <header>https://raw.github.com/rabobank/argos/master/docs/header.txt</header>
+                    <header>https://raw.github.com/argosnotary/argos-parent/master/docs/header.txt</header>
 					<excludes>
 						<exclude>target/**</exclude>
 						<exclude>drone.yml</exclude>

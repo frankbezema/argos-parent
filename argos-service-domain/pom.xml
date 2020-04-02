@@ -22,13 +22,13 @@
     <parent>
         <artifactId>argos-parent</artifactId>
         <groupId>com.rabobank.argos</groupId>
-        <version>0.0.1-RC4</version>
+        <version>0.0.1-RC5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>argos-service-domain</artifactId>
     <description>Domain for Argos Service</description>
-    <url>https://github.com/rabobank/argos/argos-domain</url>
+    <url>https://github.com/argosnotary/argos-parent/argos-domain</url>
 
     <licenses>
         <license>
@@ -47,9 +47,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:https://github.com/rabobank/argos.git</connection>
-        <developerConnection>scm:git:https://github.com/rabobank/argos.git</developerConnection>
-        <url>https://github.com/rabobank/argos/tree/master</url>
+        <connection>scm:git:https://github.com/argosnotary/argos.git</connection>
+        <developerConnection>scm:git:https://github.com/argosnotary/argos.git</developerConnection>
+        <url>https://github.com/argosnotary/argos-parent/tree/master</url>
     </scm>
     <dependencies>
         <dependency>
