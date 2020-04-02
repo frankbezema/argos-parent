@@ -9,7 +9,7 @@ platform:
 
 steps:
 - name: build
-  image: rabobanknl/argos-build:latest
+  image: argosnotary/argos-build:latest
   commands:
   - mvn -q install
   volumes:
@@ -17,7 +17,7 @@ steps:
     path: /root/.m2/repository
 
 - name: sonar
-  image: rabobanknl/argos-build:latest
+  image: argosnotary/argos-build:latest
   commands:
   - mvn -q -e verify sonar:sonar -Psonar -Dsonar.projectKey=rabobank_argos -Dsonar.organization=argosnotary -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_LOGIN
   environment:
@@ -30,7 +30,7 @@ steps:
   - build
 
 - name: pitest
-  image: rabobanknl/argos-build:latest
+  image: argosnotary/argos-build:latest
   commands:
   - mvn -q -e verify -Ppitest
   volumes:
@@ -46,7 +46,7 @@ steps:
     dockerfile: argos-docker/ServiceDockerfile
     password:
       from_secret: docker_login_token
-    repo: rabobanknl/argos-service-snapshot
+    repo: argosnotary/argos-service-snapshot
     tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
     username:
       from_secret: docker_login_user
@@ -61,7 +61,7 @@ steps:
     dockerfile: argos-docker/IntegrationTestServiceDockerfile
     password:
       from_secret: docker_login_token
-    repo: rabobanknl/argos-integration-test-service
+    repo: argosnotary/argos-integration-test-service
     tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
     username:
       from_secret: docker_login_user
@@ -76,7 +76,7 @@ steps:
     dockerfile: argos-docker/oauth-stub/Dockerfile
     password:
       from_secret: docker_login_token
-    repo: rabobanknl/argos-integration-test-stub
+    repo: argosnotary/argos-integration-test-stub
     tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
     username:
       from_secret: docker_login_user
@@ -91,7 +91,7 @@ steps:
     dockerfile: argos-docker/JenkinsDockerfile
     password:
       from_secret: docker_login_token
-    repo: rabobanknl/argos-jenkins-snapshot
+    repo: argosnotary/argos-jenkins-snapshot
     tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
     username:
       from_secret: docker_login_user
@@ -107,7 +107,7 @@ steps:
   - sonar
   
 - name: argos-service
-  image: rabobanknl/argos-service-snapshot:${DRONE_BRANCH/\//_}${DRONE_TAG}
+  image: argosnotary/argos-service-snapshot:${DRONE_BRANCH/\//_}${DRONE_TAG}
   pull: always
   detach: true
   environment:
@@ -124,7 +124,7 @@ steps:
   - build argos service image
 
 - name: argos-integration-test-service
-  image: rabobanknl/argos-integration-test-service:${DRONE_BRANCH/\//_}${DRONE_TAG}
+  image: argosnotary/argos-integration-test-service:${DRONE_BRANCH/\//_}${DRONE_TAG}
   pull: always
   detach: true
   environment:
@@ -134,14 +134,14 @@ steps:
   - build argos integration test service image
 
 - name: argos-integration-test-stub
-  image: rabobanknl/argos-integration-test-stub:${DRONE_BRANCH/\//_}${DRONE_TAG}
+  image: argosnotary/argos-integration-test-stub:${DRONE_BRANCH/\//_}${DRONE_TAG}
   pull: always
   detach: true
   depends_on:
   - build argos integration test stub image
 
 - name: argos-jenkins
-  image: rabobanknl/argos-jenkins-snapshot:${DRONE_BRANCH/\//_}${DRONE_TAG}
+  image: argosnotary/argos-jenkins-snapshot:${DRONE_BRANCH/\//_}${DRONE_TAG}
   pull: always
   detach: true
   environment:
@@ -155,7 +155,7 @@ steps:
   - build argos jenkins image
 
 - name: regression test
-  image: rabobanknl/argos-build:latest
+  image: argosnotary/argos-build:latest
   commands:
   - cd argos-test
   - mvn -q clean verify -Pregression-test-drone
@@ -180,7 +180,7 @@ steps:
     dockerfile: argos-docker/ServiceDockerfile
     password:
       from_secret: docker_login_token
-    repo: rabobanknl/argos-service
+    repo: argosnotary/argos-service
     username:
       from_secret: docker_login_user
   when:
@@ -209,7 +209,7 @@ steps:
   - regression test
 
 - name: deploy release to sonatype
-  image: rabobanknl/argos-build:latest
+  image: argosnotary/argos-build:latest
   commands:
   - cp argos4j/dependency-reduced-pom.xml argos4j/target/pom.xml
   - cp argos4j/dependency-reduced-pom.xml.asc argos4j/target/pom.xml.asc

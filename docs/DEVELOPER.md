@@ -88,8 +88,8 @@ A better way is to set up your IDE to format the changed file on each file save.
 ## Create a Release
 
 A release creates the following artifacts:
-* docker.io/rabobanknl/argos-service:[version]
-* docker.io/rabobanknl/argos-frontend:[version]
+* docker.io/argosnotary/argos-service:[version]
+* docker.io/argosnotary/argos-frontend:[version]
 * com.rabobank.argos.argos4j in Maven Central
 * com.rabobank.argos.argos-service in Maven Central
 
