@@ -19,7 +19,7 @@ steps:
 - name: sonar
   image: argosnotary/argos-build:latest
   commands:
-  - mvn -q -e verify sonar:sonar -Psonar -Dsonar.projectKey=rabobank_argos -Dsonar.organization=argosnotary -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_LOGIN
+  - mvn -q -e verify sonar:sonar -Psonar -Dsonar.projectKey=argosnotary_argos-parent -Dsonar.organization=argosnotary -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_LOGIN
   environment:
     SONAR_LOGIN:
       from_secret: sonar_login
