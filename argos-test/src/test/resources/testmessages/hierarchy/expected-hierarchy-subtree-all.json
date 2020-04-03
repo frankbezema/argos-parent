@@ -1,19 +1,19 @@
 {
   "name": "root1",
   "type": "LABEL",
-   "referenceId": "#uuid",
+  "referenceId": "#uuid",
   "hasChildren": true,
   "children": [
     {
       "name": "childaroot1",
       "type": "LABEL",
-       "referenceId": "#uuid",
+      "referenceId": "#uuid",
       "hasChildren": true,
       "children": [
         {
           "name": "npa-1",
           "type": "NON_PERSONAL_ACCOUNT",
-           "referenceId": "#uuid",
+          "referenceId": "#uuid",
           "hasChildren": false,
           "children": [
           ],
@@ -26,7 +26,7 @@
         {
           "name": "supply-chain-1",
           "type": "SUPPLY_CHAIN",
-           "referenceId": "#uuid",
+          "referenceId": "#uuid",
           "hasChildren": false,
           "children": [
           ],
@@ -46,7 +46,7 @@
     {
       "name": "childbroot1",
       "type": "LABEL",
-       "referenceId": "#uuid",
+      "referenceId": "#uuid",
       "hasChildren": false,
       "children": [
       ],

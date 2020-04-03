@@ -122,7 +122,6 @@ Feature: Personal Account
     Given path '/api/personalaccount'
     When method GET
     Then status 200
-    * print response
     And match response == expectedResponse
 
   Scenario: search personal account without PERSONAL_ACCOUNT_READ should return a 403

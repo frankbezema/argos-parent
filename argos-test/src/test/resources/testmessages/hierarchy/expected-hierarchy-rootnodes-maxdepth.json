@@ -2,13 +2,13 @@
   {
     "name": "default_root_label",
     "type": "LABEL",
-     "referenceId": "#uuid",
+    "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
       {
         "name": "default-npa1",
         "type": "NON_PERSONAL_ACCOUNT",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
@@ -22,7 +22,7 @@
       {
         "name": "default-npa2",
         "type": "NON_PERSONAL_ACCOUNT",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
@@ -36,7 +36,7 @@
       {
         "name": "default-npa3",
         "type": "NON_PERSONAL_ACCOUNT",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
@@ -50,7 +50,7 @@
       {
         "name": "default-npa4",
         "type": "NON_PERSONAL_ACCOUNT",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
@@ -64,7 +64,7 @@
       {
         "name": "default-npa5",
         "type": "NON_PERSONAL_ACCOUNT",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
@@ -86,13 +86,13 @@
   {
     "name": "root1",
     "type": "LABEL",
-     "referenceId": "#uuid",
+    "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
       {
         "name": "childaroot1",
         "type": "LABEL",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": true,
         "children": [
         ],
@@ -105,7 +105,7 @@
       {
         "name": "childbroot1",
         "type": "LABEL",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
@@ -125,13 +125,13 @@
   {
     "name": "root2",
     "type": "LABEL",
-     "referenceId": "#uuid",
+    "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
       {
         "name": "childaroot2",
         "type": "LABEL",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": true,
         "children": [
         ],
@@ -144,7 +144,7 @@
       {
         "name": "childbroot2",
         "type": "LABEL",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
@@ -164,13 +164,13 @@
   {
     "name": "root3",
     "type": "LABEL",
-     "referenceId": "#uuid",
+    "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
       {
         "name": "childaroot3",
         "type": "LABEL",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": true,
         "children": [
         ],
@@ -183,7 +183,7 @@
       {
         "name": "childbroot3",
         "type": "LABEL",
-         "referenceId": "#uuid",
+        "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
