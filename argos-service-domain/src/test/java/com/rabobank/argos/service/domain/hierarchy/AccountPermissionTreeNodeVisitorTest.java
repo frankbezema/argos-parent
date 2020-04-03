@@ -42,6 +42,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AccountPermissionTreeNodeVisitorTest {
     private static final String SUPPLY_CHAIN = "supplyChain";
+    private static final String CHILD_1_2 = "child1_2";
+    private static final String CHILD_1_1 = "child1_1";
     @Mock
     private AccountSecurityContext accountSecurityContext;
 
@@ -77,21 +79,21 @@ class AccountPermissionTreeNodeVisitorTest {
                 .type(TreeNode.Type.LABEL)
                 .referenceId(CHILD_1_1_ID)
                 .hasChildren(true)
-                .name("child1_1")
+                .name(CHILD_1_1)
                 .build();
 
         child1_2 = TreeNode.builder()
-                .pathToRoot(List.of("child1_1", "root"))
+                .pathToRoot(List.of(CHILD_1_1, "root"))
                 .idPathToRoot(List.of(CHILD_1_1_ID, ROOT_ID))
                 .parentLabelId(CHILD_1_1_ID)
                 .type(TreeNode.Type.LABEL)
                 .referenceId(CHILD_1_2_ID)
                 .hasChildren(true)
-                .name("child1_2")
+                .name(CHILD_1_2)
                 .build();
 
         child1_3 = TreeNode.builder()
-                .pathToRoot(List.of("child1_2", "child1_1", "root"))
+                .pathToRoot(List.of(CHILD_1_2, CHILD_1_1, "root"))
                 .idPathToRoot(List.of(CHILD_1_2_ID, CHILD_1_1_ID, ROOT_ID))
                 .type(TreeNode.Type.SUPPLY_CHAIN)
                 .referenceId("child1_3_Id")
@@ -113,7 +115,8 @@ class AccountPermissionTreeNodeVisitorTest {
         assertThat(optionalTreeNode.isPresent(), is(true));
         assertThat(optionalTreeNode.get().getName(), is("root"));
         assertThat(optionalTreeNode.get().getChildren(), hasSize(1));
-        assertThat(optionalTreeNode.get().getChildren().iterator().next().getName(), is("child1_1"));
+        assertThat(optionalTreeNode.get().getChildren().iterator().next().getName(), is(CHILD_1_1));
+
     }
 
     @Test
@@ -147,7 +150,7 @@ class AccountPermissionTreeNodeVisitorTest {
         assertThat(accountPermissionTreeNodeVisitor.visitLeaf(child1_3), is(true));
         Optional<TreeNode> optionalTreeNode = accountPermissionTreeNodeVisitor.result();
         assertThat(optionalTreeNode.isPresent(), is(true));
-        assertThat(optionalTreeNode.get().getName(), is("child1_2"));
+        assertThat(optionalTreeNode.get().getName(), is(CHILD_1_2));
         assertThat(optionalTreeNode.get().getChildren(), hasSize(1));
         assertThat(optionalTreeNode.get().getChildren().iterator().next().getName(), is(SUPPLY_CHAIN));
 
