@@ -28,7 +28,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ArtifactCollectorFactory {
-
+    
+    private ArtifactCollectorFactory() {}
 
     private static final Map<Class<? extends FileCollector>, Class<? extends ArtifactCollector>> MAPPING = new HashMap<>();
 
