@@ -2,20 +2,19 @@
   {
     "name": "default_root_label",
     "type": "LABEL",
-    "referenceId": "#uuid",
+     "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
       {
         "name": "default-npa1",
         "type": "NON_PERSONAL_ACCOUNT",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "LAYOUT_ADD",
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "VERIFY"
         ]
@@ -23,14 +22,13 @@
       {
         "name": "default-npa2",
         "type": "NON_PERSONAL_ACCOUNT",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "LAYOUT_ADD",
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "VERIFY"
         ]
@@ -38,14 +36,13 @@
       {
         "name": "default-npa3",
         "type": "NON_PERSONAL_ACCOUNT",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "LAYOUT_ADD",
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "VERIFY"
         ]
@@ -53,14 +50,13 @@
       {
         "name": "default-npa4",
         "type": "NON_PERSONAL_ACCOUNT",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "LAYOUT_ADD",
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "VERIFY"
         ]
@@ -68,14 +64,13 @@
       {
         "name": "default-npa5",
         "type": "NON_PERSONAL_ACCOUNT",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "LAYOUT_ADD",
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "VERIFY"
         ]
@@ -84,7 +79,6 @@
     "permissions": [
       "LAYOUT_ADD",
       "NPA_EDIT",
-      "PERSONAL_ACCOUNT_READ",
       "READ",
       "VERIFY"
     ]
@@ -92,19 +86,18 @@
   {
     "name": "root1",
     "type": "LABEL",
-    "referenceId": "#uuid",
+     "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
       {
         "name": "childaroot1",
         "type": "LABEL",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": true,
         "children": [
         ],
         "permissions": [
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "TREE_EDIT"
         ]
@@ -112,13 +105,12 @@
       {
         "name": "childbroot1",
         "type": "LABEL",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "TREE_EDIT"
         ]
@@ -126,7 +118,6 @@
     ],
     "permissions": [
       "NPA_EDIT",
-      "PERSONAL_ACCOUNT_READ",
       "READ",
       "TREE_EDIT"
     ]
@@ -134,19 +125,18 @@
   {
     "name": "root2",
     "type": "LABEL",
-    "referenceId": "#uuid",
+     "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
       {
         "name": "childaroot2",
         "type": "LABEL",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": true,
         "children": [
         ],
         "permissions": [
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "TREE_EDIT"
         ]
@@ -154,13 +144,12 @@
       {
         "name": "childbroot2",
         "type": "LABEL",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "TREE_EDIT"
         ]
@@ -168,7 +157,6 @@
     ],
     "permissions": [
       "NPA_EDIT",
-      "PERSONAL_ACCOUNT_READ",
       "READ",
       "TREE_EDIT"
     ]
@@ -176,19 +164,18 @@
   {
     "name": "root3",
     "type": "LABEL",
-    "referenceId": "#uuid",
+     "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
       {
         "name": "childaroot3",
         "type": "LABEL",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": true,
         "children": [
         ],
         "permissions": [
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "TREE_EDIT"
         ]
@@ -196,13 +183,12 @@
       {
         "name": "childbroot3",
         "type": "LABEL",
-        "referenceId": "#uuid",
+         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "NPA_EDIT",
-          "PERSONAL_ACCOUNT_READ",
           "READ",
           "TREE_EDIT"
         ]
@@ -210,7 +196,6 @@
     ],
     "permissions": [
       "NPA_EDIT",
-      "PERSONAL_ACCOUNT_READ",
       "READ",
       "TREE_EDIT"
     ]

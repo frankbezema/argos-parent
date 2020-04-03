@@ -2,14 +2,13 @@
   {
     "name": "default_root_label",
     "type": "LABEL",
-    "referenceId": "#uuid",
+     "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
     ],
     "permissions": [
       "LAYOUT_ADD",
       "NPA_EDIT",
-      "PERSONAL_ACCOUNT_READ",
       "READ",
       "VERIFY"
     ]
@@ -17,13 +16,12 @@
   {
     "name": "root1",
     "type": "LABEL",
-    "referenceId": "#uuid",
+     "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
     ],
     "permissions": [
       "NPA_EDIT",
-      "PERSONAL_ACCOUNT_READ",
       "READ",
       "TREE_EDIT"
     ]
@@ -31,13 +29,12 @@
   {
     "name": "root2",
     "type": "LABEL",
-    "referenceId": "#uuid",
+     "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
     ],
     "permissions": [
       "NPA_EDIT",
-      "PERSONAL_ACCOUNT_READ",
       "READ",
       "TREE_EDIT"
     ]
@@ -45,13 +42,12 @@
   {
     "name": "root3",
     "type": "LABEL",
-    "referenceId": "#uuid",
+     "referenceId": "#uuid",
     "hasChildren": true,
     "children": [
     ],
     "permissions": [
       "NPA_EDIT",
-      "PERSONAL_ACCOUNT_READ",
       "READ",
       "TREE_EDIT"
     ]

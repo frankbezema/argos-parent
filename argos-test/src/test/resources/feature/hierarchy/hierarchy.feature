@@ -170,5 +170,6 @@ Feature: Hierarchy
     And param HierarchyMode = 'MAX_DEPTH'
     When method GET
     Then status 200
+    * print response
     * def expectedResponse =  read('classpath:testmessages/hierarchy/expected-hierarchy-subtree-maxdepth.json')
     And match response == expectedResponse

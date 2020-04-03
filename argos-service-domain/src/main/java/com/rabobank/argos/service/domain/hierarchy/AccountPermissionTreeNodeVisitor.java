@@ -22,17 +22,22 @@ import com.rabobank.argos.service.domain.security.AccountSecurityContext;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.rabobank.argos.domain.permission.Permission.*;
 
 public class AccountPermissionTreeNodeVisitor implements TreeNodeVisitor<Optional<TreeNode>> {
 
     private TreeNode treeNodeWithUserPermissions;
     private HashMap<String, TreeNode> parentRegistry = new HashMap<>();
     private final AccountSecurityContext accountSecurityContext;
+    private Set<Permission> hierarchyPermissions = EnumSet.of(READ,TREE_EDIT,LOCAL_PERMISSION_EDIT,LINK_ADD,LAYOUT_ADD,VERIFY,NPA_EDIT);
 
     AccountPermissionTreeNodeVisitor(final AccountSecurityContext accountSecurityContext) {
         this.accountSecurityContext = accountSecurityContext;
@@ -76,9 +81,17 @@ public class AccountPermissionTreeNodeVisitor implements TreeNodeVisitor<Optiona
         }
         aggregatedPermissions.addAll(accountSecurityContext.allLocalPermissions(labelIdsDownTree));
         aggregatedPermissions.addAll(accountSecurityContext.getGlobalPermission());
-        List<Permission> arrayOfAggregatedPermissions = new ArrayList<>(aggregatedPermissions);
-        arrayOfAggregatedPermissions.sort(Comparator.comparing(Permission::name));
-        return arrayOfAggregatedPermissions;
+        Set<Permission> hierarchyOnlyPermissions = filterForHierarchyOnlyPermissions(aggregatedPermissions);
+        List<Permission> arrayOfHierarchyOnlyPermissions = new ArrayList<>(hierarchyOnlyPermissions);
+        arrayOfHierarchyOnlyPermissions.sort(Comparator.comparing(Permission::name));
+        return arrayOfHierarchyOnlyPermissions;
+    }
+
+    private Set<Permission> filterForHierarchyOnlyPermissions(Set<Permission> aggregatedPermissions) {
+       return  aggregatedPermissions
+                .stream()
+                .filter(permission-> hierarchyPermissions.contains(permission))
+                .collect(Collectors.toSet());
     }
 
     @Override
