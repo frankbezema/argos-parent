@@ -44,17 +44,6 @@ public class AccountPermissionTreeNodeVisitor implements TreeNodeVisitor<Optiona
     private HashMap<String, TreeNode> parentRegistry = new HashMap<>();
     private final AccountSecurityContext accountSecurityContext;
 
-
-    /*READ,
-    TREE_EDIT,
-    LOCAL_PERMISSION_EDIT,
-    ASSIGN_ROLE,
-    LINK_ADD,
-    LAYOUT_ADD,
-    VERIFY,
-    PERSONAL_ACCOUNT_READ,
-    NPA_EDIT*/
-
     private Set<Permission> hierarchyPermissions = EnumSet.of(READ,TREE_EDIT,LOCAL_PERMISSION_EDIT,LINK_ADD,LAYOUT_ADD,VERIFY,NPA_EDIT);
 
     AccountPermissionTreeNodeVisitor(final AccountSecurityContext accountSecurityContext) {
