@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.rabobank.argos.domain.permission.Permission.ASSIGN_ROLE;
+import static com.rabobank.argos.domain.permission.Permission.PERSONAL_ACCOUNT_READ;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singletonList;
@@ -39,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AccountPermissionTreeNodeVisitorTest {
-    public static final String SUPPLY_CHAIN = "supplyChain";
+    private static final String SUPPLY_CHAIN = "supplyChain";
     @Mock
     private AccountSecurityContext accountSecurityContext;
 
@@ -116,6 +118,15 @@ class AccountPermissionTreeNodeVisitorTest {
 
     @Test
     void visitEnterWithoutPermissionsShouldReturnFalseAndEmptyResult() {
+        when(accountSecurityContext.allLocalPermissions(any())).thenReturn(emptySet());
+        when(accountSecurityContext.getGlobalPermission()).thenReturn(Set.of(PERSONAL_ACCOUNT_READ, ASSIGN_ROLE));
+        assertThat(accountPermissionTreeNodeVisitor.visitEnter(root), is(false));
+        Optional<TreeNode> optionalTreeNode = accountPermissionTreeNodeVisitor.result();
+        assertThat(optionalTreeNode.isPresent(), is(false));
+    }
+
+    @Test
+    void visitEnterWithoutHierarchyPermissionsShouldReturnFalseAndEmptyResult() {
         when(accountSecurityContext.allLocalPermissions(any())).thenReturn(emptySet());
         when(accountSecurityContext.getGlobalPermission()).thenReturn(emptySet());
         assertThat(accountPermissionTreeNodeVisitor.visitEnter(root), is(false));

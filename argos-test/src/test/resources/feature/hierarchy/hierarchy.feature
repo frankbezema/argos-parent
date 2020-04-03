@@ -51,6 +51,15 @@ Feature: Hierarchy
     * def expectedResponse =  read('classpath:testmessages/hierarchy/expected-hierarchy-rootnodes-all.json')
     And match response == expectedResponse
 
+  Scenario: get root nodes with default user and no hierarchy permissions should return empty array
+    * def userWithoutHierarchyPermissions = defaultTestData.personalAccounts['default-pa2']
+    * configure headers = call read('classpath:headers.js') { token: #(userWithoutHierarchyPermissions.token)}
+    Given path '/api/hierarchy'
+    And param HierarchyMode = 'ALL'
+    When method GET
+    Then status 200
+    And match response == []
+
   Scenario: get root nodes without authorization should return a 401 error
     * configure headers = null
     Given path '/api/hierarchy'

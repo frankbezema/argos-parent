@@ -30,13 +30,31 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.rabobank.argos.domain.permission.Permission.*;
+import static com.rabobank.argos.domain.permission.Permission.LAYOUT_ADD;
+import static com.rabobank.argos.domain.permission.Permission.LINK_ADD;
+import static com.rabobank.argos.domain.permission.Permission.LOCAL_PERMISSION_EDIT;
+import static com.rabobank.argos.domain.permission.Permission.NPA_EDIT;
+import static com.rabobank.argos.domain.permission.Permission.READ;
+import static com.rabobank.argos.domain.permission.Permission.TREE_EDIT;
+import static com.rabobank.argos.domain.permission.Permission.VERIFY;
 
 public class AccountPermissionTreeNodeVisitor implements TreeNodeVisitor<Optional<TreeNode>> {
 
     private TreeNode treeNodeWithUserPermissions;
     private HashMap<String, TreeNode> parentRegistry = new HashMap<>();
     private final AccountSecurityContext accountSecurityContext;
+
+
+    /*READ,
+    TREE_EDIT,
+    LOCAL_PERMISSION_EDIT,
+    ASSIGN_ROLE,
+    LINK_ADD,
+    LAYOUT_ADD,
+    VERIFY,
+    PERSONAL_ACCOUNT_READ,
+    NPA_EDIT*/
+
     private Set<Permission> hierarchyPermissions = EnumSet.of(READ,TREE_EDIT,LOCAL_PERMISSION_EDIT,LINK_ADD,LAYOUT_ADD,VERIFY,NPA_EDIT);
 
     AccountPermissionTreeNodeVisitor(final AccountSecurityContext accountSecurityContext) {
