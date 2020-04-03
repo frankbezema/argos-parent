@@ -8,7 +8,7 @@ It also explains the basic mechanics of using `git`, `maven`.
 * [Building](#building)
 * [Running Tests Locally](#running-tests-locally)
 * [Create a Release](#create-a-release)
-* [Making a personal account adminstrator](#administrator)
+* [Adminstrator recovery](#administrator)
 
 See the [contribution guidelines](https://github.com/rabobank/argos/blob/master/CONTRIBUTING.md)
 if you'd like to contribute to Argos.
