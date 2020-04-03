@@ -21,7 +21,7 @@
     <parent>
         <artifactId>argos-parent</artifactId>
         <groupId>com.rabobank.argos</groupId>
-        <version>0.0.1-RC4</version>
+        <version>0.0.1-RC5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <properties>
@@ -33,7 +33,7 @@
 
     <artifactId>argos-integration-test-service</artifactId>
     <description>Argos integration test service used to create test fixtures for rest api testing</description>
-    <url>https://github.com/rabobank/argos/argos-integration-test-service</url>
+    <url>https://github.com/argosnotary/argos-parent/argos-integration-test-service</url>
 
     <licenses>
         <license>
@@ -52,9 +52,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/rabobank/argos.git</connection>
-        <developerConnection>scm:git:ssh://github.com:rabobank/argos.git</developerConnection>
-        <url>https://github.com/rabobank/argos/tree/master</url>
+        <connection>scm:git:git://github.com/argosnotary/argos.git</connection>
+        <developerConnection>scm:git:ssh://github.com/argosnotary/argos.git</developerConnection>
+        <url>https://github.com/argosnotary/argos-parent/tree/master</url>
     </scm>
 
     <dependencies>

@@ -18,6 +18,7 @@
         "pattern": "**",
         "destinationType": "PRODUCTS",
         "destinationStepName": "collect_dar",
+        "destinationPathPrefix": "target/collect",
         "destinationSegmentName": "jenkins"
       }
     ],

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-FROM rabobanknl/argos-jenkins-base:latest
+FROM argosnotary/argos-jenkins-base:latest
 
 # groovy files
 COPY jenkins_config/*.groovy* /usr/share/jenkins/ref/init.groovy.d/

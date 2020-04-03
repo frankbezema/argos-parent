@@ -71,6 +71,8 @@ class JenkinsTestIT {
     private JenkinsServer jenkins;
     private String supplyChainId;
     private DefaultTestData.PersonalAccount personalAccount;
+    
+    private boolean USE_CRUMB = true;
 
     @BeforeAll
     static void startup() {
@@ -134,9 +136,10 @@ class JenkinsTestIT {
     @Test
     void testPipeline() throws IOException {
         
-          JobWithDetails pipeLineJob = getJob("argos-test-app-pipeline"); if
-          (!hasMaster(pipeLineJob)) { pipeLineJob.build(); await().atMost(1,
-          MINUTES).until(() -> hasMaster(pipeLineJob)); }
+          JobWithDetails pipeLineJob = getJob("argos-test-app-pipeline");
+          if (!hasMaster(pipeLineJob)) { 
+              pipeLineJob.build(USE_CRUMB); await().atMost(1, MINUTES).until(() -> hasMaster(pipeLineJob)); 
+          }
           
           JobWithDetails job = getJob("argos-test-app-pipeline"); FolderJob folderJob =
           jenkins.getFolderJob(job).get(); Map<String, Job> jobs = folderJob.getJobs();
@@ -147,7 +150,7 @@ class JenkinsTestIT {
 
 
     private int runBuild(Job job) throws IOException {
-        QueueReference reference = job.build();
+        QueueReference reference = job.build(USE_CRUMB);
 
         await().atMost(25, SECONDS).until(() -> jenkins.getQueueItem(reference).getExecutable() != null);
 

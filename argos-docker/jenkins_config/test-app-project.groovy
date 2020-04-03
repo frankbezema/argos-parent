@@ -55,7 +55,7 @@ if (job) {
 }
     
 logger.info("--> set Argos Test App Project")
-GitSCMSource scms = new GitSCMSource(null, "https://github.com/rabobank/argos-test-app.git", "", "*", "", false)
+GitSCMSource scms = new GitSCMSource(null, "https://github.com/argosnotary/argos-test-app.git", "", "*", "", false)
 
 extensions = [];
 
@@ -78,7 +78,7 @@ argosConfig = instance.getExtensionList(ArgosServiceConfiguration)[0]
 argosConfig.setUrl("http://argos-service:8080")
 
 FreeStyleProject fp = instance.createProject(FreeStyleProject.class, "argos-test-app-freestyle-recording")
-fp.setScm(new GitSCM("https://github.com/rabobank/argos-test-app.git"))
+fp.setScm(new GitSCM("https://github.com/argosnotary/argos-test-app.git"))
 argosRecorder = new ArgosRecorder("root_label.child_label:argos-test-app", "default-npa2", "segment 1", "build", '${BUILD_NUMBER}')
 fp.getPublishersList().add(argosRecorder)
 fp.getBuildersList().add(new Shell("mvn clean install"))

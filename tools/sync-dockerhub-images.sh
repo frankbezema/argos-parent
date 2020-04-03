@@ -72,10 +72,10 @@ do
   echo "Mirror ${namespace}/${image_name}:${version} to ${registry_dst}/${namespace_dst}${image_name}:${version}"
 
   url="https://${registry_dst}/v2/${namespace_dst}${image_name}/manifests/${version}"
-  if curl --insecure --output /dev/null --silent --fail "${url}"; then
-    echo "Image already exists, skipping..."
-    continue
-  fi
+  #if curl --insecure --output /dev/null --silent --fail "${url}"; then
+  #  echo "Image already exists, skipping..."
+  #  continue
+  #fi
 
   echo "Pulling ${namespace}/${image_name}:${version}"
   docker pull ${namespace}/${image_name}:${version}

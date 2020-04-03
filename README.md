@@ -1,4 +1,4 @@
-ARGOS Supply Chain Notary ![Drone (cloud)](https://img.shields.io/drone/build/rabobank/argos) [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=rabobank_argos&metric=coverage)](https://sonarcloud.io/dashboard/index/rabobank_argos)
+ARGOS Supply Chain Notary Parent Project [![Build Status](https://cloud.drone.io/api/badges/argosnotary/argos-parent/status.svg)](https://cloud.drone.io/argosnotary/argos-parent) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=argosnotary_argos-parent&metric=alert_status)](https://sonarcloud.io/dashboard?id=argosnotary_argos-parent)
 ============
  Argos provides a framework to protect the integrity of a
  [**software supply chain**](docs/terminology/terminology.md#ssc). It
