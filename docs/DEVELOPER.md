@@ -8,6 +8,7 @@ It also explains the basic mechanics of using `git`, `maven`.
 * [Building](#building)
 * [Running Tests Locally](#running-tests-locally)
 * [Create a Release](#create-a-release)
+* [Making a personal account adminstrator](#administrator)
 
 See the [contribution guidelines](https://github.com/rabobank/argos/blob/master/CONTRIBUTING.md)
 if you'd like to contribute to Argos.
@@ -115,3 +116,20 @@ After this drone.io will create and publish a release.
     tools/change_project_version.sh [future version]
 ```
 This version can always be changed in a future release.
+
+
+## Administrator
+To force an acount to administrator you logon to the mongo db shell and run this script (change the email address to the account you want to be administrator):
+```shell
+db.getCollection("roles").find(
+    {
+        "name" : "administrator"
+    }
+).projection({ roleId: 1, _id: 0 })
+.forEach(function(role) {
+    print( "role: " + role.roleId );
+       db.personalaccounts.findOneAndUpdate({ "email": "luke@skywalker.imp" },{ $set: { "roleIds" :[ role.roleId]} });
+});
+
+```
+
