@@ -198,6 +198,8 @@ steps:
     - argos4j/dependency-reduced-pom.xml
     - argos-service/target/*.jar
     - argos-service/target/pom.xml
+    - argos/target/*.hpi
+    - argos/target/pom.xml
     key:
       from_secret: argos-signing-private-key
     passphrase:
@@ -215,6 +217,7 @@ steps:
   - cp argos4j/dependency-reduced-pom.xml.asc argos4j/target/pom.xml.asc
   - mvn -q -f argos4j/pom.xml deploy:deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/
   - mvn -q -f argos-service/pom.xml deploy:deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/
+  - mvn -q -f argos/pom.xml deploy:deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/
   environment:
     ossrh_password:
       from_secret: ossrh_login_password
