@@ -18,7 +18,6 @@ package com.rabobank.argos.service.domain.security;
 import com.rabobank.argos.domain.account.Account;
 import com.rabobank.argos.domain.hierarchy.HierarchyMode;
 import com.rabobank.argos.domain.hierarchy.TreeNode;
-import com.rabobank.argos.domain.permission.LocalPermissions;
 import com.rabobank.argos.domain.permission.Permission;
 import com.rabobank.argos.service.domain.hierarchy.HierarchyRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,9 +61,6 @@ class DefaultLocalPermissionCheckStrategyTest {
     @Mock
     private TreeNode treeNode;
 
-    @Mock
-    private LocalPermissions localPermissions;
-
 
     @BeforeEach
     void setUp() {
@@ -79,6 +75,17 @@ class DefaultLocalPermissionCheckStrategyTest {
         when(treeNode.getIdPathToRoot()).thenReturn(Collections.emptyList());
         when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
         when(accountSecurityContext.allLocalPermissions(Collections.singletonList(LABEL_ID))).thenReturn(Set.of(Permission.READ));
+        assertThat(strategy.hasLocalPermission(localPermissionCheckData, new HashSet<>(List.of(Permission.READ))), is(true));
+    }
+
+    @Test
+    void hasImplicitReadLocalPermissionOnLabel() {
+        when(account.getName()).thenReturn(ACCOUNT_NAME);
+        when(localPermissionCheckData.getLabelIds()).thenReturn(new HashSet<>(List.of(LABEL_ID)));
+        when(hierarchyRepository.getSubTree(LABEL_ID, HierarchyMode.NONE, 0)).thenReturn(Optional.of(treeNode));
+        when(treeNode.getIdPathToRoot()).thenReturn(Collections.emptyList());
+        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
+        when(accountSecurityContext.allLocalPermissions(Collections.singletonList(LABEL_ID))).thenReturn(Set.of(Permission.TREE_EDIT));
         assertThat(strategy.hasLocalPermission(localPermissionCheckData, new HashSet<>(List.of(Permission.READ))), is(true));
     }
 

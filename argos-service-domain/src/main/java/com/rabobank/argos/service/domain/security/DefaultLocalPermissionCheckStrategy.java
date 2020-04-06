@@ -26,9 +26,14 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.rabobank.argos.domain.permission.Permission.LOCAL_PERMISSION_EDIT;
+import static com.rabobank.argos.domain.permission.Permission.NPA_EDIT;
+import static com.rabobank.argos.domain.permission.Permission.READ;
+import static com.rabobank.argos.domain.permission.Permission.TREE_EDIT;
 import static com.rabobank.argos.service.domain.security.DefaultLocalPermissionCheckStrategy.DEFAULT_LOCAL_PERMISSION_CHECK_STRATEGY_BEAN_NAME;
 import static java.util.Objects.requireNonNull;
 
@@ -42,6 +47,7 @@ public class DefaultLocalPermissionCheckStrategy implements LocalPermissionCheck
     private final AccountSecurityContext accountSecurityContext;
 
     public static final String DEFAULT_LOCAL_PERMISSION_CHECK_STRATEGY_BEAN_NAME = "defaultLocalPermissionCheckStrategy";
+    private final Set<Permission> implicitReadPermissions = EnumSet.of(TREE_EDIT, NPA_EDIT, LOCAL_PERMISSION_EDIT);
 
     @Override
     public boolean hasLocalPermission(LocalPermissionCheckData localPermissionCheckData, Set<Permission> permissionsToCheck) {
@@ -57,7 +63,14 @@ public class DefaultLocalPermissionCheckStrategy implements LocalPermissionCheck
     private boolean hasLocalPermission(Set<Permission> permissionsToCheck, String labelId) {
         return accountSecurityContext.allLocalPermissions(getAllLabelIdsUpTree(labelId))
                 .stream()
-                .anyMatch(permissionsToCheck::contains);
+                .anyMatch(permission -> permissionsToCheck.contains(permission) || isImplicitRead(permissionsToCheck, permission));
+    }
+
+    private boolean isImplicitRead(Set<Permission> permissionsToCheck, Permission permission) {
+        if (permissionsToCheck.contains(READ)) {
+            return implicitReadPermissions.contains(permission);
+        }
+        return false;
     }
 
     private ArrayList<String> getAllLabelIdsUpTree(String labelId) {

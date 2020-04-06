@@ -43,7 +43,6 @@ public class AccountPermissionTreeNodeVisitor implements TreeNodeVisitor<Optiona
     private TreeNode treeNodeWithUserPermissions;
     private HashMap<String, TreeNode> parentRegistry = new HashMap<>();
     private final AccountSecurityContext accountSecurityContext;
-
     private Set<Permission> hierarchyPermissions = EnumSet.of(READ,TREE_EDIT,LOCAL_PERMISSION_EDIT,LINK_ADD,LAYOUT_ADD,VERIFY,NPA_EDIT);
 
     AccountPermissionTreeNodeVisitor(final AccountSecurityContext accountSecurityContext) {
