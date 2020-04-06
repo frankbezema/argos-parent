@@ -19,7 +19,6 @@ import com.rabobank.argos.domain.layout.Step;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestStep;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {RuleMapper.class})
 public interface StepMapper {

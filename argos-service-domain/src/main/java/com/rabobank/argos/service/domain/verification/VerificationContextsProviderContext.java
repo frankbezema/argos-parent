@@ -139,7 +139,7 @@ public class VerificationContextsProviderContext {
     public static Map<LayoutSegment, Set<LayoutSegment>> createDirectedSegmentGraph(Layout layout) {
         Map<LayoutSegment, Set<LayoutSegment>> graph = new HashMap<>();
 
-        layout.getLayoutSegments().forEach(segment -> {
+        layout.getLayoutSegments().forEach(segment -> 
             segment.getSteps().forEach(step -> {
                 Set<String> destSegs = Stream
                         .concat(step.getExpectedMaterials().stream(),
@@ -153,8 +153,7 @@ public class VerificationContextsProviderContext {
                         graph.get(destSegment).add(segment);
                     }
                 });
-            });
-        });
+            }));
         if (graph.values().stream().filter(Set::isEmpty).count() > 1) {
             throw new ArgosError("layout segment graph has more than 1 start segment.");
         }
@@ -213,14 +212,12 @@ public class VerificationContextsProviderContext {
         });});        
         
         Map<String, Map<MatchRule, Set<Artifact>>> destStepMap = new HashMap<>();
-        linkMap.entrySet().forEach(segmentEntry -> {
-            segmentEntry.getValue().entrySet().forEach(stepEntry -> {
+        linkMap.entrySet().forEach(segmentEntry -> 
+            segmentEntry.getValue().entrySet().forEach(stepEntry -> 
                 stepEntry.getValue().forEach(link -> {
                     addStepsWithMatchRulesAndArtifactsToMap(destStepMap, link, destinationSegment, stepEntry.getKey().getExpectedMaterials(), ArtifactType.MATERIALS);
                     addStepsWithMatchRulesAndArtifactsToMap(destStepMap, link, destinationSegment, stepEntry.getKey().getExpectedProducts(), ArtifactType.PRODUCTS);
-                });
-            });
-        });
+                })));
         return destStepMap;
     }
     

@@ -143,10 +143,8 @@ public class RulesVerification implements Verification {
     
     private boolean validateNotConsumedArtifacts(ArtifactsVerificationContext artifactsContext) {
         if (!artifactsContext.getNotConsumedArtifacts().isEmpty()) {
-            artifactsContext.getNotConsumedArtifacts().stream().forEach(artifact -> {
-                log.info("Not consumed artifact [{}]",
-                        artifact);
-            });
+            artifactsContext.getNotConsumedArtifacts().stream().forEach(artifact -> 
+                log.info("Not consumed artifact [{}]", artifact));
             return false;
         }
         return true;
