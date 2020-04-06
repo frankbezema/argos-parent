@@ -37,7 +37,7 @@ class DefaultLocalPermissionCheckDataExtractorTest {
 
     private static final String LABEL_ID = "labelId";
     private static final String PARENT_LABEL_ID = "parentLabelId";
-    public static final Object[] ARGUMENT_VALUES = {LABEL_ID, PARENT_LABEL_ID};
+    private static final Object[] ARGUMENT_VALUES = {LABEL_ID, PARENT_LABEL_ID};
     private static final String EXTRACTOR = "extratcor";
     @Mock
     private ReflectionHelper reflectionHelper;
