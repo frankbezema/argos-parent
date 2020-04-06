@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<header>
+    <title>Login</title>
+    <script>
+        const users = {
+            "1": {
+                name: "Luke Skywalker",
+                email: "luke@skywalker.imp",
+                profileId: "7e9ed58d-1c2e-452b-8d2e-7f0634a10ed2"
+            },
+            "2": {
+                name: "Han Solo",
+                email: "han@skywalker.imp",
+                profileId: "68a89a22-e6ad-4021-a882-ed6a2e50ade2"
+            },
+            "3": {
+                name: "Obi-Wan Kenobi",
+                email: "kenobi@skywalker.imp",
+                profileId: "81014eda-a9f8-42b8-886c-f8bde3aba1d1"
+            },
+            "4": {
+                name: "R2-D2",
+                email: "r2d2@skywalker.imp",
+                profileId: "8dca42d8-2ef8-4181-9c36-581cf803175b"
+            },
+            "5": {
+                name: "Princess Leia",
+                email: "leia@skywalker.imp",
+                profileId: "a7bb9922-2380-42b5-b753-da287875a6dc"
+            }
+        };
+
+        window.addEventListener("load", function () {
+            function sendData() {
+                const XHR = new XMLHttpRequest();
+
+                // Bind the FormData object and the form element
+                const formData = new FormData(form);
+
+                const selectedUser = users[formData.get("userId")];
+                if (selectedUser) {
+
+                    const profileMockBody = {
+                        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
+                        businessPhones: [],
+                        displayName: selectedUser.name,
+                        givenName: selectedUser.name,
+                        jobTitle: null,
+                        mail: null,
+                        mobilePhone: null,
+                        officeLocation: null,
+                        preferredLanguage: null,
+                        surname: selectedUser.name,
+                        userPrincipalName: selectedUser.email,
+                        id: selectedUser.profileId
+                    };
+
+                    const profileMock = {
+                        request: {
+                            method: "GET",
+                            url: "/v1.0/me"
+                        },
+                        response: {
+                            status: 200,
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8;"
+                            },
+                            body: JSON.stringify(profileMockBody)
+                        }
+                    };
+
+                    const json = JSON.stringify(profileMock);
+
+                    // Define what happens on successful data submission
+                    XHR.addEventListener("load", function () {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        window.location = urlParams.get("redirect_uri") + "?code=oath-code&state=" + encodeURI(urlParams.get("state")) + "&session_state=3827ce94-654c-4329-922e-6b3a9e19c2a3";
+                    });
+
+                    // Define what happens in case of error
+                    XHR.addEventListener("error", function () {
+                        alert('Oops! Something went wrong.');
+                    });
+
+                    // Set up our request
+                    XHR.open("POST", "/__admin/mappings");
+                    XHR.setRequestHeader("Content-Type", "application/json");
+
+                    // The data sent is what the user provided in the form
+                    XHR.send(json);
+                }
+            }
+
+            // Access the form element...
+            let form = document.getElementById("myForm");
+
+            // ...and take over its submit event.
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                sendData();
+            });
+
+
+            const select = document.getElementById("selectUser");
+
+            for (const key in users) {
+                const user = users[key];
+                const el = document.createElement("option");
+                el.textContent = user.name;
+                el.value = key;
+                select.appendChild(el);
+            }
+
+        });
+    </script>
+</header>
+<body>
+    <form id="myForm">
+        <label for="selectUser">Select User</label>
+        <select id="selectUser" name="userId">
+            <option>Select user...</option>
+        </select>
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>

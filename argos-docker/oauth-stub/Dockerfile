@@ -35,4 +35,5 @@ EXPOSE 8080 8443
 
 CMD java $JAVA_OPTS -cp /var/wiremock/lib/*:/var/wiremock/extensions/* com.github.tomakehurst.wiremock.standalone.WireMockServerRunner --global-response-templating
 COPY mappings mappings
+COPY __files __files
 
