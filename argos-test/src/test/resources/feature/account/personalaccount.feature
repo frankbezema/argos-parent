@@ -78,11 +78,25 @@ Feature: Personal Account
     And request ["administrator"]
     When method PUT
     Then status 200
-    Then match response == {"id":"#(extraAccount.response.id)","name":"Extra Person","email":"extra@extra.go", "roles": [{"id": "#uuid", "name":"administrator", "permissions" : ["READ","LOCAL_PERMISSION_EDIT","TREE_EDIT","VERIFY","ASSIGN_ROLE"] }]}
+    Then match response == {"id":"#(extraAccount.response.id)","name":"Extra Person", "roles": [{"id": "#uuid", "name":"administrator", "permissions" : ["READ","LOCAL_PERMISSION_EDIT","TREE_EDIT","VERIFY","ASSIGN_ROLE"] }]}
     Given path '/api/personalaccount/'+extraAccount.response.id
     When method GET
     Then status 200
-    Then match response == {"id":"#(extraAccount.response.id)","name":"Extra Person","email":"extra@extra.go", "roles": [{"id": "#uuid", "name":"administrator", "permissions" : ["READ","LOCAL_PERMISSION_EDIT","TREE_EDIT","VERIFY","ASSIGN_ROLE"] }]}
+    Then match response == {"id":"#(extraAccount.response.id)","name":"Extra Person", "roles": [{"id": "#uuid", "name":"administrator", "permissions" : ["READ","LOCAL_PERMISSION_EDIT","TREE_EDIT","VERIFY","ASSIGN_ROLE"] }]}
+
+  Scenario: remove administrator role of administrator should return 400
+    * def extraAccount = call read('classpath:feature/account/create-personal-account.feature') {name: 'Extra Person', email: 'extra@extra.go'}
+    Given path '/api/personalaccount/'+extraAccount.response.id+'/role'
+    And request ["administrator"]
+    When method PUT
+    Then status 200
+    * configure headers = call read('classpath:headers.js') { token: #(extraAccount.response.token)}
+    Given path '/api/personalaccount/'+extraAccount.response.id+'/role'
+    And request ["user"]
+    When method PUT
+    Then status 400
+    And match response == {"message":"administrators can not unassign there own administrator role"}
+
 
   Scenario: user without ASSIGN_ROLE permission can not assign a role to a user
     * def extraAccount = call read('classpath:feature/account/create-personal-account.feature') {name: 'Extra Person', email: 'extra@extra.go'}
@@ -99,7 +113,7 @@ Feature: Personal Account
     And param roleName = 'administrator'
     When method GET
     Then status 200
-    And match response == [{"id":"#uuid","name":"Luke Skywalker","email":"luke@skywalker.imp"}]
+    And match response == [{"id":"#uuid","name":"Luke Skywalker"}]
 
   Scenario: search all personal account 200
     * def extraAccount = call read('classpath:feature/account/create-personal-account.feature') {name: 'Extra Person', email: 'extra@extra.go'}
@@ -125,7 +139,7 @@ Feature: Personal Account
     And param name = 'per'
     When method GET
     Then status 200
-    And match response == [{"id":"#uuid","name":"Extra Person","email":"extra@extra.go"}]
+    And match response == [{"id":"#uuid","name":"Extra Person"}]
 
   Scenario: search by local permission label id personal account 200
     * def extraAccount = call read('classpath:feature/account/create-personal-account.feature') {name: 'Extra Person', email: 'search@extra.go'}
@@ -145,7 +159,7 @@ Feature: Personal Account
     And param localPermissionsLabelId = label.response.id
     When method GET
     Then status 200
-    And match response == [{"id":"#uuid","name":"Extra Person","email":"search@extra.go"}]
+    And match response == [{"id":"#uuid","name":"Extra Person"}]
 
     Given path '/api/personalaccount/'+extraAccount.response.id+'/localpermission/'+label.response.id
     And request []
@@ -194,9 +208,8 @@ Feature: Personal Account
     And match response == [{"labelId": "#(label.response.id)", "permissions": ["VERIFY","READ"]}]
 
   Scenario: a user with local permission LOCAL_PERMISSION_EDIT can manage local permissions
-    * def extraAccount = call read('classpath:feature/account/create-personal-account.feature') {name: 'Extra Person', email: 'local.permissions@extra.go'}
+    * def extraAccount = call read('classpath:feature/account/create-personal-account.feature') {name: 'Extra Person', email:'local.permissions@extra.go'}
     * def rootLabel = call read('classpath:feature/label/create-label.feature') { name: 'root_label'}
-
     Given path '/api/personalaccount/'+extraAccount.response.id+'/localpermission/'+rootLabel.response.id
     And request ["LOCAL_PERMISSION_EDIT"]
     When method PUT

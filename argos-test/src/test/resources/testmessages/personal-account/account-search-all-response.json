@@ -1,17 +1,18 @@
 [
   {
     "id": "#uuid",
-    "name": "Default User",
-    "email": "default@nl.nl"
+    "name": "Default User"
   },
   {
     "id": "#uuid",
-    "name": "Extra Person",
-    "email": "extra@extra.go"
+    "name": "Default User2"
   },
   {
     "id": "#uuid",
-    "name": "Luke Skywalker",
-    "email": "luke@skywalker.imp"
+    "name": "Extra Person"
+  },
+  {
+    "id": "#uuid",
+    "name": "Luke Skywalker"
   }
 ]

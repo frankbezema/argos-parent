@@ -70,12 +70,23 @@ Feature: Non Personal Account
     * def result = call read('create-non-personal-account.feature') { name: 'npa 1', parentLabelId: #(rootLabelId)}
     * def accounWithNoReadPermission = call read('classpath:feature/account/create-personal-account.feature') {name: 'unauthorized person',email: 'local.unauthorized@extra.nogo'}
     * configure headers = call read('classpath:headers.js') { token: #(defaultTestData.adminToken)}
-    * call read('classpath:feature/account/set-local-permissions.feature') { accountId: #(accounWithNoReadPermission.response.id),labelId: #(rootLabelId), permissions: ["NPA_EDIT"]}
+    * def info = call read('classpath:create-local-authorized-account.js') {permissions: ["LAYOUT_ADD"]}
     * configure headers = call read('classpath:headers.js') { token: #(accounWithNoReadPermission.response.token)}
     * def restPath = '/api/nonpersonalaccount/'+result.response.id
     Given path restPath
     When method GET
     Then status 403
+
+  Scenario: retrieve non personal account with implicit READ permission should return a 200 error
+    * configure headers = call read('classpath:headers.js') { token: #(defaultTestData.adminToken)}
+    * def info = call read('classpath:create-local-authorized-account.js') {permissions: ["NPA_EDIT"]}
+    * configure headers = call read('classpath:headers.js') { token: #(info.token)}
+    * def result = call read('create-non-personal-account.feature') { name: 'npa 1', parentLabelId: #(info.labelId)}
+    * def restPath = '/api/nonpersonalaccount/'+result.response.id
+    Given path restPath
+    When method GET
+    Then status 200
+    And match response == { name: 'npa 1', id: '#(result.response.id)', parentLabelId: #(info.labelId)}
 
   Scenario: update a non personal account should return a 200
     * def createResult = call read('create-non-personal-account.feature') { name: 'npa 1', parentLabelId: #(rootLabelId)}
@@ -114,7 +125,7 @@ Feature: Non Personal Account
     When method POST
     Then status 403
 
-  Scenario: create a non personal account key should without authorization should return a 401 error
+  Scenario: create a non personal account key without authorization should return a 401 error
     * def createResult = call read('create-non-personal-account.feature') { name: 'npa 1', parentLabelId: #(rootLabelId)}
     * def accountId = createResult.response.id
     * def keyPair = read('classpath:testmessages/key/npa-keypair1.json')
@@ -135,15 +146,29 @@ Feature: Non Personal Account
     Then status 200
     And match response == {keyId: #(keyPair.keyId), publicKey: #(keyPair.publicKey), encryptedPrivateKey: #(keyPair.encryptedPrivateKey)}
 
+  Scenario: get a active non personal account key with implicit read permission should return a 200
+
+    * configure headers = call read('classpath:headers.js') { token: #(defaultTestData.adminToken)}
+    * def info = call read('classpath:create-local-authorized-account.js') {permissions: ["NPA_EDIT"]}
+    * configure headers = call read('classpath:headers.js') { token: #(info.token)}
+    * def result = call read('create-non-personal-account.feature') { name: 'npa 1', parentLabelId: #(info.labelId)}
+    * def accountId = result.response.id
+    * def keyPair = read('classpath:testmessages/key/npa-keypair1.json')
+    * call read('create-non-personal-account-key.feature') {accountId: #(accountId), key: #(keyPair)}
+    * def restPath = '/api/nonpersonalaccount/'+result.response.id+'/key'
+    Given path restPath
+    When method GET
+    Then status 200
+    And match response == {keyId: #(keyPair.keyId), publicKey: #(keyPair.publicKey), encryptedPrivateKey: #(keyPair.encryptedPrivateKey)}
+
   Scenario: get a active non personal account key without READ permission should return a 403 error
     * def createResult = call read('create-non-personal-account.feature') { name: 'npa 1', parentLabelId: #(rootLabelId)}
     * def accountId = createResult.response.id
     * def keyPair = read('classpath:testmessages/key/npa-keypair1.json')
     * call read('create-non-personal-account-key.feature') {accountId: #(accountId), key: #(keyPair)}
-    * def accounWithNoReadPermission = call read('classpath:feature/account/create-personal-account.feature') {name: 'unauthorized person',email: 'local.unauthorized@extra.nogo'}
     * configure headers = call read('classpath:headers.js') { token: #(defaultTestData.adminToken)}
-    * call read('classpath:feature/account/set-local-permissions.feature') { accountId: #(accounWithNoReadPermission.response.id),labelId: #(rootLabelId), permissions: ["NPA_EDIT"]}
-    * configure headers = call read('classpath:headers.js') { token: #(accounWithNoReadPermission.response.token)}
+    * def info = call read('classpath:create-local-authorized-account.js') {permissions: ["LAYOUT_ADD"]}
+    * configure headers = call read('classpath:headers.js') { token: #(info.token)}
     * def restPath = '/api/nonpersonalaccount/'+accountId+'/key'
     Given path restPath
     When method GET

@@ -570,7 +570,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PersonalAccount'
+                $ref: '#/components/schemas/Profile'
         '404':
           description: personal account not found
         '500':
@@ -1334,9 +1334,20 @@ components:
           readOnly: true
         name:
           type: string
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/Role"
+    Profile:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
         email:
           type: string
-          format: email
         roles:
           type: array
           items:

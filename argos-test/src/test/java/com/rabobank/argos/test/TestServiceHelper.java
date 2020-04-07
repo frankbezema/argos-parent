@@ -48,15 +48,17 @@ import static com.rabobank.argos.test.ServiceStatusHelper.getNonPersonalAccountA
 import static com.rabobank.argos.test.ServiceStatusHelper.getPersonalAccountApi;
 import static com.rabobank.argos.test.ServiceStatusHelper.getToken;
 
-public class TestServiceHelper {
+class TestServiceHelper {
 
+    private static final String DEFAULT_USER_2 = "Default User2";
+    private static final String DEFAULT_USER1 = "Default User";
     private static Properties properties = Properties.getInstance();
 
-    public static void clearDatabase() {
+    static void clearDatabase() {
         getTestApi().resetDatabase();
     }
 
-    public static IntegrationTestServiceApi getTestApi() {
+    private static IntegrationTestServiceApi getTestApi() {
         return getApiClient().buildClient(IntegrationTestServiceApi.class);
     }
 
@@ -64,7 +66,7 @@ public class TestServiceHelper {
         return new ApiClient().setBasePath(properties.getIntegrationTestServiceBaseUrl() + "/integration-test");
     }
 
-    public static DefaultTestData createDefaultTestData() {
+    static DefaultTestData createDefaultTestData() {
         getTestApi().resetDatabaseAll();
         DefaultTestData defaultTestData = new DefaultTestData();
         defaultTestData.setAdminToken(getToken("Luke Skywalker", "Skywalker", "luke@skywalker.imp"));
@@ -78,27 +80,35 @@ public class TestServiceHelper {
         hierarchy.setDefaultRootLabel(getHierarchyApi(hierarchy.getAdminToken()).createLabel(new RestLabel().name("default_root_label")));
     }
 
-    public static void createDefaultPersonalAccount(DefaultTestData defaultTestData) {
-        IntegrationTestServiceApi testApi = getTestApi();
-        String defaultUserToken = getToken("Default User", "User", "default@nl.nl");
+    private static void createDefaultPersonalAccount(DefaultTestData defaultTestData) {
+        String defaultUser1Token = getToken(DEFAULT_USER1, "User", "default@nl.nl");
         PersonalAccountApi personalAccountApi = getPersonalAccountApi(defaultTestData.getAdminToken());
-        RestPersonalAccount defaultUser = personalAccountApi.searchPersonalAccounts(null, null, "Default User").iterator().next();
-        personalAccountApi.updateLocalPermissionsForLabel(defaultUser.getId(), defaultTestData.getDefaultRootLabel().getId(), List.of(LAYOUT_ADD, READ, VERIFY, NPA_EDIT));
+        RestPersonalAccount defaultUser1 = personalAccountApi.searchPersonalAccounts(null, null, DEFAULT_USER1).iterator().next();
+        personalAccountApi.updateLocalPermissionsForLabel(defaultUser1.getId(), defaultTestData.getDefaultRootLabel().getId(), List.of(LAYOUT_ADD, READ, VERIFY, NPA_EDIT));
+
         TestDateKeyPair keyPair = readKeyPair(1);
-        getPersonalAccountApi(defaultUserToken).createKey(new RestKeyPair()
+        getPersonalAccountApi(defaultUser1Token).createKey(new RestKeyPair()
                 .encryptedPrivateKey(keyPair.getEncryptedPrivateKey())
                 .publicKey(keyPair.getPublicKey())
                 .keyId(keyPair.getKeyId()));
+
         defaultTestData.getPersonalAccounts().put("default-pa1", DefaultTestData.PersonalAccount.builder()
                 .passphrase(keyPair.getPassphrase())
                 .keyId(keyPair.getKeyId())
-                .accountId(defaultUser.getId())
-                .token(defaultUserToken)
+                .accountId(defaultUser1.getId())
+                .token(defaultUser1Token)
                 .publicKey(keyPair.getPublicKey())
+                .build());
+
+        String defaultUser2Token = getToken(DEFAULT_USER_2, "User2", "default2@nl.nl");
+        RestPersonalAccount defaultUser2 = personalAccountApi.searchPersonalAccounts(null, null, DEFAULT_USER_2).iterator().next();
+        defaultTestData.getPersonalAccounts().put("default-pa2", DefaultTestData.PersonalAccount.builder()
+                .accountId(defaultUser2.getId())
+                .token(defaultUser2Token)
                 .build());
     }
 
-    public static void createDefaultNpaAccounts(DefaultTestData defaultTestData) {
+    private static void createDefaultNpaAccounts(DefaultTestData defaultTestData) {
         createNpaWithActiveKey(defaultTestData, readKeyPair(1), "default-npa1");
         createNpaWithActiveKey(defaultTestData, readKeyPair(2), "default-npa2");
         createNpaWithActiveKey(defaultTestData, readKeyPair(3), "default-npa3");
@@ -144,7 +154,7 @@ public class TestServiceHelper {
         private byte[] encryptedPrivateKey;
     }
 
-    public static void signAndStoreLayout(String token, String supplyChainId, RestLayoutMetaBlock restLayout, String keyId, String password) {
+    static void signAndStoreLayout(String token, String supplyChainId, RestLayoutMetaBlock restLayout, String keyId, String password) {
         RestMapper mapper = Mappers.getMapper(RestMapper.class);
         TestLayoutMetaBlock testLayout = mapper.mapRestLayout(restLayout);
         TestLayoutMetaBlock signed = getTestApi().signLayout(password, keyId, testLayout);
