@@ -32,8 +32,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.rabobank.argos.service.adapter.in.rest.supplychain.SupplyChainLabelIdExtractor.SUPPLY_CHAIN_LABEL_ID_EXTRACTOR;
 
@@ -51,52 +49,25 @@ public class LayoutRestService implements LayoutApi {
 
     @Override
     @PermissionCheck(permissions = Permission.LAYOUT_ADD)
-    public ResponseEntity<RestLayoutMetaBlock> createLayout(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, RestLayoutMetaBlock restLayoutMetaBlock) {
+    public ResponseEntity<RestLayoutMetaBlock> createOrUpdateLayout(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, RestLayoutMetaBlock restLayoutMetaBlock) {
         log.info("createLayout for supplyChainId {}", supplyChainId);
 
         LayoutMetaBlock layoutMetaBlock = converter.convertFromRestLayoutMetaBlock(restLayoutMetaBlock);
         layoutMetaBlock.setSupplyChainId(supplyChainId);
         validator.validate(layoutMetaBlock);
-        repository.save(layoutMetaBlock);
+        repository.createOrUpdate(layoutMetaBlock);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{layoutMetaBlockId}")
-                .buildAndExpand(layoutMetaBlock.getLayoutMetaBlockId())
-                .toUri();
-        return ResponseEntity
-                .created(location)
-                .body(converter.convertToRestLayoutMetaBlock(layoutMetaBlock));
-    }
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
 
-    @Override
-    @PermissionCheck(permissions = Permission.LAYOUT_ADD)
-    public ResponseEntity<RestLayoutMetaBlock> updateLayout(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String layoutId, RestLayoutMetaBlock restLayoutMetaBlock) {
-        log.info("updateLayout for supplyChainId {}", supplyChainId);
-        LayoutMetaBlock layoutMetaBlock = converter.convertFromRestLayoutMetaBlock(restLayoutMetaBlock);
-        layoutMetaBlock.setSupplyChainId(supplyChainId);
-        layoutMetaBlock.setLayoutMetaBlockId(layoutId);
-        validator.validate(layoutMetaBlock);
-        if (repository.update(supplyChainId, layoutId, layoutMetaBlock)) {
-            return ResponseEntity.ok(converter.convertToRestLayoutMetaBlock(layoutMetaBlock));
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "layout not found");
-        }
+        return ResponseEntity.created(location).body(converter.convertToRestLayoutMetaBlock(layoutMetaBlock));
     }
 
     @Override
     @PermissionCheck(permissions = Permission.READ)
-    public ResponseEntity<RestLayoutMetaBlock> getLayout(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String layoutId) {
-        return repository.findBySupplyChainAndId(supplyChainId, layoutId)
+    public ResponseEntity<RestLayoutMetaBlock> getLayout(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId) {
+        return repository.findBySupplyChainId(supplyChainId)
                 .map(converter::convertToRestLayoutMetaBlock)
                 .map(ResponseEntity::ok).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "layout not found"));
     }
 
-    @Override
-    @PermissionCheck(permissions = Permission.READ)
-    public ResponseEntity<List<RestLayoutMetaBlock>> findLayout(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId) {
-        return ResponseEntity.ok(repository.findBySupplyChainId(supplyChainId).stream()
-                .map(converter::convertToRestLayoutMetaBlock)
-                .collect(Collectors.toList()));
-    }
 }

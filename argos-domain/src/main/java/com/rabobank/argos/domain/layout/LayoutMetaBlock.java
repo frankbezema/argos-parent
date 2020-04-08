@@ -23,17 +23,12 @@ import lombok.ToString;
 
 import java.util.List;
 
-import static java.util.UUID.randomUUID;
-
 @Getter
 @Setter
 @Builder
 @ToString
 public class LayoutMetaBlock {
     private String supplyChainId;
-
-    @Builder.Default
-    private String layoutMetaBlockId = randomUUID().toString();
 
     private List<Signature> signatures;
 

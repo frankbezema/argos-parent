@@ -197,7 +197,7 @@ paths:
   /supplychain/{supplyChainId}/layout:
     get:
       summary: get layout
-      operationId: findLayout
+      operationId: getLayout
       tags:
         - layout
       parameters:
@@ -209,18 +209,18 @@ paths:
             type: string
       responses:
         '200':
-          description: array of layouts
+          description: layout
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/LayoutMetaBlock"
+                $ref: "#/components/schemas/LayoutMetaBlock"
         '500':
           $ref: '#/components/responses/Error'
+        '404':
+          description: no layout found
     post:
-      summary: Create a layout
-      operationId: createLayout
+      summary: create or update a layout
+      operationId: createOrUpdateLayout
       tags:
         - layout
       parameters:
@@ -253,71 +253,6 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
-
-  /supplychain/{supplyChainId}/layout/{layoutId}:
-    get:
-      summary: get layout
-      operationId: getLayout
-      tags:
-        - layout
-      parameters:
-        - name: supplyChainId
-          in: path
-          description: supply chain id
-          required: true
-          schema:
-            type: string
-        - name: layoutId
-          in: path
-          description: layout id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: layouts
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LayoutMetaBlock"
-        '500':
-          $ref: '#/components/responses/Error'
-    put:
-      summary: update a layout
-      operationId: updateLayout
-      tags:
-        - layout
-      parameters:
-        - name: supplyChainId
-          in: path
-          description: supply chain id
-          required: true
-          schema:
-            type: string
-        - name: layoutId
-          in: path
-          description: layout id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LayoutMetaBlock"
-      responses:
-        '200':
-          description: updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LayoutMetaBlock"
-        '400':
-          $ref: '#/components/responses/ValidationError'
-        '500':
-          $ref: '#/components/responses/Error'
-
   /supplychain/{supplyChainId}/verification:
     post:
       summary: creates a verification run
@@ -1120,9 +1055,6 @@ components:
         - signatures
         - layout
       properties:
-        id:
-          type: string
-          readOnly: true
         signatures:
           minItems: 1
           type: array

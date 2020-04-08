@@ -30,12 +30,10 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static com.rabobank.argos.service.adapter.out.mongodb.layout.LayoutMetaBlockRepositoryImpl.COLLECTION;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -46,7 +44,6 @@ import static org.mockito.Mockito.when;
 class LayoutMetaBlockRepositoryImplTest {
 
     private static final String SUPPLY_CHAIN_ID = "supplyChainId";
-    private static final String LAYOUT_METABLOCK_ID = "layoutMetablockId";
 
     @Mock
     private MongoTemplate template;
@@ -75,44 +72,32 @@ class LayoutMetaBlockRepositoryImplTest {
 
     @Test
     void save() {
-        repository.save(layoutMetaBlock);
+        repository.createOrUpdate(layoutMetaBlock);
         verify(template).save(layoutMetaBlock, COLLECTION);
     }
 
-    @Test
-    void findBySupplyChainAndId() {
-        when(template.findOne(any(Query.class), eq(LayoutMetaBlock.class), eq(COLLECTION))).thenReturn(layoutMetaBlock);
-        assertThat(repository.findBySupplyChainAndId(SUPPLY_CHAIN_ID, LAYOUT_METABLOCK_ID), is(Optional.of(layoutMetaBlock)));
-        verify(template).findOne(queryArgumentCaptor.capture(), eq(LayoutMetaBlock.class), eq(COLLECTION));
-        assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"supplyChainId\" : \"supplyChainId\", \"layoutMetaBlockId\" : \"layoutMetablockId\"}, Fields: {}, Sort: {}"));
-    }
 
     @Test
     void findBySupplyChainId() {
-        when(template.find(any(Query.class), eq(LayoutMetaBlock.class), eq(COLLECTION))).thenReturn(Collections.singletonList(layoutMetaBlock));
-        assertThat(repository.findBySupplyChainId(SUPPLY_CHAIN_ID), contains(layoutMetaBlock));
-        verify(template).find(queryArgumentCaptor.capture(), eq(LayoutMetaBlock.class), eq(COLLECTION));
+        when(template.findOne(any(Query.class), eq(LayoutMetaBlock.class), eq(COLLECTION))).thenReturn(layoutMetaBlock);
+        assertThat(repository.findBySupplyChainId(SUPPLY_CHAIN_ID), is(Optional.of(layoutMetaBlock)));
+        verify(template).findOne(queryArgumentCaptor.capture(), eq(LayoutMetaBlock.class), eq(COLLECTION));
         assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"supplyChainId\" : \"supplyChainId\"}, Fields: {}, Sort: {}"));
     }
 
     @Test
     void update() {
+        when(template.findOne(any(Query.class), eq(LayoutMetaBlock.class), eq(COLLECTION))).thenReturn(layoutMetaBlock);
         when(template.getConverter()).thenReturn(converter);
         when(updateResult.getMatchedCount()).thenReturn(1L);
         when(template.updateFirst(any(Query.class), any(Update.class), eq(LayoutMetaBlock.class), eq(COLLECTION))).thenReturn(updateResult);
-        assertThat(repository.update(SUPPLY_CHAIN_ID, LAYOUT_METABLOCK_ID, layoutMetaBlock), is(true));
+        when(layoutMetaBlock.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
+        repository.createOrUpdate(layoutMetaBlock);
 
         verify(template).updateFirst(queryArgumentCaptor.capture(), updateArgumentCaptor.capture(), eq(LayoutMetaBlock.class), eq(COLLECTION));
-        assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"supplyChainId\" : \"supplyChainId\", \"layoutMetaBlockId\" : \"layoutMetablockId\"}, Fields: {}, Sort: {}"));
+        assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"supplyChainId\" : \"supplyChainId\"}, Fields: {}, Sort: {}"));
         assertThat(updateArgumentCaptor.getValue().toString(), is("{}"));
         verify(converter).write(eq(layoutMetaBlock), any(Document.class));
     }
 
-    @Test
-    void updateNotFound() {
-        when(template.getConverter()).thenReturn(converter);
-        when(updateResult.getMatchedCount()).thenReturn(0L);
-        when(template.updateFirst(any(Query.class), any(Update.class), eq(LayoutMetaBlock.class), eq(COLLECTION))).thenReturn(updateResult);
-        assertThat(repository.update(SUPPLY_CHAIN_ID, LAYOUT_METABLOCK_ID, layoutMetaBlock), is(false));
-    }
 }

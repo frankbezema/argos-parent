@@ -22,7 +22,6 @@ Feature: reset
 
   Scenario: add personal account
     Given path '/integration-test/createPersonalAccount'
-    * print _arg
     And request __arg
     When method POST
     Then status 200

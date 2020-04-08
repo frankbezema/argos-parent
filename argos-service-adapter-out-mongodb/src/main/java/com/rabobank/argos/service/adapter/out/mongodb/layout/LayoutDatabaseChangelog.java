@@ -22,9 +22,7 @@ import org.springframework.data.mongodb.core.index.HashedIndex;
 import org.springframework.data.mongodb.core.index.IndexDefinition;
 
 import static com.rabobank.argos.service.adapter.out.mongodb.layout.LayoutMetaBlockRepositoryImpl.COLLECTION;
-import static com.rabobank.argos.service.adapter.out.mongodb.layout.LayoutMetaBlockRepositoryImpl.LAYOUT_ID_FIELD;
 import static com.rabobank.argos.service.adapter.out.mongodb.layout.LayoutMetaBlockRepositoryImpl.SUPPLY_CHAIN_ID_FIELD;
-
 
 @ChangeLog
 public class LayoutDatabaseChangelog {
@@ -32,7 +30,6 @@ public class LayoutDatabaseChangelog {
     @ChangeSet(order = "001", id = "LayoutDatabaseChangelog-1", author = "bart")
     public void addIndex(MongoTemplate template) {
         createIndex(template, HashedIndex.hashed(SUPPLY_CHAIN_ID_FIELD));
-        createIndex(template, HashedIndex.hashed(LAYOUT_ID_FIELD));
     }
 
     private void createIndex(MongoTemplate template, IndexDefinition indexDefinition) {

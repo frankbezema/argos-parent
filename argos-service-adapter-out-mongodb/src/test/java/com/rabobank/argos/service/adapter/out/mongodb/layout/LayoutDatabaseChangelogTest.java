@@ -40,7 +40,7 @@ class LayoutDatabaseChangelogTest {
     void addIndex() {
         when(template.indexOps(COLLECTION)).thenReturn(indexOperations);
         new LayoutDatabaseChangelog().addIndex(template);
-        verify(template, times(2)).indexOps(COLLECTION);
+        verify(template, times(1)).indexOps(COLLECTION);
     }
 
 }

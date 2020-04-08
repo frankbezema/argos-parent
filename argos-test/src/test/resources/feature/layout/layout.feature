@@ -64,7 +64,7 @@ Feature: Layout
     Then status 200
     * def layoutId = layoutResponse.response.id
     * def response = read('classpath:testmessages/layout/valid-layout-response.json')
-    And match response[*] contains response
+    And match response contains response
 
   Scenario: find layout without authorization should return a 401 error
     * def layoutResponse = call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
@@ -83,36 +83,35 @@ Feature: Layout
 
   Scenario: update a layout should return a 200
     * def layoutResponse = call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
-    * def layoutId = layoutResponse.response.id
     * def layoutToBeSigned = read('classpath:testmessages/layout/valid-update-layout.json')
     * def requestBody = call read('sign-layout.feature') {json:#(layoutToBeSigned),keyNumber:1}
-    Given path layoutPath + '/' + layoutId
+    Given path layoutPath
     And request requestBody.response
-    When method PUT
+    When method POST
+    Then status 201
+    Given path layoutPath
+    When method GET
     Then status 200
-    * def layoutId = layoutResponse.response.id
     * def expectedResponse = read('classpath:testmessages/layout/valid-update-layout-response.json')
     And match response contains expectedResponse
 
   Scenario: update a layout without LAYOUT_ADD permission should return a 403
     * def layoutResponse = call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
-    * def layoutId = layoutResponse.response.id
     * def layoutToBeSigned = read('classpath:testmessages/layout/valid-update-layout.json')
     * def requestBody = call read('sign-layout.feature') {json:#(layoutToBeSigned),keyNumber:1}
     * configure headers = call read('classpath:headers.js') { token: #(tokenWithoutLayoutAddPermissions)}
-    Given path layoutPath + '/' + layoutId
+    Given path layoutPath
     And request requestBody.response
-    When method PUT
+    When method POST
     Then status 403
 
   Scenario: update a layout without authorization should return a 401 error
     * def layoutResponse = call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
-    * def layoutId = layoutResponse.response.id
     * def layoutToBeSigned = read('classpath:testmessages/layout/valid-update-layout.json')
     * def requestBody = call read('sign-layout.feature') {json:#(layoutToBeSigned),keyNumber:1}
     * configure headers = null
-    Given path layoutPath + '/' + layoutId
+    Given path layoutPath
     And request requestBody.response
     And header Content-Type = 'application/json'
-    When method PUT
+    When method POST
     Then status 401
