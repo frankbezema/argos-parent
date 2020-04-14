@@ -1,5 +1,4 @@
 {
-  "id": "##(layoutId)",
   "layout": {
     "keys": [
       {
@@ -19,12 +18,12 @@
         "pattern": "target/argos-test-0.0.1-SNAPSHOT.jar",
         "destinationType": "PRODUCTS",
         "destinationStepName": "build",
-        "destinationSegmentName": "segment 1"
+        "destinationSegmentName": "segment a"
       }
     ],
     "layoutSegments": [
       {
-        "name": "segment 1",
+        "name": "segment a",
         "steps": [
           {
             "name": "build",

@@ -32,7 +32,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
-import static java.util.Collections.emptyList;
+import java.util.Optional;
+
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -87,7 +88,7 @@ class VerificationRestServiceTest {
         RestVerificationResult restVerificationResult = new RestVerificationResult();
         restVerificationResult.setRunIsValid(true);
         when(repository.findBySupplyChainId(eq("supplyChainId")))
-                .thenReturn(singletonList(layoutMetaBlockMetaBlock));
+                .thenReturn(Optional.of(layoutMetaBlockMetaBlock));
         when(restVerifyCommand.getExpectedProducts()).thenReturn(singletonList(restArtifact));
         when(artifactMapper.mapToArtifacts(any())).thenReturn(singletonList(artifact));
         when(verificationProvider.verifyRun(any(), any())).thenReturn(runResult);
@@ -100,7 +101,7 @@ class VerificationRestServiceTest {
     @Test
     void performVerificationWithNoLayoutShouldReturnError() {
         when(repository.findBySupplyChainId(eq("supplyChainId")))
-                .thenReturn(emptyList());
+                .thenReturn(Optional.empty());
         ResponseStatusException error = assertThrows(ResponseStatusException.class, () -> verificationRestService.performVerification("supplyChainId", restVerifyCommand));
         assertThat(error.getStatus().value(), is(400));
     }

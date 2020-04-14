@@ -57,12 +57,11 @@ public class VerificationRestService implements VerificationApi {
     @PermissionCheck(permissions = Permission.VERIFY)
     public ResponseEntity<RestVerificationResult> performVerification(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, @Valid RestVerifyCommand restVerifyCommand) {
 
-        List<LayoutMetaBlock> layoutMetaBlocks = repository.findBySupplyChainId(supplyChainId);
-        if (layoutMetaBlocks.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "no active layout could be found for supplychain:" + supplyChainId);
-        }
+        LayoutMetaBlock layoutMetaBlock = repository.findBySupplyChainId(supplyChainId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "no active layout could be found for supplychain:" + supplyChainId));
+
         List<Artifact> expectedProducts = artifactMapper.mapToArtifacts(restVerifyCommand.getExpectedProducts());
-        VerificationRunResult verificationRunResult = verificationProvider.verifyRun(layoutMetaBlocks.iterator().next(), expectedProducts);
+        VerificationRunResult verificationRunResult = verificationProvider.verifyRun(layoutMetaBlock, expectedProducts);
         return ResponseEntity.ok(verificationResultMapper.mapToRestVerificationResult(verificationRunResult));
     }
 }

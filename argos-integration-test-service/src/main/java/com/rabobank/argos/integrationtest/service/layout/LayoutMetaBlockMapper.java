@@ -32,11 +32,9 @@ import static com.rabobank.argos.domain.key.RSAPublicKeyFactory.instance;
 public interface LayoutMetaBlockMapper {
 
 
-    @Mapping(target = "layoutMetaBlockId", ignore = true)
     @Mapping(target = "supplyChainId", ignore = true)
     LayoutMetaBlock convertFromRestLayoutMetaBlock(RestLayoutMetaBlock metaBlock);
 
-    @Mapping(source = "layoutMetaBlockId", target = "id")
     RestLayoutMetaBlock convertToRestLayoutMetaBlock(LayoutMetaBlock metaBlock);
 
     @Mapping(source = "key", target = "key")

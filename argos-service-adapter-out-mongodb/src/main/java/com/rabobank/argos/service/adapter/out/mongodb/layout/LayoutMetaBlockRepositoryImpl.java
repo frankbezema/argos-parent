@@ -26,7 +26,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -34,37 +33,32 @@ import java.util.Optional;
 public class LayoutMetaBlockRepositoryImpl implements LayoutMetaBlockRepository {
 
     static final String COLLECTION = "layoutMetaBlocks";
-    static final String LAYOUT_ID_FIELD = "layoutMetaBlockId";
     static final String SUPPLY_CHAIN_ID_FIELD = "supplyChainId";
     private final MongoTemplate template;
 
     @Override
-    public void save(LayoutMetaBlock layoutMetaBlock) {
-        template.save(layoutMetaBlock, COLLECTION);
+    public Optional<LayoutMetaBlock> findBySupplyChainId(String supplyChainId) {
+        return Optional.ofNullable(template.findOne(getPrimaryQuery(supplyChainId), LayoutMetaBlock.class, COLLECTION));
     }
 
     @Override
-    public Optional<LayoutMetaBlock> findBySupplyChainAndId(String supplyChainId, String layoutMetaBlockId) {
-        Query query = getPrimaryQuery(supplyChainId, layoutMetaBlockId);
-        return Optional.ofNullable(template.findOne(query, LayoutMetaBlock.class, COLLECTION));
+    public void createOrUpdate(LayoutMetaBlock layoutMetaBlock) {
+        Optional<LayoutMetaBlock> optionalLayoutMetaBlock = findBySupplyChainId(layoutMetaBlock.getSupplyChainId());
+        if (optionalLayoutMetaBlock.isPresent()) {
+            update(layoutMetaBlock);
+        } else {
+            template.save(layoutMetaBlock, COLLECTION);
+        }
     }
 
-    private Query getPrimaryQuery(String supplyChainId, String layoutMetaBlockId) {
-        return new Query(Criteria.where(SUPPLY_CHAIN_ID_FIELD).is(supplyChainId).and(LAYOUT_ID_FIELD).is(layoutMetaBlockId));
-    }
-
-    @Override
-    public List<LayoutMetaBlock> findBySupplyChainId(String supplyChainId) {
-        Query query = new Query(Criteria.where(SUPPLY_CHAIN_ID_FIELD).is(supplyChainId));
-        return template.find(query, LayoutMetaBlock.class, COLLECTION);
-    }
-
-    @Override
-    public boolean update(String supplyChainId, String layoutMetaBlockId, LayoutMetaBlock layoutMetaBlock) {
-        Query query = getPrimaryQuery(supplyChainId, layoutMetaBlockId);
+    private boolean update(LayoutMetaBlock layoutMetaBlock) {
         Document document = new Document();
         template.getConverter().write(layoutMetaBlock, document);
-        UpdateResult updateResult = template.updateFirst(query, Update.fromDocument(document), LayoutMetaBlock.class, COLLECTION);
+        UpdateResult updateResult = template.updateFirst(getPrimaryQuery(layoutMetaBlock.getSupplyChainId()), Update.fromDocument(document), LayoutMetaBlock.class, COLLECTION);
         return updateResult.getMatchedCount() > 0;
+    }
+
+    private Query getPrimaryQuery(String supplyChainId) {
+        return new Query(Criteria.where(SUPPLY_CHAIN_ID_FIELD).is(supplyChainId));
     }
 }

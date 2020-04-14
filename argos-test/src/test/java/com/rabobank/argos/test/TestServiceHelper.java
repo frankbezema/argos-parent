@@ -158,7 +158,7 @@ class TestServiceHelper {
         RestMapper mapper = Mappers.getMapper(RestMapper.class);
         TestLayoutMetaBlock testLayout = mapper.mapRestLayout(restLayout);
         TestLayoutMetaBlock signed = getTestApi().signLayout(password, keyId, testLayout);
-        getLayoutApi(token).createLayout(supplyChainId, mapper.mapTestLayout(signed));
+        getLayoutApi(token).createOrUpdateLayout(supplyChainId, mapper.mapTestLayout(signed));
     }
 
 }

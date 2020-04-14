@@ -33,8 +33,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasLength;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {LayoutMetaBlockMapperImpl.class, RuleMapperImpl.class, MatchRuleMapperImpl.class, StepMapperImpl.class})
@@ -57,8 +55,6 @@ class LayoutMetaBlockMapperTest {
     void convertFromRestLayoutMetaBlock() throws JsonProcessingException, JSONException {
         LayoutMetaBlock layoutMetaBlock = converter.convertFromRestLayoutMetaBlock(mapper.readValue(layoutJson, RestLayoutMetaBlock.class));
         RestLayoutMetaBlock restLayoutMetaBlock = converter.convertToRestLayoutMetaBlock(layoutMetaBlock);
-        assertThat(restLayoutMetaBlock.getId(), hasLength(36));
-        restLayoutMetaBlock.setId(null);
         JSONAssert.assertEquals(layoutJson, mapper.writeValueAsString(restLayoutMetaBlock), true);
     }
 
