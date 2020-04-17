@@ -71,6 +71,8 @@ public class RestServiceExceptionHandler {
 
     @ExceptionHandler(value = {ResponseStatusException.class})
     public ResponseEntity<RestError> handleResponseStatusException(ResponseStatusException ex) {
+        //HttpStatus.BAD_REQUEST==ex.getStatus()
+
         return ResponseEntity.status(ex.getStatus()).contentType(APPLICATION_JSON).body(createMessage(ex.getReason()));
     }
 
@@ -93,5 +95,6 @@ public class RestServiceExceptionHandler {
     private RestError createMessage(String message) {
         return new RestError().message(message);
     }
+
 
 }

@@ -16,8 +16,6 @@
 package com.rabobank.argos.service.adapter.in.rest.layout;
 
 import com.rabobank.argos.domain.Signature;
-import com.rabobank.argos.domain.key.KeyIdProvider;
-import com.rabobank.argos.domain.key.KeyPair;
 import com.rabobank.argos.domain.layout.Layout;
 import com.rabobank.argos.domain.layout.LayoutMetaBlock;
 import com.rabobank.argos.domain.layout.LayoutSegment;
@@ -33,8 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -91,9 +87,6 @@ class LayoutValidatorServiceTest {
 
     private PublicKey publicKey2 = ArgosKeyHelper.generateArgosPublickKey();
 
-    private java.security.PublicKey key1 = ArgosKeyHelper.generatePublickKey();
-
-    private java.security.PublicKey key2 = ArgosKeyHelper.generatePublickKey();
 
     @BeforeEach
     void setUp() {
@@ -147,9 +140,12 @@ class LayoutValidatorServiceTest {
         when(accountService.keyPairExists(publicKey1.getId())).thenReturn(true);
         when(accountService.keyPairExists(publicKey2.getId())).thenReturn(true);
 
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.validate(layoutMetaBlock));
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is("layout can't be signed more than one time with the same keyId"));
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+            service.validate(layoutMetaBlock);
+        });
+        assertThat(layoutValidationError.getValidationMessages().containsKey("signatures"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("signatures").get(0), is("layout can't be signed more than one time with the same keyId"));
+
     }
 
     @Test
@@ -168,9 +164,11 @@ class LayoutValidatorServiceTest {
         when(accountService.keyPairExists(publicKey1.getId())).thenReturn(true);
         when(accountService.keyPairExists(publicKey2.getId())).thenReturn(true);
 
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.validate(layoutMetaBlock));
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is("The defined Public keys are not equal to all defined Authorized keys"));
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+            service.validate(layoutMetaBlock);
+        });
+        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.authorizedKeyIds"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("layout.authorizedKeyIds").get(0), is("The defined Public keys are not equal to all defined Authorized keys"));
     }
 
     @Test
@@ -185,12 +183,13 @@ class LayoutValidatorServiceTest {
         when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment));
         when(layoutSegment.getSteps()).thenReturn(singletonList(step));
         when(step.getAuthorizedKeyIds()).thenReturn(singletonList(publicKey2.getId()));
-
         when(accountService.keyPairExists(publicKey2.getId())).thenReturn(true);
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+            service.validate(layoutMetaBlock);
+        });
+        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.authorizedKeyIds"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("layout.authorizedKeyIds").get(0), is("The defined Public keys are not equal to all defined Authorized keys"));
 
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.validate(layoutMetaBlock));
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is("The defined Public keys are not equal to all defined Authorized keys"));
     }
 
     @Test
@@ -206,12 +205,13 @@ class LayoutValidatorServiceTest {
         when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment));
         when(layoutSegment.getSteps()).thenReturn(singletonList(step));
         when(step.getAuthorizedKeyIds()).thenReturn(singletonList(publicKey1.getId()));
-
         when(accountService.keyPairExists(publicKey1.getId())).thenReturn(true);
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+            service.validate(layoutMetaBlock);
+        });
+        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.keys"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("layout.keys").get(0), is(String.format("key with id %s not matched computed key id from public key", publicKey1.getId())));
 
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.validate(layoutMetaBlock));
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is(String.format("key with id %s not matched computed key id from public key", publicKey1.getId())));
     }
 
     @Test
@@ -227,11 +227,13 @@ class LayoutValidatorServiceTest {
         when(accountService.keyPairExists(publicKey1.getId())).thenReturn(true);
         when(accountService.keyPairExists(publicKey2.getId())).thenReturn(false);
 
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> {
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is(String.format("keyId %s not found", publicKey2.getId())));
+
+        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.keys"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("layout.keys").get(0), is(String.format("keyId %s not found", publicKey2.getId())));
+
     }
 
     @Test
@@ -244,28 +246,38 @@ class LayoutValidatorServiceTest {
         when(layout.getAuthorizedKeyIds()).thenReturn(singletonList(publicKey1.getId()));
         when(accountService.keyPairExists(publicKey1.getId())).thenReturn(false);
 
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> {
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is(String.format("keyId %s not found", publicKey1.getId())));
+
+        assertThat(layoutValidationError
+                .getValidationMessages()
+                .containsKey("layout.keys"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("layout.keys").get(0), is(String.format("keyId %s not found", publicKey1.getId())));
     }
 
     @Test
     void validateNoSupplyChain() {
         when(layoutMetaBlock.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.validate(layoutMetaBlock));
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is("supply chain not found : " + SUPPLY_CHAIN_ID));
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+            service.validate(layoutMetaBlock);
+        });
+        assertThat(layoutValidationError
+                .getValidationMessages()
+                .containsKey("layout.supplychain"), is(true));
+        assertThat(layoutValidationError.getValidationMessages()
+                .get("layout.supplychain").get(0), is("supply chain not found : " + SUPPLY_CHAIN_ID));
     }
 
     @Test
     void validateSegmentNamesNotUnique() {
         when(layoutSegment.getName()).thenReturn("segment 1");
         when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment, layoutSegment));
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.validate(layoutMetaBlock));
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is("segment names are not unique"));
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+            service.validate(layoutMetaBlock);
+        });
+        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.layoutSegments"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("layout.layoutSegments").get(0), is("segment names are not unique"));
     }
 
     @Test
@@ -274,9 +286,12 @@ class LayoutValidatorServiceTest {
         when(step.getName()).thenReturn("stepName");
         when(layoutSegment.getSteps()).thenReturn(List.of(step, step));
         when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment));
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.validate(layoutMetaBlock));
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is("step names are not unique"));
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+            service.validate(layoutMetaBlock);
+        });
+
+        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.layoutSegments"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("layout.layoutSegments").get(0), is(String.format("step names for segment: %s are not unique", layoutSegment.getName())));
     }
 
     @Test
@@ -288,9 +303,13 @@ class LayoutValidatorServiceTest {
         when(step.getName()).thenReturn("stepName");
         when(layoutSegment.getSteps()).thenReturn(List.of(step));
         when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment));
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.validate(layoutMetaBlock));
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is("expected product destination step name not found"));
+
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+            service.validate(layoutMetaBlock);
+        });
+
+        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.expectedEndProducts"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("layout.expectedEndProducts").get(0), is("expected product destination step name not found"));
     }
 
     @Test
@@ -301,9 +320,14 @@ class LayoutValidatorServiceTest {
         when(step.getName()).thenReturn("stepName");
         when(layoutSegment.getSteps()).thenReturn(List.of(step));
         when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment));
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.validate(layoutMetaBlock));
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is("expected product destination step name not found"));
+
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+            service.validate(layoutMetaBlock);
+        });
+
+        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.expectedEndProducts"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("layout.expectedEndProducts").get(0), is("expected product destination step name not found"));
+
     }
 
     @Test
@@ -319,8 +343,12 @@ class LayoutValidatorServiceTest {
         when(matchRule.getDestinationStepName()).thenReturn("stepName");
         when(matchRule2.getDestinationSegmentName()).thenReturn("othersegmentName");
         when(matchRule2.getDestinationStepName()).thenReturn("stepName");
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.validate(layoutMetaBlock));
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.BAD_REQUEST));
-        assertThat(responseStatusException.getReason(), is("segment names for expectedProducts should all be the same"));
+
+        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+            service.validate(layoutMetaBlock);
+        });
+
+        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.expectedEndProducts"), is(true));
+        assertThat(layoutValidationError.getValidationMessages().get("layout.expectedEndProducts").get(0), is("segment names for expectedProducts should all be the same"));
     }
 }
