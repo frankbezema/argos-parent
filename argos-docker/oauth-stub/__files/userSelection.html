@@ -48,87 +48,86 @@
             }
         };
 
-        window.addEventListener("load", function () {
-            function sendData() {
-                const XHR = new XMLHttpRequest();
+        function sendData() {
+            const XHR = new XMLHttpRequest();
 
-                // Bind the FormData object and the form element
-                const formData = new FormData(form);
 
-                const selectedUser = users[formData.get("userId")];
-                if (selectedUser) {
+            const e = document.getElementById("selectUser");
 
-                    const profileMockBody = {
-                        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
-                        businessPhones: [],
-                        displayName: selectedUser.name,
-                        givenName: selectedUser.name,
-                        jobTitle: null,
-                        mail: null,
-                        mobilePhone: null,
-                        officeLocation: null,
-                        preferredLanguage: null,
-                        surname: selectedUser.name,
-                        userPrincipalName: selectedUser.email,
-                        id: selectedUser.profileId
-                    };
+            const selectedUser = users[e.options[e.selectedIndex].value];
+            if (selectedUser) {
 
-                    const profileMock = {
-                        request: {
-                            method: "GET",
-                            url: "/v1.0/me"
+                const profileMockBody = {
+                    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
+                    businessPhones: [],
+                    displayName: selectedUser.name,
+                    givenName: selectedUser.name,
+                    jobTitle: null,
+                    mail: null,
+                    mobilePhone: null,
+                    officeLocation: null,
+                    preferredLanguage: null,
+                    surname: selectedUser.name,
+                    userPrincipalName: selectedUser.email,
+                    id: selectedUser.profileId
+                };
+
+                const profileMock = {
+                    request: {
+                        method: "GET",
+                        url: "/v1.0/me"
+                    },
+                    response: {
+                        status: 200,
+                        headers: {
+                            "Content-Type": "application/json; charset=utf-8;"
                         },
-                        response: {
-                            status: 200,
-                            headers: {
-                                "Content-Type": "application/json; charset=utf-8;"
-                            },
-                            body: JSON.stringify(profileMockBody)
-                        }
-                    };
+                        body: JSON.stringify(profileMockBody)
+                    }
+                };
 
-                    const json = JSON.stringify(profileMock);
+                const json = JSON.stringify(profileMock);
 
-                    // Define what happens on successful data submission
-                    XHR.addEventListener("load", function () {
-                        const urlParams = new URLSearchParams(window.location.search);
-                        window.location = urlParams.get("redirect_uri") + "?code=oath-code&state=" + encodeURI(urlParams.get("state")) + "&session_state=3827ce94-654c-4329-922e-6b3a9e19c2a3";
-                    });
+                // Define what happens on successful data submission
+                XHR.addEventListener("load", function () {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    window.location = urlParams.get("redirect_uri") + "?code=oath-code&state=" + encodeURI(urlParams.get("state")) + "&session_state=3827ce94-654c-4329-922e-6b3a9e19c2a3";
+                });
 
-                    // Define what happens in case of error
-                    XHR.addEventListener("error", function () {
-                        alert('Oops! Something went wrong.');
-                    });
+                // Define what happens in case of error
+                XHR.addEventListener("error", function () {
+                    alert('Oops! Something went wrong.');
+                });
 
-                    // Set up our request
-                    XHR.open("POST", "/__admin/mappings");
-                    XHR.setRequestHeader("Content-Type", "application/json");
+                // Set up our request
+                XHR.open("POST", "/__admin/mappings");
+                XHR.setRequestHeader("Content-Type", "application/json");
 
-                    // The data sent is what the user provided in the form
-                    XHR.send(json);
-                }
+                // The data sent is what the user provided in the form
+                XHR.send(json);
             }
+        }
 
-            // Access the form element...
-            let form = document.getElementById("myForm");
+        window.addEventListener("load", function () {
 
-            // ...and take over its submit event.
+            const form = document.getElementById("myForm");
+
             form.addEventListener("submit", function (event) {
                 event.preventDefault();
-
                 sendData();
             });
 
-
             const select = document.getElementById("selectUser");
 
-            for (const key in users) {
-                const user = users[key];
+            const k = Object.keys(users);
+            for (var i = 0; i < k.length; i++) {
+                const user = users[k[i]];
                 const el = document.createElement("option");
                 el.textContent = user.name;
-                el.value = key;
+                el.value = k[i];
                 select.appendChild(el);
             }
+
 
         });
     </script>
