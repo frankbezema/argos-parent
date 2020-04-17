@@ -23,6 +23,6 @@ import java.util.Map;
 
 @Builder
 @Getter
-public class LayoutValidationError extends RuntimeException {
+public class LayoutValidationException extends RuntimeException {
     private final Map<String, List<String>> validationMessages;
 }

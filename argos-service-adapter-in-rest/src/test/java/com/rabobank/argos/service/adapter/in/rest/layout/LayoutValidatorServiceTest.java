@@ -140,11 +140,11 @@ class LayoutValidatorServiceTest {
         when(accountService.keyPairExists(publicKey1.getId())).thenReturn(true);
         when(accountService.keyPairExists(publicKey2.getId())).thenReturn(true);
 
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationError.getValidationMessages().containsKey("signatures"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("signatures").get(0), is("layout can't be signed more than one time with the same keyId"));
+        assertThat(layoutValidationException.getValidationMessages().containsKey("signatures"), is(true));
+        assertThat(layoutValidationException.getValidationMessages().get("signatures").get(0), is("layout can't be signed more than one time with the same keyId"));
 
     }
 
@@ -164,11 +164,11 @@ class LayoutValidatorServiceTest {
         when(accountService.keyPairExists(publicKey1.getId())).thenReturn(true);
         when(accountService.keyPairExists(publicKey2.getId())).thenReturn(true);
 
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.authorizedKeyIds"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("layout.authorizedKeyIds").get(0), is("The defined Public keys are not equal to all defined Authorized keys"));
+        assertThat(layoutValidationException.getValidationMessages().containsKey("layout.authorizedKeyIds"), is(true));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.authorizedKeyIds").get(0), is("The defined Public keys are not equal to all defined Authorized keys"));
     }
 
     @Test
@@ -184,11 +184,11 @@ class LayoutValidatorServiceTest {
         when(layoutSegment.getSteps()).thenReturn(singletonList(step));
         when(step.getAuthorizedKeyIds()).thenReturn(singletonList(publicKey2.getId()));
         when(accountService.keyPairExists(publicKey2.getId())).thenReturn(true);
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.authorizedKeyIds"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("layout.authorizedKeyIds").get(0), is("The defined Public keys are not equal to all defined Authorized keys"));
+        assertThat(layoutValidationException.getValidationMessages().containsKey("layout.authorizedKeyIds"), is(true));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.authorizedKeyIds").get(0), is("The defined Public keys are not equal to all defined Authorized keys"));
 
     }
 
@@ -206,11 +206,11 @@ class LayoutValidatorServiceTest {
         when(layoutSegment.getSteps()).thenReturn(singletonList(step));
         when(step.getAuthorizedKeyIds()).thenReturn(singletonList(publicKey1.getId()));
         when(accountService.keyPairExists(publicKey1.getId())).thenReturn(true);
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.keys"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("layout.keys").get(0), is(String.format("key with id %s not matched computed key id from public key", publicKey1.getId())));
+        assertThat(layoutValidationException.getValidationMessages().containsKey("layout.keys"), is(true));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.keys").get(0), is(String.format("key with id %s not matched computed key id from public key", publicKey1.getId())));
 
     }
 
@@ -227,12 +227,12 @@ class LayoutValidatorServiceTest {
         when(accountService.keyPairExists(publicKey1.getId())).thenReturn(true);
         when(accountService.keyPairExists(publicKey2.getId())).thenReturn(false);
 
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
 
-        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.keys"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("layout.keys").get(0), is(String.format("keyId %s not found", publicKey2.getId())));
+        assertThat(layoutValidationException.getValidationMessages().containsKey("layout.keys"), is(true));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.keys").get(0), is(String.format("keyId %s not found", publicKey2.getId())));
 
     }
 
@@ -246,26 +246,26 @@ class LayoutValidatorServiceTest {
         when(layout.getAuthorizedKeyIds()).thenReturn(singletonList(publicKey1.getId()));
         when(accountService.keyPairExists(publicKey1.getId())).thenReturn(false);
 
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
 
-        assertThat(layoutValidationError
+        assertThat(layoutValidationException
                 .getValidationMessages()
                 .containsKey("layout.keys"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("layout.keys").get(0), is(String.format("keyId %s not found", publicKey1.getId())));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.keys").get(0), is(String.format("keyId %s not found", publicKey1.getId())));
     }
 
     @Test
     void validateNoSupplyChain() {
         when(layoutMetaBlock.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationError
+        assertThat(layoutValidationException
                 .getValidationMessages()
                 .containsKey("layout.supplychain"), is(true));
-        assertThat(layoutValidationError.getValidationMessages()
+        assertThat(layoutValidationException.getValidationMessages()
                 .get("layout.supplychain").get(0), is("supply chain not found : " + SUPPLY_CHAIN_ID));
     }
 
@@ -273,11 +273,11 @@ class LayoutValidatorServiceTest {
     void validateSegmentNamesNotUnique() {
         when(layoutSegment.getName()).thenReturn("segment 1");
         when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment, layoutSegment));
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.layoutSegments"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("layout.layoutSegments").get(0), is("segment names are not unique"));
+        assertThat(layoutValidationException.getValidationMessages().containsKey("layout.layoutSegments"), is(true));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.layoutSegments").get(0), is("segment names are not unique"));
     }
 
     @Test
@@ -286,12 +286,12 @@ class LayoutValidatorServiceTest {
         when(step.getName()).thenReturn("stepName");
         when(layoutSegment.getSteps()).thenReturn(List.of(step, step));
         when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment));
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
 
-        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.layoutSegments"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("layout.layoutSegments").get(0), is(String.format("step names for segment: %s are not unique", layoutSegment.getName())));
+        assertThat(layoutValidationException.getValidationMessages().containsKey("layout.layoutSegments"), is(true));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.layoutSegments").get(0), is(String.format("step names for segment: %s are not unique", layoutSegment.getName())));
     }
 
     @Test
@@ -304,12 +304,12 @@ class LayoutValidatorServiceTest {
         when(layoutSegment.getSteps()).thenReturn(List.of(step));
         when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment));
 
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
 
-        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.expectedEndProducts"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("layout.expectedEndProducts").get(0), is("expected product destination step name not found"));
+        assertThat(layoutValidationException.getValidationMessages().containsKey("layout.expectedEndProducts"), is(true));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.expectedEndProducts").get(0), is("expected product destination step name not found"));
     }
 
     @Test
@@ -321,12 +321,12 @@ class LayoutValidatorServiceTest {
         when(layoutSegment.getSteps()).thenReturn(List.of(step));
         when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment));
 
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
 
-        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.expectedEndProducts"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("layout.expectedEndProducts").get(0), is("expected product destination step name not found"));
+        assertThat(layoutValidationException.getValidationMessages().containsKey("layout.expectedEndProducts"), is(true));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.expectedEndProducts").get(0), is("expected product destination step name not found"));
 
     }
 
@@ -344,11 +344,11 @@ class LayoutValidatorServiceTest {
         when(matchRule2.getDestinationSegmentName()).thenReturn("othersegmentName");
         when(matchRule2.getDestinationStepName()).thenReturn("stepName");
 
-        LayoutValidationError layoutValidationError = assertThrows(LayoutValidationError.class, () -> {
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
 
-        assertThat(layoutValidationError.getValidationMessages().containsKey("layout.expectedEndProducts"), is(true));
-        assertThat(layoutValidationError.getValidationMessages().get("layout.expectedEndProducts").get(0), is("segment names for expectedProducts should all be the same"));
+        assertThat(layoutValidationException.getValidationMessages().containsKey("layout.expectedEndProducts"), is(true));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.expectedEndProducts").get(0), is("segment names for expectedProducts should all be the same"));
     }
 }

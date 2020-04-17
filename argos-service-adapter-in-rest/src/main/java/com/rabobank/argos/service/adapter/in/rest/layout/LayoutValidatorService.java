@@ -181,7 +181,7 @@ public class LayoutValidatorService {
     }
 
     private void throwValidationException(LayoutValidationReport report) {
-        throw LayoutValidationError
+        throw LayoutValidationException
                 .builder()
                 .validationMessages(report.validationMessages)
                 .build();

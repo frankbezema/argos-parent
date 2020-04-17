@@ -18,6 +18,9 @@ package com.rabobank.argos.service.adapter.in.rest;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.rabobank.argos.domain.ArgosError;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestError;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationError;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage;
+import com.rabobank.argos.service.adapter.in.rest.layout.LayoutValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -30,6 +33,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -69,10 +74,30 @@ public class RestServiceExceptionHandler {
         return ResponseEntity.badRequest().contentType(APPLICATION_JSON).body(createMessage("invalid json"));
     }
 
+    @ExceptionHandler(value = {LayoutValidationException.class})
+    public ResponseEntity<RestValidationError> handleLayoutValidationException(LayoutValidationException ex) {
+        return ResponseEntity.badRequest().contentType(APPLICATION_JSON).body(createValidationError(ex));
+    }
+
+    private RestValidationError createValidationError(LayoutValidationException ex) {
+        RestValidationError restValidationError = new RestValidationError();
+        List<RestValidationMessage> messages = new ArrayList<>();
+        ex.getValidationMessages()
+                .entrySet()
+                .forEach(set ->
+                        set.getValue()
+                                .forEach(message -> {
+                                    RestValidationMessage validationMessage = new RestValidationMessage();
+                                    validationMessage.setField(set.getKey());
+                                    validationMessage.setMessage(message);
+                                    messages.add(validationMessage);
+                                }));
+        restValidationError.setMessages(messages);
+        return restValidationError;
+    }
+
     @ExceptionHandler(value = {ResponseStatusException.class})
     public ResponseEntity<RestError> handleResponseStatusException(ResponseStatusException ex) {
-        //HttpStatus.BAD_REQUEST==ex.getStatus()
-
         return ResponseEntity.status(ex.getStatus()).contentType(APPLICATION_JSON).body(createMessage(ex.getReason()));
     }
 
