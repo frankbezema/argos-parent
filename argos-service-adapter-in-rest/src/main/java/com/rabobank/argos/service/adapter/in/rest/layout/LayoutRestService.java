@@ -15,6 +15,7 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.layout;
 
+import com.rabobank.argos.domain.layout.Layout;
 import com.rabobank.argos.domain.layout.LayoutMetaBlock;
 import com.rabobank.argos.domain.permission.Permission;
 import com.rabobank.argos.service.adapter.in.rest.api.handler.LayoutApi;
@@ -33,12 +34,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.DATA_INPUT;
 import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
 import static com.rabobank.argos.service.adapter.in.rest.supplychain.SupplyChainLabelIdExtractor.SUPPLY_CHAIN_LABEL_ID_EXTRACTOR;
 
@@ -52,24 +51,24 @@ public class LayoutRestService implements LayoutApi {
 
     private final LayoutMetaBlockRepository repository;
 
+    private final LayoutValidatorService validator;
+
     @Override
-    public ResponseEntity<List<RestValidationMessage>> validateLayout(String supplyChainId, @Valid RestLayout restLayout) {
+    public ResponseEntity<List<RestValidationMessage>> validateLayout(String supplyChainId, RestLayout restLayout) {
+
+        Layout layout = converter.convertFromRestLayout(restLayout);
         List<RestValidationMessage> messages = new ArrayList<>();
-        RestValidationMessage message1 = new RestValidationMessage().field("layout.keys[0].keyid")
-                .message("must match \"^[0-9a-f]*$\"")
-                .type(DATA_INPUT);
-
-        RestValidationMessage message2 = new RestValidationMessage()
-                .field("layout.keys")
-                .message("key with id ID not matched computed key id from public key")
-                .type(MODEL_CONSISTENCY);
-
-        messages.add(message1);
-        messages.add(message2);
+        validator.validateLayout(layout)
+                .getValidationMessages()
+                .forEach((key, value) -> value
+                        .forEach(message ->
+                                messages.add(new RestValidationMessage()
+                                        .type(MODEL_CONSISTENCY)
+                                        .field(key)
+                                        .message(message))
+                        ));
         return ResponseEntity.ok(messages);
     }
-
-    private final LayoutValidatorService validator;
 
     @Override
     @PermissionCheck(permissions = Permission.LAYOUT_ADD)

@@ -210,7 +210,7 @@ class LayoutValidatorServiceTest {
             service.validate(layoutMetaBlock);
         });
         assertThat(layoutValidationException.getValidationMessages().containsKey("layout.keys"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("layout.keys").get(0), is(String.format("key with id %s not matched computed key id from public key", publicKey1.getId())));
+        assertThat(layoutValidationException.getValidationMessages().get("layout.keys").get(0), is(String.format("key with id %s does not match computed key id from public key", publicKey1.getId())));
 
     }
 

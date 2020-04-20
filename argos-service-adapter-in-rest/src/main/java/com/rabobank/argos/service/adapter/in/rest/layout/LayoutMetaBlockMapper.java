@@ -15,7 +15,9 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.layout;
 
+import com.rabobank.argos.domain.layout.Layout;
 import com.rabobank.argos.domain.layout.LayoutMetaBlock;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -33,6 +35,8 @@ public interface LayoutMetaBlockMapper {
 
     @Mapping(target = "supplyChainId", ignore = true)
     LayoutMetaBlock convertFromRestLayoutMetaBlock(RestLayoutMetaBlock metaBlock);
+
+    Layout convertFromRestLayout(RestLayout restLayout);
 
     RestLayoutMetaBlock convertToRestLayoutMetaBlock(LayoutMetaBlock metaBlock);
 

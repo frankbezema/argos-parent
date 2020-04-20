@@ -26,6 +26,7 @@ import com.rabobank.argos.domain.layout.rule.MatchRule;
 import com.rabobank.argos.service.adapter.in.rest.SignatureValidatorService;
 import com.rabobank.argos.service.domain.account.AccountService;
 import com.rabobank.argos.service.domain.supplychain.SupplyChainRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +68,17 @@ public class LayoutValidatorService {
         }
     }
 
+    public LayoutValidationReport validateLayout(Layout layout) {
+        LayoutValidationReport report = new LayoutValidationReport();
+        validateSegmentNamesUnique(report, layout);
+        validateStepNamesUnique(report, layout);
+        validateMatchRuleDestinations(report, layout);
+        validateExpectedProductsHaveSameSegmentName(report, layout);
+        validateAutorizationKeyIds(report, layout);
+        validatePublicKeys(report, layout);
+        return report;
+    }
+
     private void validatePublicKeys(LayoutValidationReport report, Layout layout) {
         validatePublicKeyIds(report, layout);
         validateAuthorizedKeysWithPublicKeys(report, layout);
@@ -79,7 +91,7 @@ public class LayoutValidatorService {
     private void validatePublicKeyId(LayoutValidationReport report, PublicKey publicKey) {
         if (!publicKey.getId().equals(KeyIdProvider.computeKeyId(publicKey.getKey()))) {
             report.addValidationMessage("layout.keys",
-                    "key with id " + publicKey.getId() + " not matched computed key id from public key");
+                    "key with id " + publicKey.getId() + " does not match computed key id from public key");
         }
     }
 
@@ -187,7 +199,8 @@ public class LayoutValidatorService {
                 .build();
     }
 
-    private static class LayoutValidationReport {
+    @Getter
+    public static class LayoutValidationReport {
         private Map<String, List<String>> validationMessages = new HashMap<>();
 
         private void addValidationMessage(String field, String message) {
