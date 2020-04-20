@@ -18,7 +18,9 @@ package com.rabobank.argos.service.adapter.in.rest.layout;
 import com.rabobank.argos.domain.layout.LayoutMetaBlock;
 import com.rabobank.argos.domain.permission.Permission;
 import com.rabobank.argos.service.adapter.in.rest.api.handler.LayoutApi;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage;
 import com.rabobank.argos.service.domain.layout.LayoutMetaBlockRepository;
 import com.rabobank.argos.service.domain.security.LabelIdCheckParam;
 import com.rabobank.argos.service.domain.security.PermissionCheck;
@@ -31,8 +33,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
+import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.DATA_INPUT;
+import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
 import static com.rabobank.argos.service.adapter.in.rest.supplychain.SupplyChainLabelIdExtractor.SUPPLY_CHAIN_LABEL_ID_EXTRACTOR;
 
 @RestController
@@ -44,6 +51,23 @@ public class LayoutRestService implements LayoutApi {
     private final LayoutMetaBlockMapper converter;
 
     private final LayoutMetaBlockRepository repository;
+
+    @Override
+    public ResponseEntity<List<RestValidationMessage>> validateLayout(String supplyChainId, @Valid RestLayout restLayout) {
+        List<RestValidationMessage> messages = new ArrayList<>();
+        RestValidationMessage message1 = new RestValidationMessage().field("layout.keys[0].keyid")
+                .message("must match \"^[0-9a-f]*$\"")
+                .type(DATA_INPUT);
+
+        RestValidationMessage message2 = new RestValidationMessage()
+                .field("layout.keys")
+                .message("key with id ID not matched computed key id from public key")
+                .type(MODEL_CONSISTENCY);
+
+        messages.add(message1);
+        messages.add(message2);
+        return ResponseEntity.ok(messages);
+    }
 
     private final LayoutValidatorService validator;
 
