@@ -1363,8 +1363,14 @@ components:
       type: object
       required:
         - message
+        - type
       properties:
         field:
           type: string
+        type:
+          type: string
+          enum:
+            - DATA_INPUT
+            - MODEL_CONSISTENCY
         message:
           type: string
