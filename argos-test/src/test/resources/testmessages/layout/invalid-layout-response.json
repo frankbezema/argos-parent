@@ -1,1 +1,14 @@
-{"message":"signatures[0].keyId:must match \"^[0-9a-f]*$\", signatures[0].keyId:size must be between 64 and 64"}
+{
+  "messages": [
+    {
+      "field": "signatures[0].keyId",
+      "type": "DATA_INPUT",
+      "message": "must match \"^[0-9a-f]*$\""
+    },
+    {
+      "field": "signatures[0].keyId",
+      "type": "DATA_INPUT",
+      "message": "size must be between 64 and 64"
+    }
+  ]
+}

@@ -34,6 +34,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,13 +64,17 @@ public class RestServiceExceptionHandler {
                         .message(error.getDefaultMessage())
                         .type(DATA_INPUT)
                 )
-                .sorted()
                 .collect(Collectors.toList());
+
+        Collections.sort(validationMessages, Comparator
+                .comparing(RestValidationMessage::getField)
+                .thenComparing(RestValidationMessage::getMessage));
+
         RestValidationError restValidationError = new RestValidationError().messages(validationMessages);
         return ResponseEntity.badRequest().contentType(APPLICATION_JSON).body(restValidationError);
     }
 
-    @ExceptionHandler(value = {ConstraintViolationException.class})
+    @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<RestValidationError> handleConstraintViolationException(
             ConstraintViolationException ex) {
         List<RestValidationMessage> validationMessages = ex.getConstraintViolations()
@@ -79,6 +85,11 @@ public class RestServiceExceptionHandler {
                         .type(DATA_INPUT)
                 )
                 .collect(Collectors.toList());
+
+        Collections.sort(validationMessages, Comparator
+                .comparing(RestValidationMessage::getField)
+                .thenComparing(RestValidationMessage::getMessage));
+
         RestValidationError restValidationError = new RestValidationError().messages(validationMessages);
         return ResponseEntity.badRequest().contentType(APPLICATION_JSON).body(restValidationError);
     }

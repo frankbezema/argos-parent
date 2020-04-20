@@ -72,6 +72,7 @@ Feature: Link
     And request read('classpath:testmessages/link/invalid-link.json')
     When method POST
     Then status 400
+    * print response
     And match response contains read('classpath:testmessages/link/invalid-link-response.json')
 
   Scenario: store link without authorization should return a 401 error

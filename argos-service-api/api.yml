@@ -253,6 +253,37 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
+  /supplychain/{supplyChainId}/layout/validate:
+    post:
+      summary: validates a layout on data input and model consistency
+      operationId: validateLayout
+      tags:
+        - layout
+      parameters:
+        - name: supplyChainId
+          in: path
+          description: supply chain id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Layout"
+      responses:
+        '200':
+          description: list of validation messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ValidationMessage"
+        '500':
+          $ref: '#/components/responses/Error'
+
   /supplychain/{supplyChainId}/verification:
     post:
       summary: creates a verification run

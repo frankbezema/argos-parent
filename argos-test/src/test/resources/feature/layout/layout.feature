@@ -32,7 +32,6 @@ Feature: Layout
 
   Scenario: store layout with valid specifications should return a 200
     * call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
-
   Scenario: store layout with invalid specifications should return a 400 error
     Given path layoutPath
     And request read('classpath:testmessages/layout/invalid-layout.json')

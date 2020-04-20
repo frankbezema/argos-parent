@@ -56,7 +56,8 @@ Feature: Non Personal Account
     And request { name: 'npa 1', parentLabelId: #(rootLabelId)}
     When method POST
     Then status 400
-    And match response.message contains 'non personal account with name: npa 1 and parentLabelId'
+    * print response
+    And match response.messages[0].message contains "non personal account with name: npa 1 and parentLabelId:"
 
   Scenario: retrieve non personal account should return a 200
     * def result = call read('create-non-personal-account.feature') { name: 'npa 1', parentLabelId: #(rootLabelId)}

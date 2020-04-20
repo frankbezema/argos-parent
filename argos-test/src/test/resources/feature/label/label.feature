@@ -39,7 +39,7 @@ Feature: Label
     And request { name: '1label'}
     When method POST
     Then status 400
-    And match response.message == 'name:must match "^([a-z]{1}[a-z0-9_]*)?$"'
+    And match response.messages[0].message == 'must match "^([a-z]{1}[a-z0-9_]*)?$"'
 
   Scenario: store a label without authorization should return a 401 error
     * configure headers = null
@@ -55,7 +55,7 @@ Feature: Label
     And request { name: 'label1'}
     When method POST
     Then status 400
-    And match response.message == 'label with name: label1 and parentLabelId: null already exists'
+    And match response.messages[0].message == 'label with name: label1 and parentLabelId: null already exists'
 
   Scenario: retrieve root label should return a 200
     * def result = call read('create-label.feature') { name: 'label2'}
