@@ -56,7 +56,6 @@ Feature: Non Personal Account
     And request { name: 'npa 1', parentLabelId: #(rootLabelId)}
     When method POST
     Then status 400
-    * print response
     And match response.messages[0].message contains "non personal account with name: npa 1 and parentLabelId:"
 
   Scenario: retrieve non personal account should return a 200
