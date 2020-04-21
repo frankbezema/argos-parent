@@ -21,7 +21,6 @@ import com.rabobank.argos.domain.permission.Permission;
 import com.rabobank.argos.service.adapter.in.rest.api.handler.LayoutApi;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
-import com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage;
 import com.rabobank.argos.service.domain.layout.LayoutMetaBlockRepository;
 import com.rabobank.argos.service.domain.security.LabelIdCheckParam;
 import com.rabobank.argos.service.domain.security.PermissionCheck;
@@ -35,10 +34,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
-import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
 import static com.rabobank.argos.service.adapter.in.rest.supplychain.SupplyChainLabelIdExtractor.SUPPLY_CHAIN_LABEL_ID_EXTRACTOR;
 
 @RestController
@@ -54,27 +50,16 @@ public class LayoutRestService implements LayoutApi {
     private final LayoutValidatorService validator;
 
     @Override
-    public ResponseEntity<List<RestValidationMessage>> validateLayout(String supplyChainId, RestLayout restLayout) {
-
+    public ResponseEntity validateLayout(RestLayout restLayout) {
         Layout layout = converter.convertFromRestLayout(restLayout);
-        List<RestValidationMessage> messages = new ArrayList<>();
-        validator.validateLayout(layout)
-                .getValidationMessages()
-                .forEach((key, value) -> value
-                        .forEach(message ->
-                                messages.add(new RestValidationMessage()
-                                        .type(MODEL_CONSISTENCY)
-                                        .field(key)
-                                        .message(message))
-                        ));
-        return ResponseEntity.ok(messages);
+        validator.validateLayout(layout);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
     @PermissionCheck(permissions = Permission.LAYOUT_ADD)
     public ResponseEntity<RestLayoutMetaBlock> createOrUpdateLayout(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, RestLayoutMetaBlock restLayoutMetaBlock) {
         log.info("createLayout for supplyChainId {}", supplyChainId);
-
         LayoutMetaBlock layoutMetaBlock = converter.convertFromRestLayoutMetaBlock(restLayoutMetaBlock);
         layoutMetaBlock.setSupplyChainId(supplyChainId);
         validator.validate(layoutMetaBlock);

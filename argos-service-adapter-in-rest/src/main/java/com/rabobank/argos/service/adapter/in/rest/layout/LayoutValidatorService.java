@@ -31,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -68,7 +68,7 @@ public class LayoutValidatorService {
         }
     }
 
-    public LayoutValidationReport validateLayout(Layout layout) {
+    public void validateLayout(Layout layout) {
         LayoutValidationReport report = new LayoutValidationReport();
         validateSegmentNamesUnique(report, layout);
         validateStepNamesUnique(report, layout);
@@ -76,7 +76,9 @@ public class LayoutValidatorService {
         validateExpectedProductsHaveSameSegmentName(report, layout);
         validateAutorizationKeyIds(report, layout);
         validatePublicKeys(report, layout);
-        return report;
+        if (!report.isValid()) {
+            throwValidationException(report);
+        }
     }
 
     private void validatePublicKeys(LayoutValidationReport report, Layout layout) {
@@ -204,12 +206,12 @@ public class LayoutValidatorService {
         private Map<String, List<String>> validationMessages = new HashMap<>();
 
         private void addValidationMessage(String field, String message) {
-            validationMessages.computeIfAbsent(field,
-                    k -> new ArrayList<>(Collections.singletonList(message)));
             validationMessages.computeIfPresent(field, (key, messages) -> {
                 messages.add(message);
                 return messages;
             });
+            validationMessages.computeIfAbsent(field,
+                    k -> new ArrayList<>(singletonList(message)));
         }
 
         private boolean isValid() {
