@@ -15,7 +15,9 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.layout;
 
+import com.rabobank.argos.domain.layout.Layout;
 import com.rabobank.argos.domain.layout.LayoutMetaBlock;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
 import com.rabobank.argos.service.domain.layout.LayoutMetaBlockRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +56,12 @@ class LayoutRestServiceTest {
     private RestLayoutMetaBlock restLayoutMetaBlock;
 
     @Mock
+    private RestLayout restLayout;
+
+    @Mock
+    private Layout layout;
+
+    @Mock
     private LayoutMetaBlock layoutMetaBlock;
 
     @Mock
@@ -76,7 +84,6 @@ class LayoutRestServiceTest {
         when(converter.convertFromRestLayoutMetaBlock(restLayoutMetaBlock)).thenReturn(layoutMetaBlock);
         when(converter.convertToRestLayoutMetaBlock(layoutMetaBlock)).thenReturn(restLayoutMetaBlock);
 
-
         ResponseEntity<RestLayoutMetaBlock> responseEntity = service.createOrUpdateLayout(SUPPLY_CHAIN_ID, restLayoutMetaBlock);
 
         assertThat(responseEntity.getStatusCodeValue(), is(201));
@@ -88,6 +95,13 @@ class LayoutRestServiceTest {
 
     }
 
+    @Test
+    void validateLayoutValid() {
+        when(converter.convertFromRestLayout(restLayout)).thenReturn(layout);
+        ResponseEntity responseEntity = service.validateLayout(SUPPLY_CHAIN_ID, restLayout);
+        assertThat(responseEntity.getStatusCodeValue(), is(204));
+        verify(validator).validateLayout(layout);
+    }
 
     @Test
     void getLayout() {

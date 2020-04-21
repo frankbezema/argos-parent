@@ -50,7 +50,8 @@ public class LayoutRestService implements LayoutApi {
     private final LayoutValidatorService validator;
 
     @Override
-    public ResponseEntity validateLayout(RestLayout restLayout) {
+    @PermissionCheck(permissions = Permission.LAYOUT_ADD)
+    public ResponseEntity validateLayout(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, RestLayout restLayout) {
         Layout layout = converter.convertFromRestLayout(restLayout);
         validator.validateLayout(layout);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

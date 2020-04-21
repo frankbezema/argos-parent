@@ -92,7 +92,7 @@ public class LayoutValidatorService {
 
     private void validatePublicKeyId(LayoutValidationReport report, PublicKey publicKey) {
         if (!publicKey.getId().equals(KeyIdProvider.computeKeyId(publicKey.getKey()))) {
-            report.addValidationMessage("layout.keys",
+            report.addValidationMessage("keys",
                     "key with id " + publicKey.getId() + " does not match computed key id from public key");
         }
     }
@@ -104,7 +104,7 @@ public class LayoutValidatorService {
                 .flatMap(List::stream)).collect(toSet());
 
         if (publicKeyIds.size() != authorizedKeyIds.size() || !publicKeyIds.containsAll(authorizedKeyIds)) {
-            report.addValidationMessage("layout.authorizedKeyIds",
+            report.addValidationMessage("authorizedKeyIds",
                     "The defined Public keys are not equal to all defined Authorized keys");
         }
     }
@@ -115,7 +115,7 @@ public class LayoutValidatorService {
                 .map(MatchRule::getDestinationSegmentName)
                 .collect(Collectors.toSet());
         if (sameSegmentNames.size() > 1) {
-            report.addValidationMessage("layout.expectedEndProducts",
+            report.addValidationMessage("expectedEndProducts",
                     "segment names for expectedProducts should all be the same");
         }
     }
@@ -128,7 +128,7 @@ public class LayoutValidatorService {
         Set<String> stepNameSet = layoutSegment.getSteps().stream().map(Step::getName).collect(toSet());
         List<String> stepNameList = layoutSegment.getSteps().stream().map(Step::getName).collect(toList());
         if (stepNameSet.size() != stepNameList.size()) {
-            report.addValidationMessage("layout.layoutSegments",
+            report.addValidationMessage("layoutSegments",
                     "step names for segment: " + layoutSegment.getName() + " are not unique");
         }
     }
@@ -137,14 +137,14 @@ public class LayoutValidatorService {
         Set<String> segmentNameSet = layout.getLayoutSegments().stream().map(LayoutSegment::getName).collect(toSet());
         List<String> segmentNameList = layout.getLayoutSegments().stream().map(LayoutSegment::getName).collect(toList());
         if (segmentNameSet.size() != segmentNameList.size()) {
-            report.addValidationMessage("layout.layoutSegments",
+            report.addValidationMessage("layoutSegments",
                     "segment names are not unique");
         }
     }
 
     private void validateMatchRuleDestinations(LayoutValidationReport report, Layout layout) {
         if (!layout.getExpectedEndProducts().stream().allMatch(matchRule -> hasFilterDestination(matchRule, layout))) {
-            report.addValidationMessage("layout.expectedEndProducts",
+            report.addValidationMessage("expectedEndProducts",
                     "expected product destination step name not found");
         }
     }
@@ -163,7 +163,7 @@ public class LayoutValidatorService {
     private void validateSupplyChain(LayoutValidationReport report, LayoutMetaBlock layoutMetaBlock) {
         if (!supplyChainRepository.exists(layoutMetaBlock.getSupplyChainId())) {
             report
-                    .addValidationMessage("layout.supplychain",
+                    .addValidationMessage("supplychain",
                             "supply chain not found : " + layoutMetaBlock.getSupplyChainId());
         }
     }
@@ -189,7 +189,7 @@ public class LayoutValidatorService {
     private void keyExists(LayoutValidationReport report, String keyId) {
         if (!accountService.keyPairExists(keyId)) {
             report
-                    .addValidationMessage("layout.keys",
+                    .addValidationMessage("keys",
                             "keyId " + keyId + " not found");
         }
     }
