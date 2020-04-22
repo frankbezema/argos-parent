@@ -35,8 +35,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -46,7 +48,6 @@ import static org.mockito.Mockito.when;
 class LayoutValidatorServiceTest {
 
     private static final String SUPPLY_CHAIN_ID = "supplyChainId";
-    private static final String KEY_ID_1 = "keyId1";
 
     @Mock
     private SupplyChainRepository supplyChainRepository;
@@ -143,9 +144,11 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationException.getValidationMessages().containsKey("signatures"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("signatures").get(0), is("layout can't be signed more than one time with the same keyId"));
 
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(1));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("signatures"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("layout can't be signed more than one time with the same keyId"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
     }
 
     @Test
@@ -167,8 +170,12 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationException.getValidationMessages().containsKey("authorizedKeyIds"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("authorizedKeyIds").get(0), is("The defined Public keys are not equal to all defined Authorized keys"));
+
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(1));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("authorizedKeyIds"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("The defined Public keys are not equal to all defined Authorized keys"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
+
     }
 
     @Test
@@ -187,8 +194,11 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationException.getValidationMessages().containsKey("authorizedKeyIds"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("authorizedKeyIds").get(0), is("The defined Public keys are not equal to all defined Authorized keys"));
+
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(1));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("authorizedKeyIds"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("The defined Public keys are not equal to all defined Authorized keys"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
 
     }
 
@@ -209,8 +219,10 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationException.getValidationMessages().containsKey("keys"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("keys").get(0), is(String.format("key with id %s does not match computed key id from public key", publicKey1.getId())));
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(1));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("keys"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is(String.format("key with id %s does not match computed key id from public key", publicKey1.getId())));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
 
     }
 
@@ -230,9 +242,9 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-
-        assertThat(layoutValidationException.getValidationMessages().containsKey("keys"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("keys").get(0), is(String.format("keyId %s not found", publicKey2.getId())));
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(2));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("keys"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is(String.format("keyId %s not found", publicKey2.getId())));
 
     }
 
@@ -250,10 +262,11 @@ class LayoutValidatorServiceTest {
             service.validate(layoutMetaBlock);
         });
 
-        assertThat(layoutValidationException
-                .getValidationMessages()
-                .containsKey("keys"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("keys").get(0), is(String.format("keyId %s not found", publicKey1.getId())));
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(2));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("keys"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is(String.format(String.format("keyId %s not found", publicKey1.getId()))));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
+
     }
 
     @Test
@@ -262,11 +275,12 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationException
-                .getValidationMessages()
-                .containsKey("supplychain"), is(true));
-        assertThat(layoutValidationException.getValidationMessages()
-                .get("supplychain").get(0), is("supply chain not found : " + SUPPLY_CHAIN_ID));
+
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(1));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("supplychain"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("supply chain not found : " + SUPPLY_CHAIN_ID));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
+
     }
 
     @Test
@@ -276,8 +290,12 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-        assertThat(layoutValidationException.getValidationMessages().containsKey("layoutSegments"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("layoutSegments").get(0), is("segment names are not unique"));
+
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(2));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("layoutSegments"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("segment names are not unique"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
+
     }
 
     @Test
@@ -289,9 +307,10 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-
-        assertThat(layoutValidationException.getValidationMessages().containsKey("layoutSegments"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("layoutSegments").get(0), is(String.format("step names for segment: %s are not unique", layoutSegment.getName())));
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(2));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("layoutSegments"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is(String.format("step names for segment: %s are not unique", layoutSegment.getName())));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
     }
 
     @Test
@@ -307,9 +326,11 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(2));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("expectedEndProducts"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("expected product destination step name not found"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
 
-        assertThat(layoutValidationException.getValidationMessages().containsKey("expectedEndProducts"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("expectedEndProducts").get(0), is("expected product destination step name not found"));
     }
 
     @Test
@@ -324,9 +345,10 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-
-        assertThat(layoutValidationException.getValidationMessages().containsKey("expectedEndProducts"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("expectedEndProducts").get(0), is("expected product destination step name not found"));
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(2));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("expectedEndProducts"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("expected product destination step name not found"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
 
     }
 
@@ -347,8 +369,9 @@ class LayoutValidatorServiceTest {
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> {
             service.validate(layoutMetaBlock);
         });
-
-        assertThat(layoutValidationException.getValidationMessages().containsKey("expectedEndProducts"), is(true));
-        assertThat(layoutValidationException.getValidationMessages().get("expectedEndProducts").get(0), is("segment names for expectedProducts should all be the same"));
+        assertThat(layoutValidationException.getValidationMessages(), hasSize(2));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("expectedEndProducts"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("segment names for expectedProducts should all be the same"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getType(), is(MODEL_CONSISTENCY));
     }
 }

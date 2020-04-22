@@ -115,12 +115,19 @@ Feature: Layout
     When method POST
     Then status 401
 
-  Scenario: validate layout with invalid specifications should return a 400 error
+  Scenario: validate layout with invalid model specifications should return a 400 error
     Given path layoutPath+'/validate'
     And request read('classpath:testmessages/layout/invalid-layout-validation.json')
     When method POST
     Then status 400
     And match response contains read('classpath:testmessages/layout/invalid-layout-validation-response.json')
+
+  Scenario: validate layout with data input  should return a 400 error
+    Given path layoutPath+'/validate'
+    And request read('classpath:testmessages/layout/invalid-layout-data-validation.json')
+    When method POST
+    Then status 400
+    And match response contains read('classpath:testmessages/layout/invalid-layout-validation-data-response.json')
 
   Scenario: validate layout with valid specifications should return a 204
     Given path layoutPath+'/validate'

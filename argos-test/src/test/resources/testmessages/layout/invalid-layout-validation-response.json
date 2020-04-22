@@ -1,6 +1,26 @@
 {
   "messages": [
     {
+      "field": "authorizedKeyIds",
+      "type": "MODEL_CONSISTENCY",
+      "message": "The defined Public keys are not equal to all defined Authorized keys"
+    },
+    {
+      "field": "expectedEndProducts",
+      "type": "MODEL_CONSISTENCY",
+      "message": "expected product destination step name not found"
+    },
+    {
+      "field": "keys",
+      "type": "MODEL_CONSISTENCY",
+      "message": "key with id 45c47ccc386678d0eb76efcdbc0720474586ff12e673d5d0f52534cca722438c does not match computed key id from public key"
+    },
+    {
+      "field": "keys",
+      "type": "MODEL_CONSISTENCY",
+      "message": "key with id 5ac47ccc386678d0eb76efcdbc0720474586ff12e673d5d0f52537c2a722438c does not match computed key id from public key"
+    },
+    {
       "field": "keys",
       "type": "MODEL_CONSISTENCY",
       "message": "keyId authorizedKeyId1 not found"
@@ -24,26 +44,6 @@
       "field": "keys",
       "type": "MODEL_CONSISTENCY",
       "message": "keyId stepName2 authorizedKeyId not found"
-    },
-    {
-      "field": "keys",
-      "type": "MODEL_CONSISTENCY",
-      "message": "key with id 45c47ccc386678d0eb76efcdbc0720474586ff12e673d5d0f52534cca722438c does not match computed key id from public key"
-    },
-    {
-      "field": "keys",
-      "type": "MODEL_CONSISTENCY",
-      "message": "key with id 5ac47ccc386678d0eb76efcdbc0720474586ff12e673d5d0f52537c2a722438c does not match computed key id from public key"
-    },
-    {
-      "field": "expectedEndProducts",
-      "type": "MODEL_CONSISTENCY",
-      "message": "expected product destination step name not found"
-    },
-    {
-      "field": "authorizedKeyIds",
-      "type": "MODEL_CONSISTENCY",
-      "message": "The defined Public keys are not equal to all defined Authorized keys"
     }
   ]
 }

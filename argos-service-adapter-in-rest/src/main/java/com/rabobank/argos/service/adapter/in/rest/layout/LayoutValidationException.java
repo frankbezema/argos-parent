@@ -15,14 +15,14 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.layout;
 
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Map;
 
 @Builder
 @Getter
 public class LayoutValidationException extends RuntimeException {
-    private final Map<String, List<String>> validationMessages;
+    private final transient List<RestValidationMessage> validationMessages;
 }

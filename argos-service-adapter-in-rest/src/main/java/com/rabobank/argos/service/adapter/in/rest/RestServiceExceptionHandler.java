@@ -33,14 +33,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolationException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.DATA_INPUT;
-import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
 import static java.util.Collections.singletonList;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -66,9 +64,7 @@ public class RestServiceExceptionHandler {
                 )
                 .collect(Collectors.toList());
 
-        Collections.sort(validationMessages, Comparator
-                .comparing(RestValidationMessage::getField)
-                .thenComparing(RestValidationMessage::getMessage));
+        sortValidationMessages(validationMessages);
 
         RestValidationError restValidationError = new RestValidationError().messages(validationMessages);
         return ResponseEntity.badRequest().contentType(APPLICATION_JSON).body(restValidationError);
@@ -85,11 +81,7 @@ public class RestServiceExceptionHandler {
                         .type(DATA_INPUT)
                 )
                 .collect(Collectors.toList());
-
-        Collections.sort(validationMessages, Comparator
-                .comparing(RestValidationMessage::getField)
-                .thenComparing(RestValidationMessage::getMessage));
-
+        sortValidationMessages(validationMessages);
         RestValidationError restValidationError = new RestValidationError().messages(validationMessages);
         return ResponseEntity.badRequest().contentType(APPLICATION_JSON).body(restValidationError);
     }
@@ -104,20 +96,6 @@ public class RestServiceExceptionHandler {
         return ResponseEntity.badRequest().contentType(APPLICATION_JSON).body(createValidationError(ex));
     }
 
-    private RestValidationError createValidationError(LayoutValidationException ex) {
-        RestValidationError restValidationError = new RestValidationError();
-        List<RestValidationMessage> messages = new ArrayList<>();
-        ex.getValidationMessages()
-                .forEach((key, value) -> value
-                        .forEach(message ->
-                                messages.add(new RestValidationMessage()
-                                        .type(MODEL_CONSISTENCY)
-                                        .field(key)
-                                        .message(message))
-                        ));
-        restValidationError.setMessages(messages);
-        return restValidationError;
-    }
 
     @ExceptionHandler(value = {ResponseStatusException.class})
     public ResponseEntity handleResponseStatusException(ResponseStatusException ex) {
@@ -142,6 +120,20 @@ public class RestServiceExceptionHandler {
     @ExceptionHandler(value = {AccessDeniedException.class})
     public ResponseEntity<RestError> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity.status(FORBIDDEN).contentType(APPLICATION_JSON).body(createRestErrorMessage(ex.getMessage()));
+    }
+
+    private RestValidationError createValidationError(LayoutValidationException ex) {
+        RestValidationError restValidationError = new RestValidationError();
+        List<RestValidationMessage> validationMessages = ex.getValidationMessages();
+        sortValidationMessages(validationMessages);
+        restValidationError.setMessages(validationMessages);
+        return restValidationError;
+    }
+
+    private void sortValidationMessages(List<RestValidationMessage> validationMessages) {
+        Collections.sort(validationMessages, Comparator
+                .comparing(RestValidationMessage::getField)
+                .thenComparing(RestValidationMessage::getMessage));
     }
 
     private RestValidationError createValidationError(String reason) {

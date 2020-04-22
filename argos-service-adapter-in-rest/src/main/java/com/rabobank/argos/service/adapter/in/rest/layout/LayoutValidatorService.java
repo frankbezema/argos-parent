@@ -24,6 +24,7 @@ import com.rabobank.argos.domain.layout.PublicKey;
 import com.rabobank.argos.domain.layout.Step;
 import com.rabobank.argos.domain.layout.rule.MatchRule;
 import com.rabobank.argos.service.adapter.in.rest.SignatureValidatorService;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage;
 import com.rabobank.argos.service.domain.account.AccountService;
 import com.rabobank.argos.service.domain.supplychain.SupplyChainRepository;
 import lombok.Getter;
@@ -31,14 +32,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.singletonList;
+import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -54,15 +53,9 @@ public class LayoutValidatorService {
 
     public void validate(LayoutMetaBlock layoutMetaBlock) {
         LayoutValidationReport report = new LayoutValidationReport();
-        validateSegmentNamesUnique(report, layoutMetaBlock.getLayout());
-        validateStepNamesUnique(report, layoutMetaBlock.getLayout());
-        validateMatchRuleDestinations(report, layoutMetaBlock.getLayout());
-        validateExpectedProductsHaveSameSegmentName(report, layoutMetaBlock.getLayout());
+        validateLayout(report, layoutMetaBlock.getLayout());
         validateSupplyChain(report, layoutMetaBlock);
-        validateAutorizationKeyIds(report, layoutMetaBlock.getLayout());
-        validatePublicKeys(report, layoutMetaBlock.getLayout());
         validateSignatures(report, layoutMetaBlock);
-
         if (!report.isValid()) {
             throwValidationException(report);
         }
@@ -70,15 +63,19 @@ public class LayoutValidatorService {
 
     public void validateLayout(Layout layout) {
         LayoutValidationReport report = new LayoutValidationReport();
+        validateLayout(report, layout);
+        if (!report.isValid()) {
+            throwValidationException(report);
+        }
+    }
+
+    private void validateLayout(LayoutValidationReport report, Layout layout) {
         validateSegmentNamesUnique(report, layout);
         validateStepNamesUnique(report, layout);
         validateMatchRuleDestinations(report, layout);
         validateExpectedProductsHaveSameSegmentName(report, layout);
         validateAutorizationKeyIds(report, layout);
         validatePublicKeys(report, layout);
-        if (!report.isValid()) {
-            throwValidationException(report);
-        }
     }
 
     private void validatePublicKeys(LayoutValidationReport report, Layout layout) {
@@ -203,19 +200,15 @@ public class LayoutValidatorService {
 
     @Getter
     public static class LayoutValidationReport {
-        private Map<String, List<String>> validationMessages = new HashMap<>();
-
+        private List<RestValidationMessage> validationMessages = new ArrayList();
         private void addValidationMessage(String field, String message) {
-            validationMessages.computeIfPresent(field, (key, messages) -> {
-                messages.add(message);
-                return messages;
-            });
-            validationMessages.computeIfAbsent(field,
-                    k -> new ArrayList<>(singletonList(message)));
+            validationMessages.add(new RestValidationMessage()
+                    .type(MODEL_CONSISTENCY)
+                    .field(field).message(message));
         }
 
         private boolean isValid() {
-            return validationMessages == null || validationMessages.isEmpty();
+            return validationMessages.isEmpty();
         }
     }
 }

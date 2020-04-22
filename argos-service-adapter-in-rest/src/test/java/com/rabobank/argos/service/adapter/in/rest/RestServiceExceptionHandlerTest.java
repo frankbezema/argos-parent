@@ -35,9 +35,12 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
+import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
@@ -95,12 +98,13 @@ class RestServiceExceptionHandlerTest {
 
     @Test
     void handleLayoutValidationException() {
-        when(layoutValidationException.getValidationMessages()).thenReturn(Collections.singletonMap("key", Collections.singletonList("value")));
+        when(layoutValidationException.getValidationMessages())
+                .thenReturn(new ArrayList(List.of(new RestValidationMessage().field("key").message("message").type(MODEL_CONSISTENCY))));
         ResponseEntity<RestValidationError> response = handler.handleLayoutValidationException(layoutValidationException);
         assertThat(response.getStatusCodeValue(), is(400));
         assertThat(response.getBody().getMessages().get(0).getField(), is("key"));
-        assertThat(response.getBody().getMessages().get(0).getMessage(), is("value"));
-        assertThat(response.getBody().getMessages().get(0).getType(), is(RestValidationMessage.TypeEnum.MODEL_CONSISTENCY));
+        assertThat(response.getBody().getMessages().get(0).getMessage(), is("message"));
+        assertThat(response.getBody().getMessages().get(0).getType(), is(MODEL_CONSISTENCY));
     }
 
     @Test
