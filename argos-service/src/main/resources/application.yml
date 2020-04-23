@@ -53,7 +53,7 @@ spring:
       - accountId
       - accountName
   application:
-    name: Argos-service
+    name: argos-service
 management:
   endpoints:
     enabled-by-default: false
