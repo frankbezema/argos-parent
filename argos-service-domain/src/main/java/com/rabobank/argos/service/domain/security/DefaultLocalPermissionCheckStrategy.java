@@ -15,14 +15,12 @@
  */
 package com.rabobank.argos.service.domain.security;
 
-import com.rabobank.argos.domain.account.Account;
 import com.rabobank.argos.domain.hierarchy.HierarchyMode;
 import com.rabobank.argos.domain.hierarchy.TreeNode;
 import com.rabobank.argos.domain.permission.Permission;
 import com.rabobank.argos.service.domain.hierarchy.HierarchyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -51,8 +49,7 @@ public class DefaultLocalPermissionCheckStrategy implements LocalPermissionCheck
 
     @Override
     public boolean hasLocalPermission(LocalPermissionCheckData localPermissionCheckData, Set<Permission> permissionsToCheck) {
-        Account account = accountSecurityContext.getAuthenticatedAccount().orElseThrow(() -> new AccessDeniedException("Access denied"));
-        log.info("hasLocalPermission on label {} with permissionsToCheck : {} for account: {},", localPermissionCheckData, permissionsToCheck, account.getName());
+        log.info("hasLocalPermission on label {} with permissionsToCheck : {}", localPermissionCheckData, permissionsToCheck);
 
         if (!localPermissionCheckData.getLabelIds().isEmpty()) {
             return localPermissionCheckData.getLabelIds().stream().allMatch(labelId -> hasLocalPermission(permissionsToCheck, requireNonNull(labelId)));

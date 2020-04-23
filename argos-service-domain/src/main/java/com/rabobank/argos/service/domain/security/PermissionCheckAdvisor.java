@@ -15,7 +15,6 @@
  */
 package com.rabobank.argos.service.domain.security;
 
-import com.rabobank.argos.domain.account.Account;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -50,20 +49,15 @@ public class PermissionCheckAdvisor {
 
     @Before(value = "permissionCheckPointCut(permissionCheck)", argNames = "joinPoint,permissionCheck")
     public void checkPermissions(JoinPoint joinPoint, PermissionCheck permissionCheck) {
-        Account account = accountSecurityContext.getAuthenticatedAccount().orElseThrow(() -> new AccessDeniedException("Access denied"));
-
-        log.info("checking of method:{} with permissions {} for account: {}",
+        log.info("checking of method:{} with permissions {}",
                 joinPoint.getSignature().getName(),
-                permissionCheck.permissions(),
-                account.getName()
+                permissionCheck.permissions()
         );
 
-
         if (!(hasGlobalPermissions(permissionCheck) || hasLocalPermissions(joinPoint, permissionCheck))) {
-            log.info("access denied for method:{} with permissions {} for account: {}",
+            log.info("access denied for method:{} with permissions {}",
                     joinPoint.getSignature().getName(),
-                    permissionCheck.permissions(),
-                    account.getName()
+                    permissionCheck.permissions()
             );
             throw new AccessDeniedException("Access denied");
         }
