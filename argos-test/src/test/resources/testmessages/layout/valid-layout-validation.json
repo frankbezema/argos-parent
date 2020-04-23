@@ -1,0 +1,106 @@
+{
+  "keys": [
+    {
+      "id": "c8df0a497ab0df7136c4f97892f17914e6e5e021fdc039f0ea7c27d5a95c1254",
+      "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnB7t5WVvXmbwKo7vn49tDyigfZF+wqB68v4i2fgv+/625yVomAKrtQDX8ANTCbZ6UQEkXNQhI9muPo8hhYb2zEaEdEckslSQ9lFJgDHCHekC2EYwXmc4VnwLzyiITtlXSSveav5qUpGVb7t7AK4f9yueojwqUjgQGkXgmeDrg8r15G/nVuYq5WyIS3OKxXKQmm2mJTr5A+kt8SiYPmDQoJwkK6ezZU7qsobY5jloU5SdIiGn2d8KHioj5ekki9kgBszuwHHqg94Ml6JT28EWRKdfBVA2P7PRLzl3V8qdA0srkTsuy4+emEI+NAeNQkeMsucfW4xIVBMQZ28GIFmJcwIDAQAB"
+    },
+    {
+      "id": "b91bec49e7aaaeeda162970c03193baef561c10337483a8bc0741d514dc63b9c",
+      "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwhHPSza/Vx1VVzlXAXByXk4z13Q4JZI6fphr0LK5mdFlckHzqNOP9FtXzDxbJawQdDkFQAIvmBRBZHOP78z7jtSGhQLY3qpIJ82ztyBT/WAH9eyX+z4eZ5vur42jLsvrn9qKcXtUXcuiMNLUzBT251aoJcgsG6+fN7J1t5bcSLfwlWNrbe4VK2kjVu3Ep6YUKXmzJQvJ97YlLsVKTfod+3IrFOJBmHbrUJUDJh09mJ5Conkp44IYNy3zwuPqaJphuiVVszlaAnO2OUnwRdJJ8qs0BNJa+n3No9CTdEU6IvirZ1j/Bjmrl6t6Lc9PhZxNQeAriHRBeFufGTvvWmS9WwIDAQAB"
+    }
+  ],
+  "authorizedKeyIds": [
+    "c8df0a497ab0df7136c4f97892f17914e6e5e021fdc039f0ea7c27d5a95c1254",
+    "b91bec49e7aaaeeda162970c03193baef561c10337483a8bc0741d514dc63b9c"
+  ],
+  "expectedEndProducts": [
+    {
+      "pattern": "target/argos-test-0.0.1-SNAPSHOT.jar",
+      "destinationType": "PRODUCTS",
+      "destinationStepName": "build",
+      "destinationSegmentName": "segment 1"
+    }
+  ],
+  "layoutSegments": [
+    {
+      "name": "segment 1",
+      "steps": [
+        {
+          "name": "build",
+          "authorizedKeyIds": [
+            "c8df0a497ab0df7136c4f97892f17914e6e5e021fdc039f0ea7c27d5a95c1254"
+          ],
+          "requiredNumberOfLinks": 3,
+          "expectedCommand": [
+            "expectedCommand 1",
+            "expectedCommand 2"
+          ],
+          "expectedMaterials": [
+            {
+              "ruleType": "MATCH",
+              "pattern": "MATCHpattern",
+              "sourcePathPrefix": "sourcePathPrefix",
+              "destinationPathPrefix": "destinationPathPrefix",
+              "destinationType": "PRODUCTS",
+              "destinationStepName": "destinationStepName",
+              "destinationSegmentName": "segment 1"
+            },
+            {
+              "ruleType": "CREATE",
+              "pattern": "CREATEpattern"
+            },
+            {
+              "ruleType": "DELETE",
+              "pattern": "DELETEpattern"
+            },
+            {
+              "ruleType": "DISALLOW",
+              "pattern": "DISALLOWpattern"
+            }
+          ],
+          "expectedProducts": [
+            {
+              "ruleType": "CREATE",
+              "pattern": "CREATEpattern"
+            }
+          ]
+        },
+        {
+          "name": "stepName2",
+          "authorizedKeyIds": [
+            "b91bec49e7aaaeeda162970c03193baef561c10337483a8bc0741d514dc63b9c"
+          ],
+          "requiredNumberOfLinks": 45,
+          "expectedCommand": [
+            "stepName2 expectedCommand"
+          ],
+          "expectedMaterials": [
+            {
+              "ruleType": "MATCH",
+              "pattern": "MATCH pattern",
+              "sourcePathPrefix": "sourcePathPrefix",
+              "destinationPathPrefix": "destinationPathPrefix",
+              "destinationType": "MATERIALS",
+              "destinationStepName": "destinationStepName",
+              "destinationSegmentName": "segment 1"
+            }
+          ],
+          "expectedProducts": [
+            {
+              "ruleType": "ALLOW",
+              "pattern": "ALLOW pattern"
+            },
+            {
+              "ruleType": "MODIFY",
+              "pattern": "MODIFY pattern"
+            },
+            {
+              "ruleType": "REQUIRE",
+              "pattern": "REQUIRE pattern"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

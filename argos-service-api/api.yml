@@ -253,6 +253,33 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
+  /supplychain/{supplyChainId}/layout/validate:
+    post:
+      summary: validates a layout on data input and model consistency
+      operationId: validateLayout
+      tags:
+        - layout
+      parameters:
+        - name: supplyChainId
+          in: path
+          description: supply chain id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Layout"
+      responses:
+        '204':
+          description: layout is correct
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/Error'
+
   /supplychain/{supplyChainId}/verification:
     post:
       summary: creates a verification run
@@ -889,7 +916,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: "#/components/schemas/ValidationError"
     Error:
       description: server error
       content:
@@ -1348,5 +1375,29 @@ components:
       required:
         - message
       properties:
+        message:
+          type: string
+    ValidationError:
+      type: object
+      required:
+        - messages
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationMessage"
+    ValidationMessage:
+      type: object
+      required:
+        - message
+        - type
+      properties:
+        field:
+          type: string
+        type:
+          type: string
+          enum:
+            - DATA_INPUT
+            - MODEL_CONSISTENCY
         message:
           type: string

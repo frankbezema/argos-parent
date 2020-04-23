@@ -1,0 +1,107 @@
+{
+  "keys": [
+    {
+      "id": "wrong-data-input",
+      "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnB7t5WVvXmbwKo7vn49tDyigfZF+wqB68v4i2fgv+/625yVomAKrtQDX8ANTCbZ6UQEkXNQhI9muPo8hhYb2zEaEdEckslSQ9lFJgDHCHekC2EYwXmc4VnwLzyiITtlXSSveav5qUpGVb7t7AK4f9yueojwqUjgQGkXgmeDrg8r15G/nVuYq5WyIS3OKxXKQmm2mJTr5A+kt8SiYPmDQoJwkK6ezZU7qsobY5jloU5SdIiGn2d8KHioj5ekki9kgBszuwHHqg94Ml6JT28EWRKdfBVA2P7PRLzl3V8qdA0srkTsuy4+emEI+NAeNQkeMsucfW4xIVBMQZ28GIFmJcwIDAQAB"
+    },
+    {
+      "id": "5ac47ccc386678d0eb76efcdbc0720474586ff12e673d5d0f52537c2a722438c",
+      "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnB7t5WVvXmbwKo7vn49tDyigfZF+wqB68v4i2fgv+/625yVomAKrtQDX8ANTCbZ6UQEkXNQhI9muPo8hhYb2zEaEdEckslSQ9lFJgDHCHekC2EYwXmc4VnwLzyiITtlXSSveav5qUpGVb7t7AK4f9yueojwqUjgQGkXgmeDrg8r15G/nVuYq5WyIS3OKxXKQmm2mJTr5A+kt8SiYPmDQoJwkK6ezZU7qsobY5jloU5SdIiGn2d8KHioj5ekki9kgBszuwHHqg94Ml6JT28EWRKdfBVA2P7PRLzl3V8qdA0srkTsuy4+emEI+NAeNQkeMsucfW4xIVBMQZ28GIFmJcwIDAQAB"
+    }
+  ],
+  "authorizedKeyIds": [
+    "authorizedKeyId1",
+    "authorizedKeyId2"
+  ],
+  "expectedEndProducts": [
+    {
+      "pattern": "target/argos-test-0.0.1-SNAPSHOT.jar",
+      "destinationType": "PRODUCTS",
+      "destinationStepName": "build",
+      "destinationSegmentName": "segment 1"
+    }
+  ],
+  "layoutSegments": [
+    {
+      "name": "segment 1",
+      "steps": [
+        {
+          "name": "stepName1",
+          "authorizedKeyIds": [
+            "stepName1 authorizedKeyId 1",
+            "stepName1 authorizedKeyId 2"
+          ],
+          "requiredSignatures": 3,
+          "expectedCommand": [
+            "expectedCommand 1",
+            "expectedCommand 2"
+          ],
+          "expectedMaterials": [
+            {
+              "ruleType": "MATCH",
+              "pattern": "MATCHpattern",
+              "sourcePathPrefix": "sourcePathPrefix",
+              "destinationPathPrefix": "destinationPathPrefix",
+              "destinationType": "PRODUCTS",
+              "destinationStepName": "destinationStepName",
+              "destinationSegmentName": "segment 1"
+            },
+            {
+              "ruleType": "CREATE",
+              "pattern": "CREATEpattern"
+            },
+            {
+              "ruleType": "DELETE",
+              "pattern": "DELETEpattern"
+            },
+            {
+              "ruleType": "DISALLOW",
+              "pattern": "DISALLOWpattern"
+            }
+          ],
+          "expectedProducts": [
+            {
+              "ruleType": "CREATE",
+              "pattern": "CREATEpattern"
+            }
+          ]
+        },
+        {
+          "name": "stepName2",
+          "authorizedKeyIds": [
+            "stepName2 authorizedKeyId"
+          ],
+          "requiredSignatures": 45,
+          "expectedCommand": [
+            "stepName2 expectedCommand"
+          ],
+          "expectedMaterials": [
+            {
+              "ruleType": "MATCH",
+              "pattern": "MATCH pattern",
+              "sourcePathPrefix": "sourcePathPrefix",
+              "destinationPathPrefix": "destinationPathPrefix",
+              "destinationType": "MATERIALS",
+              "destinationStepName": "destinationStepName",
+              "destinationSegmentName": "segment 1"
+            }
+          ],
+          "expectedProducts": [
+            {
+              "ruleType": "ALLOW",
+              "pattern": "ALLOW pattern"
+            },
+            {
+              "ruleType": "MODIFY",
+              "pattern": "MODIFY pattern"
+            },
+            {
+              "ruleType": "REQUIRE",
+              "pattern": "REQUIRE pattern"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

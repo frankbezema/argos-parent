@@ -91,7 +91,7 @@ Feature: Hierarchy
     And param maxDepth = -1
     When method GET
     Then status 400
-    And match response == {message:'getRootNodes.maxDepth:must be greater than or equal to 1'}
+    And match response == {"messages": [{"field": "getRootNodes.maxDepth","type": "DATA_INPUT","message": "must be greater than or equal to 1"}]}
 
   Scenario: get root nodes with HierarchyMode maxdepth and no maxdepth should return maxdepth 1 descendant entries only
     * call read('classpath:feature/label/create-label.feature') { name: 'subchild1child3root1',parentLabelId:#(root1ChildResponse.response.id)}
@@ -171,7 +171,7 @@ Feature: Hierarchy
     And param maxDepth = -1
     When method GET
     Then status 400
-    And match response == {message:'getSubTree.maxDepth:must be greater than or equal to 1'}
+    And match response ==  {"messages": [{"field": "getSubTree.maxDepth","type": "DATA_INPUT","message": "must be greater than or equal to 1"}]}
 
   Scenario: get subtree with HierarchyMode maxdepth and no maxdepth should return maxdepth 1 descendant entries only
     * call read('classpath:feature/label/create-label.feature') { name: 'subchild1child3root1',parentLabelId:#(root1ChildResponse.response.id)}

@@ -95,8 +95,7 @@ Feature: Personal Account
     And request ["user"]
     When method PUT
     Then status 400
-    And match response == {"message":"administrators can not unassign there own administrator role"}
-
+    And match response == {"messages": [{"type": "DATA_INPUT","message": "administrators can not unassign there own administrator role"}]}
 
   Scenario: user without ASSIGN_ROLE permission can not assign a role to a user
     * def extraAccount = call read('classpath:feature/account/create-personal-account.feature') {name: 'Extra Person', email: 'extra@extra.go'}

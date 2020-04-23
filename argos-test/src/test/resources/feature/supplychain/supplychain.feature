@@ -35,7 +35,7 @@ Feature: SupplyChain
     And request  {"name":"name", parentLabelId: "#(supplyChainResponse.response.parentLabelId)"}
     When method POST
     Then status 400
-    And match response.message contains 'supply chain with name: name and parentLabelId'
+    And match response.messages[0].message contains 'supply chain with name: name and parentLabelId'
 
   Scenario: store supplychain without authorization should return a 401 error
     * def labelResult = call read('classpath:feature/label/create-label.feature') {name: otherlabel}

@@ -24,18 +24,20 @@ import com.rabobank.argos.domain.layout.PublicKey;
 import com.rabobank.argos.domain.layout.Step;
 import com.rabobank.argos.domain.layout.rule.MatchRule;
 import com.rabobank.argos.service.adapter.in.rest.SignatureValidatorService;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage;
 import com.rabobank.argos.service.domain.account.AccountService;
 import com.rabobank.argos.service.domain.supplychain.SupplyChainRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -50,75 +52,97 @@ public class LayoutValidatorService {
     private final AccountService accountService;
 
     public void validate(LayoutMetaBlock layoutMetaBlock) {
-        validateSegmentNamesUnique(layoutMetaBlock.getLayout());
-        validateStepNamesUnique(layoutMetaBlock.getLayout());
-        validateMatchRuleDestinations(layoutMetaBlock.getLayout());
-        validateExpectedProductsHaveSameSegmentName(layoutMetaBlock.getLayout());
-        validateSupplyChain(layoutMetaBlock);
-        validateAutorizationKeyIds(layoutMetaBlock.getLayout());
-        validatePublicKeys(layoutMetaBlock.getLayout());
-        validateSignatures(layoutMetaBlock);
-    }
-
-    private void validatePublicKeys(Layout layout) {
-        validatePublicKeyIds(layout);
-        validateAuthorizedKeysWithPublicKeys(layout);
-    }
-
-    private void validatePublicKeyIds(Layout layout) {
-        layout.getKeys().forEach(this::validatePublicKeyId);
-    }
-
-    private void validatePublicKeyId(PublicKey publicKey) {
-        if (!publicKey.getId().equals(KeyIdProvider.computeKeyId(publicKey.getKey()))) {
-            throwValidationException("key with id " + publicKey.getId() + " not matched computed key id from public key");
+        LayoutValidationReport report = new LayoutValidationReport();
+        validateLayout(report, layoutMetaBlock.getLayout());
+        validateSupplyChain(report, layoutMetaBlock);
+        validateSignatures(report, layoutMetaBlock);
+        if (!report.isValid()) {
+            throwValidationException(report);
         }
     }
 
-    private void validateAuthorizedKeysWithPublicKeys(Layout layout) {
+    public void validateLayout(Layout layout) {
+        LayoutValidationReport report = new LayoutValidationReport();
+        validateLayout(report, layout);
+        if (!report.isValid()) {
+            throwValidationException(report);
+        }
+    }
+
+    private void validateLayout(LayoutValidationReport report, Layout layout) {
+        validateSegmentNamesUnique(report, layout);
+        validateStepNamesUnique(report, layout);
+        validateMatchRuleDestinations(report, layout);
+        validateExpectedProductsHaveSameSegmentName(report, layout);
+        validateAutorizationKeyIds(report, layout);
+        validatePublicKeys(report, layout);
+    }
+
+    private void validatePublicKeys(LayoutValidationReport report, Layout layout) {
+        validatePublicKeyIds(report, layout);
+        validateAuthorizedKeysWithPublicKeys(report, layout);
+    }
+
+    private void validatePublicKeyIds(LayoutValidationReport report, Layout layout) {
+        layout.getKeys().forEach(key -> validatePublicKeyId(report, key));
+    }
+
+    private void validatePublicKeyId(LayoutValidationReport report, PublicKey publicKey) {
+        if (!publicKey.getId().equals(KeyIdProvider.computeKeyId(publicKey.getKey()))) {
+            report.addValidationMessage("keys",
+                    "key with id " + publicKey.getId() + " does not match computed key id from public key");
+        }
+    }
+
+    private void validateAuthorizedKeysWithPublicKeys(LayoutValidationReport report, Layout layout) {
         Set<String> publicKeyIds = layout.getKeys().stream().map(PublicKey::getId).collect(toSet());
         Set<String> authorizedKeyIds = Stream.concat(layout.getAuthorizedKeyIds().stream(), layout.getLayoutSegments()
                 .stream().map(LayoutSegment::getSteps).flatMap(List::stream).map(Step::getAuthorizedKeyIds)
                 .flatMap(List::stream)).collect(toSet());
 
         if (publicKeyIds.size() != authorizedKeyIds.size() || !publicKeyIds.containsAll(authorizedKeyIds)) {
-            throwValidationException("The defined Public keys are not equal to all defined Authorized keys");
+            report.addValidationMessage("authorizedKeyIds",
+                    "The defined Public keys are not equal to all defined Authorized keys");
         }
     }
 
-    private void validateExpectedProductsHaveSameSegmentName(Layout layout) {
+    private void validateExpectedProductsHaveSameSegmentName(LayoutValidationReport report, Layout layout) {
         Set<String> sameSegmentNames = layout.getExpectedEndProducts()
                 .stream()
                 .map(MatchRule::getDestinationSegmentName)
                 .collect(Collectors.toSet());
         if (sameSegmentNames.size() > 1) {
-            throwValidationException("segment names for expectedProducts should all be the same");
+            report.addValidationMessage("expectedEndProducts",
+                    "segment names for expectedProducts should all be the same");
         }
     }
 
-    private void validateStepNamesUnique(Layout layout) {
-        layout.getLayoutSegments().forEach(this::validateStepNamesUnique);
+    private void validateStepNamesUnique(LayoutValidationReport report, Layout layout) {
+        layout.getLayoutSegments().forEach(segment -> validateStepNamesUnique(report, segment));
     }
 
-    private void validateStepNamesUnique(LayoutSegment layoutSegment) {
+    private void validateStepNamesUnique(LayoutValidationReport report, LayoutSegment layoutSegment) {
         Set<String> stepNameSet = layoutSegment.getSteps().stream().map(Step::getName).collect(toSet());
         List<String> stepNameList = layoutSegment.getSteps().stream().map(Step::getName).collect(toList());
         if (stepNameSet.size() != stepNameList.size()) {
-            throwValidationException("step names are not unique");
+            report.addValidationMessage("layoutSegments",
+                    "step names for segment: " + layoutSegment.getName() + " are not unique");
         }
     }
 
-    private void validateSegmentNamesUnique(Layout layout) {
+    private void validateSegmentNamesUnique(LayoutValidationReport report, Layout layout) {
         Set<String> segmentNameSet = layout.getLayoutSegments().stream().map(LayoutSegment::getName).collect(toSet());
         List<String> segmentNameList = layout.getLayoutSegments().stream().map(LayoutSegment::getName).collect(toList());
         if (segmentNameSet.size() != segmentNameList.size()) {
-            throwValidationException("segment names are not unique");
+            report.addValidationMessage("layoutSegments",
+                    "segment names are not unique");
         }
     }
 
-    private void validateMatchRuleDestinations(Layout layout) {
+    private void validateMatchRuleDestinations(LayoutValidationReport report, Layout layout) {
         if (!layout.getExpectedEndProducts().stream().allMatch(matchRule -> hasFilterDestination(matchRule, layout))) {
-            throwValidationException("expected product destination step name not found");
+            report.addValidationMessage("expectedEndProducts",
+                    "expected product destination step name not found");
         }
     }
 
@@ -133,34 +157,58 @@ public class LayoutValidatorService {
         return steps.stream().anyMatch(step -> step.getName().equals(destinationStepName));
     }
 
-    private void validateSupplyChain(LayoutMetaBlock layoutMetaBlock) {
+    private void validateSupplyChain(LayoutValidationReport report, LayoutMetaBlock layoutMetaBlock) {
         if (!supplyChainRepository.exists(layoutMetaBlock.getSupplyChainId())) {
-            throwValidationException("supply chain not found : " + layoutMetaBlock.getSupplyChainId());
+            report
+                    .addValidationMessage("supplychain",
+                            "supply chain not found : " + layoutMetaBlock.getSupplyChainId());
         }
     }
 
-    private void validateSignatures(LayoutMetaBlock layoutMetaBlock) {
+    private void validateSignatures(LayoutValidationReport report, LayoutMetaBlock layoutMetaBlock) {
         Set<String> uniqueKeyIds = layoutMetaBlock.getSignatures().stream().map(Signature::getKeyId).collect(toSet());
         if (layoutMetaBlock.getSignatures().size() != uniqueKeyIds.size()) {
-            throwValidationException("layout can't be signed more than one time with the same keyId");
+            report.addValidationMessage("signatures",
+                    "layout can't be signed more than one time with the same keyId");
         }
 
-        layoutMetaBlock.getSignatures().forEach(signature -> signatureValidatorService.validateSignature(layoutMetaBlock.getLayout(), signature));
+        layoutMetaBlock.getSignatures()
+                .forEach(signature -> signatureValidatorService.validateSignature(layoutMetaBlock.getLayout(), signature));
     }
 
-    private void validateAutorizationKeyIds(Layout layout) {
-        layout.getAuthorizedKeyIds().forEach(this::keyExists);
-        layout.getLayoutSegments().forEach(layoutSegment -> layoutSegment.getSteps().forEach(step -> step.getAuthorizedKeyIds().forEach(this::keyExists)));
+    private void validateAutorizationKeyIds(LayoutValidationReport report, Layout layout) {
+        layout.getAuthorizedKeyIds().forEach(keyid -> keyExists(report, keyid));
+        layout.getLayoutSegments().forEach(layoutSegment -> layoutSegment.getSteps()
+                .forEach(step -> step.getAuthorizedKeyIds()
+                        .forEach(keyid -> keyExists(report, keyid))));
     }
 
-    private void keyExists(String keyId) {
+    private void keyExists(LayoutValidationReport report, String keyId) {
         if (!accountService.keyPairExists(keyId)) {
-            throwValidationException("keyId " + keyId + " not found");
+            report
+                    .addValidationMessage("keys",
+                            "keyId " + keyId + " not found");
         }
     }
 
-    private void throwValidationException(String message) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+    private void throwValidationException(LayoutValidationReport report) {
+        throw LayoutValidationException
+                .builder()
+                .validationMessages(report.validationMessages)
+                .build();
     }
 
+    @Getter
+    public static class LayoutValidationReport {
+        private List<RestValidationMessage> validationMessages = new ArrayList();
+        private void addValidationMessage(String field, String message) {
+            validationMessages.add(new RestValidationMessage()
+                    .type(MODEL_CONSISTENCY)
+                    .field(field).message(message));
+        }
+
+        private boolean isValid() {
+            return validationMessages.isEmpty();
+        }
+    }
 }
