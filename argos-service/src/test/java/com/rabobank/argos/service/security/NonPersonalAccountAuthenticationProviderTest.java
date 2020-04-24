@@ -15,6 +15,7 @@
  */
 package com.rabobank.argos.service.security;
 
+import brave.propagation.ExtraFieldPropagation;
 import com.rabobank.argos.domain.ArgosError;
 import com.rabobank.argos.domain.account.NonPersonalAccount;
 import com.rabobank.argos.domain.account.NonPersonalAccountKeyPair;
@@ -25,9 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,6 +36,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,9 +50,12 @@ class NonPersonalAccountAuthenticationProviderTest {
     private NonPersonalAccountUserDetailsService nonPersonalAccountUserDetailsService;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private LogContextHelper logContextHelper;
+
     private Authentication authentication;
     private NonPersonalAccountAuthenticationProvider nonPersonalAccountAuthenticationProvider;
-    private UserDetails userDetails = new AccountUserDetailsAdapter(NonPersonalAccount.builder()
+    private AccountUserDetailsAdapter userDetails = new AccountUserDetailsAdapter(NonPersonalAccount.builder()
             .name("test")
             .activeKeyPair(new NonPersonalAccountKeyPair(KEYID, null, null, ENCRYPTEDPASSWORD))
             .build());
@@ -63,7 +68,7 @@ class NonPersonalAccountAuthenticationProviderTest {
                 .password(PASSWORD)
                 .build();
         authentication = new NonPersonalAccountAuthenticationToken(credentials, null);
-        nonPersonalAccountAuthenticationProvider = new NonPersonalAccountAuthenticationProvider(nonPersonalAccountUserDetailsService, passwordEncoder);
+        nonPersonalAccountAuthenticationProvider = new NonPersonalAccountAuthenticationProvider(nonPersonalAccountUserDetailsService, passwordEncoder, logContextHelper);
     }
 
     @Test
@@ -73,6 +78,15 @@ class NonPersonalAccountAuthenticationProviderTest {
         Authentication authenticatedAccount = nonPersonalAccountAuthenticationProvider.authenticate(authentication);
         assertThat(authenticatedAccount.getPrincipal(), sameInstance(userDetails));
         assertThat(authenticatedAccount.isAuthenticated(), is(true));
+        verify(logContextHelper).addAccountInfoToLogContext(userDetails);
+
+    }
+
+    private void assertLogContextSet() {
+        assertThat(ExtraFieldPropagation.get("accountId"), is(userDetails.getAccount().getAccountId()));
+        assertThat(MDC.get("accountId"), is(userDetails.getAccount().getAccountId()));
+        assertThat(ExtraFieldPropagation.get("accountName"), is(userDetails.getAccount().getName()));
+        assertThat(MDC.get("accountName"), is(userDetails.getAccount().getName()));
     }
 
     @Test

@@ -83,6 +83,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new SCryptPasswordEncoder();
     }
 
+    @Bean
+    public LogContextHelper logContextHelper() {
+        return new LogContextHelper();
+    }
+
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) {
         //
@@ -96,8 +101,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authenticationProvider(new PersonalAccountAuthenticationProvider(personalAccountUserDetailsService));
-        http.authenticationProvider(new NonPersonalAccountAuthenticationProvider(nonPersonalAccountUserDetailsService, passwordEncoder()));
+        http.authenticationProvider(new PersonalAccountAuthenticationProvider(personalAccountUserDetailsService, logContextHelper()));
+        http.authenticationProvider(new NonPersonalAccountAuthenticationProvider(nonPersonalAccountUserDetailsService, passwordEncoder(), logContextHelper()));
         http
                 .cors()
                 .and()

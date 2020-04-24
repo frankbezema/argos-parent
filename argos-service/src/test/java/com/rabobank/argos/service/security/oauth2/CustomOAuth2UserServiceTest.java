@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CustomOAuth2PersonalAccountServiceTest {
+class CustomOAuth2UserServiceTest {
 
     private static final String ACCOUNT_ID = "accountId";
     @Mock
@@ -83,6 +83,26 @@ class CustomOAuth2PersonalAccountServiceTest {
         ReflectionTestUtils.setField(userService, "defaultOAuth2UserService", defaultOAuth2UserService);
     }
 
+
+    @Test
+    void loadUserNewUserWithEmptyAttributesShouldThrowError() {
+        setupMocksForEmptyAttributes();
+        assertThrows(InternalAuthenticationServiceException.class, () -> {
+            userService.loadUser(oAuth2UserRequest);
+        });
+
+    }
+
+    @Test
+    void loadUserNotFoundShouldThrowError() {
+        setupMocks();
+        when(accountService.authenticateUser(any())).thenReturn(Optional.empty());
+        assertThrows(InternalAuthenticationServiceException.class, () -> {
+            userService.loadUser(oAuth2UserRequest);
+        });
+
+    }
+
     @Test
     void loadUserNewUser() {
         setupMocks();
@@ -90,7 +110,6 @@ class CustomOAuth2PersonalAccountServiceTest {
         when(accountService.authenticateUser(any())).thenReturn(Optional.of(personalAccount));
         ArgosOAuth2User userPrincipal = (ArgosOAuth2User) userService.loadUser(oAuth2UserRequest);
         assertThat(userPrincipal.getAccountId(), is(ACCOUNT_ID));
-
         verify(accountService).authenticateUser(userArgumentCaptor.capture());
         PersonalAccount createdPersonalAccount = userArgumentCaptor.getValue();
         assertThat(createdPersonalAccount.getName(), is("displayName"));
@@ -109,6 +128,12 @@ class CustomOAuth2PersonalAccountServiceTest {
 
     private void setupMocks() {
         when(oAuth2User.getAttributes()).thenReturn(Map.of("userPrincipalName", "userPrincipalName", "displayName", "displayName", "id", "providerId"));
+        when(defaultOAuth2UserService.loadUser(oAuth2UserRequest)).thenReturn(oAuth2User);
+        when(oAuth2UserRequest.getClientRegistration()).thenReturn(clientRegistration);
+    }
+
+    private void setupMocksForEmptyAttributes() {
+        when(oAuth2User.getAttributes()).thenReturn(null);
         when(defaultOAuth2UserService.loadUser(oAuth2UserRequest)).thenReturn(oAuth2User);
         when(oAuth2UserRequest.getClientRegistration()).thenReturn(clientRegistration);
     }

@@ -69,6 +69,8 @@ class OAuth2AuthenticationSuccessHandlerTest {
         successHandler.onAuthenticationSuccess(request, response, authentication);
         verify(response).encodeRedirectURL("https://host:89/uri?someExtraParam=extra&token=token");
         verify(httpCookieOAuth2AuthorizationRequestRepository).removeAuthorizationRequestCookies(request, response);
+        verify(request).getSession(false);
+
     }
 
     @Test

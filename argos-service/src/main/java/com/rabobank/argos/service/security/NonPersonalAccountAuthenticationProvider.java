@@ -24,17 +24,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static com.rabobank.argos.service.security.LogContextHelper.addAccountInfoToLogContext;
-
-
 @Slf4j
 @RequiredArgsConstructor
 public class NonPersonalAccountAuthenticationProvider implements AuthenticationProvider {
 
     private static final String NOT_AUTHENTICATED = "not authenticated";
     private final NonPersonalAccountUserDetailsService nonPersonalAccountUserDetailsService;
-
     private final PasswordEncoder passwordEncoder;
+    private final LogContextHelper logContextHelper;
 
     @Override
     public Authentication authenticate(Authentication notAuthenticatedNonPersonalAccount) {
@@ -47,7 +44,7 @@ public class NonPersonalAccountAuthenticationProvider implements AuthenticationP
             NonPersonalAccountKeyPair nonPersonalAccountKeyPair = (NonPersonalAccountKeyPair) userDetails.getAccount().getActiveKeyPair();
             if (passwordEncoder.matches(password, nonPersonalAccountKeyPair.getEncryptedHashedKeyPassphrase())) {
                 log.debug("successfully authenticated non personal account {}", userDetails.getUsername());
-                addAccountInfoToLogContext(userDetails);
+                logContextHelper.addAccountInfoToLogContext(userDetails);
                 return new NonPersonalAccountAuthenticationToken(nonPersonalAccountAuthenticationToken.getNonPersonalAccountCredentials(),
                         userDetails,
                         userDetails.getAuthorities());
