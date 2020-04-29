@@ -59,7 +59,9 @@ public class ArtifactsVerificationContext {
     }
 
     public static Set<Artifact> filterArtifacts(Set<Artifact> artifacts, String pattern, @Nullable String prefix) {
-        return artifacts.stream().filter(artifact -> ArtifactMatcher.matches(getUri(artifact, prefix), pattern)).collect(Collectors.toSet());
+        return artifacts.stream()
+        		.filter(artifact -> (StringUtils.hasLength(prefix) && artifact.getUri().startsWith(prefix)) || !StringUtils.hasLength(prefix))
+        		.filter(artifact -> ArtifactMatcher.matches(getUri(artifact, prefix), pattern)).collect(Collectors.toSet());
     }
 
     private static String getUri(Artifact artifact, String prefix) {
