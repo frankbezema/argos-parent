@@ -15,16 +15,19 @@
  */
 package com.rabobank.argos.service.security;
 
-import brave.propagation.ExtraFieldPropagation;
 import com.rabobank.argos.service.domain.security.AccountUserDetailsAdapter;
 import org.slf4j.MDC;
 
+import java.util.UUID;
+
 public class LogContextHelper {
 
-    public void addAccountInfoToLogContext(AccountUserDetailsAdapter userDetails) {
-        ExtraFieldPropagation.set("accountId", userDetails.getAccount().getAccountId());
+    void addAccountInfoToLogContext(AccountUserDetailsAdapter userDetails) {
         MDC.put("accountId", userDetails.getAccount().getAccountId());
-        ExtraFieldPropagation.set("accountName", userDetails.getAccount().getName());
         MDC.put("accountName", userDetails.getAccount().getName());
+    }
+
+    void addTraceIdToLogContext() {
+        MDC.put("traceId", UUID.randomUUID().toString());
     }
 }

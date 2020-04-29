@@ -15,7 +15,6 @@
  */
 package com.rabobank.argos.service.security;
 
-import brave.propagation.ExtraFieldPropagation;
 import com.rabobank.argos.domain.ArgosError;
 import com.rabobank.argos.domain.account.NonPersonalAccount;
 import com.rabobank.argos.domain.account.NonPersonalAccountKeyPair;
@@ -83,9 +82,7 @@ class NonPersonalAccountAuthenticationProviderTest {
     }
 
     private void assertLogContextSet() {
-        assertThat(ExtraFieldPropagation.get("accountId"), is(userDetails.getAccount().getAccountId()));
         assertThat(MDC.get("accountId"), is(userDetails.getAccount().getAccountId()));
-        assertThat(ExtraFieldPropagation.get("accountName"), is(userDetails.getAccount().getName()));
         assertThat(MDC.get("accountName"), is(userDetails.getAccount().getName()));
     }
 

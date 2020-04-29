@@ -87,7 +87,8 @@ public class RestServiceExceptionHandler {
     }
 
     @ExceptionHandler(value = {JsonMappingException.class})
-    public ResponseEntity<RestValidationError> handleJsonMappingException() {
+    public ResponseEntity<RestValidationError> handleJsonMappingException(JsonMappingException ex) {
+        log.error("error with json {}", ex);
         return ResponseEntity.badRequest().contentType(APPLICATION_JSON).body(createValidationError("invalid json"));
     }
 

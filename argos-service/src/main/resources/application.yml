@@ -40,18 +40,6 @@ spring:
             userInfoUri: http://localhost:8087/v1.0/me
             user-name-attribute: displayName
 
-  sleuth:
-    baggage-keys:
-      - accountId
-      - accountName
-    log:
-      slf4j:
-        whitelisted-mdc-keys:
-          - accountId
-          - accountName
-    local-keys:
-      - accountId
-      - accountName
   application:
     name: argos-service
 management:
@@ -79,6 +67,9 @@ jwt:
   # We're not using cookies because they won't work well in mobile clients.
 auth:
   frontendRedirectBasePath: http://localhost:8087
+
 logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%-5level) [${spring.application.name:-},traceId=%X{traceId:-},accountId=%X{accountId:-},accountName=%X{accountName}] %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
   level:
     root: INFO

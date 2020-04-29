@@ -97,10 +97,10 @@ class CustomOAuth2UserServiceTest {
     void loadUserNotFoundShouldThrowError() {
         setupMocks();
         when(accountService.authenticateUser(any())).thenReturn(Optional.empty());
-        assertThrows(InternalAuthenticationServiceException.class, () -> {
+        InternalAuthenticationServiceException error = assertThrows(InternalAuthenticationServiceException.class, () -> {
             userService.loadUser(oAuth2UserRequest);
         });
-
+        assertThat(error.getMessage(), is("account not authenticated"));
     }
 
     @Test
