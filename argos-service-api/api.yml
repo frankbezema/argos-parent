@@ -280,6 +280,112 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
+  /supplychain/{supplyChainId}/layout/approval:
+    post:
+      summary: creates an approval configuration for a segment step
+      operationId: createApprovalConfiguration
+      tags:
+        - layout
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: supplyChainId
+          in: path
+          description: supply chain id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApprovalConfiguration"
+      responses:
+        '201':
+          description: created
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: location where the created approval configuration can be found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalConfiguration'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/Error'
+  /supplychain/{supplyChainId}/layout/approval/{approvalConfigurationId}:
+    get:
+      summary: creates an approval configuration for a segment step
+      operationId: getApprovalConfiguration
+      tags:
+        - layout
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: supplyChainId
+          in: path
+          description: supply chain id
+          required: true
+          schema:
+            type: string
+        - name: approvalConfigurationId
+          in: path
+          description: approval configuration id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalConfiguration'
+        '500':
+          $ref: '#/components/responses/Error'
+    put:
+      summary: creates an approval configuration for a segment step
+      operationId: updateApprovalConfiguration
+      tags:
+        - layout
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: supplyChainId
+          in: path
+          description: supply chain id
+          required: true
+          schema:
+            type: string
+        - name: approvalConfigurationId
+          in: path
+          description: approval configuration id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApprovalConfiguration"
+      responses:
+        '200':
+          description: updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalConfiguration'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/Error'
+
   /supplychain/{supplyChainId}/verification:
     post:
       summary: creates a verification run
@@ -313,44 +419,7 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
-  /supplychain/{supplyChainId}/approval:
-    post:
-      summary: creates an approval configuration
-      operationId: createApprovalConfiguration
-      tags:
-        - approval
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: supplyChainId
-          in: path
-          description: supply chain id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ApprovalConfiguration"
-      responses:
-        '201':
-          description: created
-          headers:
-            Location:
-              schema:
-                type: string
-                format: uri
-              description: location where the created approval configuration can be found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApprovalConfiguration'
-        '400':
-          $ref: '#/components/responses/ValidationError'
-        '500':
-          $ref: '#/components/responses/Error'
+
   /hierarchy:
     get:
       summary: get all root nodes
