@@ -281,6 +281,31 @@ paths:
           $ref: '#/components/responses/Error'
 
   /supplychain/{supplyChainId}/layout/approval:
+    get:
+      summary: returns a list of approval configurations for a layout
+      operationId: getApprovalConfigurations
+      tags:
+        - layout
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: supplyChainId
+          in: path
+          description: supply chain id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: array of approval configurations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApprovalConfiguration"
+        '500':
+          $ref: '#/components/responses/Error'
     post:
       summary: creates an approval configuration for a segment step
       operationId: createApprovalConfiguration
@@ -320,7 +345,7 @@ paths:
           $ref: '#/components/responses/Error'
   /supplychain/{supplyChainId}/layout/approval/{approvalConfigurationId}:
     get:
-      summary: creates an approval configuration for a segment step
+      summary: updates an approval configuration for a segment step
       operationId: getApprovalConfiguration
       tags:
         - layout
