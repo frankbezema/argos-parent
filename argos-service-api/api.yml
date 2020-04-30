@@ -313,6 +313,44 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
+  /supplychain/{supplyChainId}/approval:
+    post:
+      summary: creates an approval configuration
+      operationId: createApprovalConfiguration
+      tags:
+        - approval
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: supplyChainId
+          in: path
+          description: supply chain id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApprovalConfiguration"
+      responses:
+        '201':
+          description: created
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: location where the created approval configuration can be found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalConfiguration'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/Error'
   /hierarchy:
     get:
       summary: get all root nodes
@@ -1370,6 +1408,37 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Permission"
+    ApprovalConfiguration:
+      type: object
+      required:
+        - stepName
+        - segmentName
+      properties:
+        approvalConfigurationId:
+          type: string
+          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}?$'
+        stepName:
+          type: string
+        segmentName:
+          type: string
+        collectors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Collector"
+    Collector:
+      type: object
+      required:
+        - type
+        - uri
+      properties:
+        type:
+          type: string
+          enum:
+            - XLDEPLOY
+        uri:
+          description: base url of the collector server
+          type: string
+          format: uri
     Error:
       type: object
       required:
