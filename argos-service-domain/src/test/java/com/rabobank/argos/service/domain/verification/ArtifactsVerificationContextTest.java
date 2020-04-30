@@ -60,9 +60,6 @@ class ArtifactsVerificationContextTest {
     
     private ArtifactType type = ArtifactType.MATERIALS;
     
-    //private Optional<Link> optionalLink = Optional.of(link);
-    //private Optional<Link> emptyOptionalLink = Optional.of(link);
-    
     private Map<String, Map<String, Link>> linksMap;
 
     private String patternWithPrefix = "someDir/*.jar";    
@@ -112,7 +109,6 @@ class ArtifactsVerificationContextTest {
                 .notConsumedArtifacts(Set.of(artifact1, artifact2))
                 .link(link)
                 .linksMap(linksMap)
-                //(ruleNotFound)
                 .build();
         verificationContext4 = ArtifactsVerificationContext.builder()
                 .segmentName(segmentName)
@@ -126,14 +122,12 @@ class ArtifactsVerificationContextTest {
                 .notConsumedArtifacts(Set.of(artifact1, artifact2, artifact3, artifact4))
                 .link(link)
                 .linksMap(linksMap)
-                //.rule(ruleAllMatch)
                 .build();
         verificationContext6 = ArtifactsVerificationContext.builder()
                 .segmentName(segmentName)
                 .notConsumedArtifacts(Set.of(artifact1, artifact2, artifact3, artifact4, artifact5))
                 .link(link)
                 .linksMap(linksMap)
-                //.rule(ruleAllMatch)
                 .build();
     }
 
