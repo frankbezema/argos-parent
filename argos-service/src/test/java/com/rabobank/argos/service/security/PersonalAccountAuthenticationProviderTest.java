@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
 
@@ -35,6 +34,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,13 +45,14 @@ class PersonalAccountAuthenticationProviderTest {
     private PersonalAccountAuthenticationProvider personalAccountAuthenticationProvider;
     private static final String NOT_AUTHENTICATED = "not authenticated";
 
-    private UserDetails userDetails = new AccountUserDetailsAdapter(PersonalAccount.builder().name("test").build(), Set.of(Permission.READ));
+    private AccountUserDetailsAdapter userDetails = new AccountUserDetailsAdapter(PersonalAccount.builder().name("test").build(), Set.of(Permission.READ));
 
     private Authentication authentication = new PersonalAccountAuthenticationToken("id", null, null);
-
+    @Mock
+    private LogContextHelper logContextHelper;
     @BeforeEach
     void setup() {
-        personalAccountAuthenticationProvider = new PersonalAccountAuthenticationProvider(personalAccountUserDetailsService);
+        personalAccountAuthenticationProvider = new PersonalAccountAuthenticationProvider(personalAccountUserDetailsService, logContextHelper);
     }
 
     @Test
@@ -60,7 +61,9 @@ class PersonalAccountAuthenticationProviderTest {
         Authentication authorized = personalAccountAuthenticationProvider.authenticate(authentication);
         assertThat(authorized.isAuthenticated(), is(true));
         assertThat(authorized.getPrincipal(), sameInstance(userDetails));
+        verify(logContextHelper).addAccountInfoToLogContext(userDetails);
     }
+
 
     @Test
     void testAuthenticateWithInValidCredentials() {

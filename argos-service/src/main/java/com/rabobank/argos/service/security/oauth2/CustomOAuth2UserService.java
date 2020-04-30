@@ -55,7 +55,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private ArgosOAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         AuthenticationProvider authenticationProvider = AuthenticationProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId().toUpperCase());
+        if (oAuth2User.getAttributes() == null || oAuth2User.getAttributes().isEmpty()) {
+            throw new ArgosError("invalid response from oauth profile service");
+        }
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(authenticationProvider, oAuth2User.getAttributes());
+
         if (!StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
             return accountService.authenticateUser(convertToPersonalAccount(authenticationProvider, oAuth2UserInfo))
                     .map(account -> new ArgosOAuth2User(oAuth2User, account.getAccountId()))

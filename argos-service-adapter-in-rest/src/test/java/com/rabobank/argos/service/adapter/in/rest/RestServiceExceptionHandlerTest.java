@@ -15,6 +15,7 @@
  */
 package com.rabobank.argos.service.adapter.in.rest;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.rabobank.argos.domain.ArgosError;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestError;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationError;
@@ -76,6 +77,9 @@ class RestServiceExceptionHandlerTest {
     private LayoutValidationException layoutValidationException;
 
     @Mock
+    private JsonMappingException jsonMappingException;
+
+    @Mock
     private ArgosError argosError;
 
     @BeforeEach
@@ -123,7 +127,7 @@ class RestServiceExceptionHandlerTest {
 
     @Test
     void handleJsonMappingException() {
-        ResponseEntity<RestValidationError> response = handler.handleJsonMappingException();
+        ResponseEntity<RestValidationError> response = handler.handleJsonMappingException(jsonMappingException);
         assertThat(response.getStatusCodeValue(), is(400));
         assertThat(response.getBody().getMessages().get(0).getMessage(), is("invalid json"));
         assertThat(response.getBody().getMessages().get(0).getType(), is(RestValidationMessage.TypeEnum.DATA_INPUT));

@@ -15,7 +15,6 @@
  */
 package com.rabobank.argos.service.domain.security;
 
-import com.rabobank.argos.domain.account.Account;
 import com.rabobank.argos.domain.hierarchy.HierarchyMode;
 import com.rabobank.argos.domain.hierarchy.TreeNode;
 import com.rabobank.argos.domain.permission.Permission;
@@ -56,11 +55,7 @@ class DefaultLocalPermissionCheckStrategyTest {
     private DefaultLocalPermissionCheckStrategy strategy;
 
     @Mock
-    private Account account;
-
-    @Mock
     private TreeNode treeNode;
-
 
     @BeforeEach
     void setUp() {
@@ -69,85 +64,69 @@ class DefaultLocalPermissionCheckStrategyTest {
 
     @Test
     void hasLocalPermissionOnLabel() {
-        when(account.getName()).thenReturn(ACCOUNT_NAME);
         when(localPermissionCheckData.getLabelIds()).thenReturn(new HashSet<>(List.of(LABEL_ID)));
         when(hierarchyRepository.getSubTree(LABEL_ID, HierarchyMode.NONE, 0)).thenReturn(Optional.of(treeNode));
         when(treeNode.getIdPathToRoot()).thenReturn(Collections.emptyList());
-        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
         when(accountSecurityContext.allLocalPermissions(Collections.singletonList(LABEL_ID))).thenReturn(Set.of(Permission.READ));
         assertThat(strategy.hasLocalPermission(localPermissionCheckData, new HashSet<>(List.of(Permission.READ))), is(true));
     }
 
     @Test
     void hasImplicitReadLocalPermissionOnLabel() {
-        when(account.getName()).thenReturn(ACCOUNT_NAME);
         when(localPermissionCheckData.getLabelIds()).thenReturn(new HashSet<>(List.of(LABEL_ID)));
         when(hierarchyRepository.getSubTree(LABEL_ID, HierarchyMode.NONE, 0)).thenReturn(Optional.of(treeNode));
         when(treeNode.getIdPathToRoot()).thenReturn(Collections.emptyList());
-        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
         when(accountSecurityContext.allLocalPermissions(Collections.singletonList(LABEL_ID))).thenReturn(Set.of(Permission.TREE_EDIT));
         assertThat(strategy.hasLocalPermission(localPermissionCheckData, new HashSet<>(List.of(Permission.READ))), is(true));
     }
 
     @Test
     void hasMultipleLocalPermissionOnLabel() {
-        when(account.getName()).thenReturn(ACCOUNT_NAME);
         when(localPermissionCheckData.getLabelIds()).thenReturn(new HashSet<>(List.of(LABEL_ID)));
         when(hierarchyRepository.getSubTree(LABEL_ID, HierarchyMode.NONE, 0)).thenReturn(Optional.of(treeNode));
         when(treeNode.getIdPathToRoot()).thenReturn(Collections.emptyList());
-        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
         when(accountSecurityContext.allLocalPermissions(Collections.singletonList(LABEL_ID))).thenReturn(Set.of(Permission.READ));
         assertThat(strategy.hasLocalPermission(localPermissionCheckData, new HashSet<>(List.of(Permission.VERIFY, Permission.READ))), is(true));
     }
 
     @Test
     void hasLocalPermissionOnParentLabel() {
-        when(account.getName()).thenReturn(ACCOUNT_NAME);
         when(localPermissionCheckData.getLabelIds()).thenReturn(new HashSet<>(List.of(LABEL_ID)));
         when(hierarchyRepository.getSubTree(LABEL_ID, HierarchyMode.NONE, 0)).thenReturn(Optional.of(treeNode));
         when(treeNode.getIdPathToRoot()).thenReturn(List.of(PARENT_LABEL_ID));
-        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
         when(accountSecurityContext.allLocalPermissions(List.of(PARENT_LABEL_ID, LABEL_ID))).thenReturn(Set.of(Permission.READ));
         assertThat(strategy.hasLocalPermission(localPermissionCheckData, new HashSet<>(List.of(Permission.READ))), is(true));
     }
 
     @Test
     void hasNoLocalPermissionOnLabel() {
-        when(account.getName()).thenReturn(ACCOUNT_NAME);
         when(localPermissionCheckData.getLabelIds()).thenReturn(new HashSet<>(List.of(LABEL_ID)));
         when(hierarchyRepository.getSubTree(LABEL_ID, HierarchyMode.NONE, 0)).thenReturn(Optional.of(treeNode));
         when(treeNode.getIdPathToRoot()).thenReturn(Collections.emptyList());
-        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
         when(accountSecurityContext.allLocalPermissions(Collections.singletonList(LABEL_ID))).thenReturn(Set.of(Permission.READ));
         assertThat(strategy.hasLocalPermission(localPermissionCheckData, new HashSet<>(List.of(Permission.VERIFY))), is(false));
     }
 
     @Test
     void hasNoLocalPermissionNoLabelId() {
-        when(account.getName()).thenReturn(ACCOUNT_NAME);
         when(localPermissionCheckData.getLabelIds()).thenReturn(new HashSet<>());
-        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
         assertThat(strategy.hasLocalPermission(localPermissionCheckData, new HashSet<>(List.of(Permission.VERIFY))), is(false));
     }
 
     @Test
     void hasLocalPermissionOnLocalPermissions() {
-        when(account.getName()).thenReturn(ACCOUNT_NAME);
         when(localPermissionCheckData.getLabelIds()).thenReturn(new HashSet<>(List.of(LABEL_ID)));
         when(hierarchyRepository.getSubTree(LABEL_ID, HierarchyMode.NONE, 0)).thenReturn(Optional.of(treeNode));
         when(treeNode.getIdPathToRoot()).thenReturn(Collections.emptyList());
-        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
         when(accountSecurityContext.allLocalPermissions(any())).thenReturn(emptySet());
         assertThat(strategy.hasLocalPermission(localPermissionCheckData, new HashSet<>(List.of(Permission.READ))), is(false));
     }
 
     @Test
     void hasNoLocalPermissionOtherLocalPermissions() {
-        when(account.getName()).thenReturn(ACCOUNT_NAME);
         when(localPermissionCheckData.getLabelIds()).thenReturn(new HashSet<>(List.of(LABEL_ID)));
         when(hierarchyRepository.getSubTree(LABEL_ID, HierarchyMode.NONE, 0)).thenReturn(Optional.of(treeNode));
         when(treeNode.getIdPathToRoot()).thenReturn(Collections.emptyList());
-        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
         when(accountSecurityContext.allLocalPermissions(any())).thenReturn(emptySet());
         assertThat(strategy.hasLocalPermission(localPermissionCheckData, new HashSet<>(List.of(Permission.READ))), is(false));
     }

@@ -15,30 +15,30 @@
  */
 package com.rabobank.argos.service.security;
 
+import com.rabobank.argos.service.domain.security.AccountUserDetailsAdapter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 
 
 @Slf4j
+@RequiredArgsConstructor
 public class PersonalAccountAuthenticationProvider implements AuthenticationProvider {
 
     private static final String NOT_AUTHENTICATED = "not authenticated";
     private final PersonalAccountUserDetailsService personalAccountUserDetailsService;
-
-    public PersonalAccountAuthenticationProvider(PersonalAccountUserDetailsService personalAccountUserDetailsService) {
-        this.personalAccountUserDetailsService = personalAccountUserDetailsService;
-    }
+    private final LogContextHelper logContextHelper;
 
     @Override
     public Authentication authenticate(Authentication notAuthenticatedPersonalAccount) {
         PersonalAccountAuthenticationToken personalAccountAuthenticationToken = (PersonalAccountAuthenticationToken) notAuthenticatedPersonalAccount;
         try {
-            UserDetails userDetails = personalAccountUserDetailsService.loadUserById(personalAccountAuthenticationToken.getCredentials());
+            AccountUserDetailsAdapter userDetails = (AccountUserDetailsAdapter) personalAccountUserDetailsService.loadUserById(personalAccountAuthenticationToken.getCredentials());
             Authentication authenticatedPersonalAccount = new PersonalAccountAuthenticationToken(personalAccountAuthenticationToken.getCredentials(), userDetails, userDetails.getAuthorities());
             authenticatedPersonalAccount.setAuthenticated(true);
+            logContextHelper.addAccountInfoToLogContext(userDetails);
             log.debug("successfully authenticated personal account {}", userDetails.getUsername());
             return authenticatedPersonalAccount;
         } catch (Exception ex) {
