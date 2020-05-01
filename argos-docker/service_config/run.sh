@@ -21,7 +21,7 @@
 #
 
 if [ -z "$@" ]; then
-	exec java -jar /argos-service.jar
+	exec java ${JAVA_OPTS} -jar /argos-service.jar
 else
 	if [ "$1" = "version" ]; then
 		echo ${ARGOS_VERSION:-"no version"}
