@@ -125,12 +125,16 @@
             ],
             "expectedProducts": [
               {
+                "ruleType": "ALLOW",
+                "pattern": "target/collect/*"
+              },
+              {
                 "ruleType": "MATCH",
-                "pattern": "argos-test-app.war/*.war",
+                "pattern": "**",
                 "sourcePathPrefix": "target/collect",
                 "destinationPathPrefix": "target/deployit-working-dir",
                 "destinationType": "PRODUCTS",
-                "destinationStepName": "deploy"
+                "destinationStepName": "build"
               },
               {
                 "ruleType": "ALLOW",

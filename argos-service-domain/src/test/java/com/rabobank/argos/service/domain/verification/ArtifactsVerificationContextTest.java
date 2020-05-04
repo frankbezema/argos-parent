@@ -46,6 +46,7 @@ class ArtifactsVerificationContextTest {
     private ArtifactsVerificationContext verificationContext3;
     private ArtifactsVerificationContext verificationContext4;
     private ArtifactsVerificationContext verificationContext5;
+    private ArtifactsVerificationContext verificationContext6;
     
     private String segmentName = "segmentName";
     
@@ -59,20 +60,21 @@ class ArtifactsVerificationContextTest {
     
     private ArtifactType type = ArtifactType.MATERIALS;
     
-    //private Optional<Link> optionalLink = Optional.of(link);
-    //private Optional<Link> emptyOptionalLink = Optional.of(link);
-    
     private Map<String, Map<String, Link>> linksMap;
 
     private String patternWithPrefix = "someDir/*.jar";    
     private String patternWithSuffix = "*.jar";
     private String patternAllMatch = "**";
     private String patternNotFound = "*.foo";
+    
+
+    private String prefix = "someDir";
 
     private Artifact artifact1 = new Artifact("someDir/some.jar", "hash");
     private Artifact artifact2 = new Artifact("someDir/some.html", "hash");    
     private Artifact artifact3 = new Artifact("someDir/someOther.jar", "hash");
     private Artifact artifact4 = new Artifact("someDir/someOther.html", "hash");
+    private Artifact artifact5 = new Artifact("root.html", "hash");
 
     @BeforeEach
     void setUp() {
@@ -107,7 +109,6 @@ class ArtifactsVerificationContextTest {
                 .notConsumedArtifacts(Set.of(artifact1, artifact2))
                 .link(link)
                 .linksMap(linksMap)
-                //(ruleNotFound)
                 .build();
         verificationContext4 = ArtifactsVerificationContext.builder()
                 .segmentName(segmentName)
@@ -121,7 +122,12 @@ class ArtifactsVerificationContextTest {
                 .notConsumedArtifacts(Set.of(artifact1, artifact2, artifact3, artifact4))
                 .link(link)
                 .linksMap(linksMap)
-                //.rule(ruleAllMatch)
+                .build();
+        verificationContext6 = ArtifactsVerificationContext.builder()
+                .segmentName(segmentName)
+                .notConsumedArtifacts(Set.of(artifact1, artifact2, artifact3, artifact4, artifact5))
+                .link(link)
+                .linksMap(linksMap)
                 .build();
     }
 
@@ -140,6 +146,9 @@ class ArtifactsVerificationContextTest {
         assertThat(artifacts, is(Set.of(artifact1, artifact3)));
         
         artifacts = verificationContext5.getFilteredArtifacts(patternAllMatch);
+        assertThat(artifacts, is(Set.of(artifact1, artifact2, artifact3, artifact4)));
+        
+        artifacts = verificationContext6.getFilteredArtifacts(patternAllMatch, prefix);
         assertThat(artifacts, is(Set.of(artifact1, artifact2, artifact3, artifact4)));
     }
     
