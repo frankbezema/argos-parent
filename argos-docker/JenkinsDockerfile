@@ -16,6 +16,10 @@
 
 FROM argosnotary/argos-jenkins-base:latest
 
+RUN mkdir /opt/xldeploy \
+    && ln -s /opt/xldeploy/cli/bin/cli.sh /usr/bin/xldcli
+ADD jenkins_config/cli.tar.gz /opt/xldeploy/
+
 # groovy files
 COPY jenkins_config/*.groovy* /usr/share/jenkins/ref/init.groovy.d/
 

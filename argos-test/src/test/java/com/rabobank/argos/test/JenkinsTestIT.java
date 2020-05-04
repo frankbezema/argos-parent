@@ -51,6 +51,7 @@ import java.util.stream.Stream;
 
 import static com.rabobank.argos.test.ServiceStatusHelper.getHierarchyApi;
 import static com.rabobank.argos.test.ServiceStatusHelper.getSupplychainApi;
+import static com.rabobank.argos.test.ServiceStatusHelper.waitForArgosIntegrationTestServiceToStart;
 import static com.rabobank.argos.test.ServiceStatusHelper.waitForArgosServiceToStart;
 import static com.rabobank.argos.test.TestServiceHelper.createDefaultTestData;
 import static com.rabobank.argos.test.TestServiceHelper.signAndStoreLayout;
@@ -85,6 +86,7 @@ class JenkinsTestIT {
         XLDeployHelper.initXLDeploy();
         waitForJenkinsToStart();
         waitForArgosServiceToStart();
+        waitForArgosIntegrationTestServiceToStart();
     }
 
     @BeforeEach
