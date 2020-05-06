@@ -114,7 +114,7 @@ public class LayoutRestService implements LayoutApi {
 
     private void verifyConfigurationDoesNotExistForSegmentAndStepName(ApprovalConfiguration approvalConfiguration) {
         Optional<ApprovalConfiguration> storedApprovalConf = approvalConfigurationRepository
-                .findBySegmentNameAndStepName(approvalConfiguration.getSegmentName(), approvalConfiguration.getStepName());
+                .findBySupplyChainIdSegmentNameAndStepName(approvalConfiguration.getSupplyChainId(), approvalConfiguration.getSegmentName(), approvalConfiguration.getStepName());
         if (storedApprovalConf.isPresent()) {
             throwLayoutValidationException(
                     SEGMENT_NAME,

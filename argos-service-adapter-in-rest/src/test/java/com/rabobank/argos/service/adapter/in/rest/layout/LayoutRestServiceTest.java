@@ -149,7 +149,7 @@ class LayoutRestServiceTest {
         when(layoutMetaBlock.getLayout()).thenReturn(layout);
         when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
         when(approvalConfigurationRepository
-                .findBySegmentNameAndStepName(SEGMENT_NAME, STEP_NAME))
+                .findBySupplyChainIdSegmentNameAndStepName(SUPPLY_CHAIN_ID, SEGMENT_NAME, STEP_NAME))
                 .thenReturn(Optional.empty());
         when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
         when(approvalConfiguration.getStepName()).thenReturn(STEP_NAME);
@@ -213,7 +213,7 @@ class LayoutRestServiceTest {
         when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
         when(approvalConfiguration.getStepName()).thenReturn(STEP_NAME);
         when(approvalConfigurationRepository
-                .findBySegmentNameAndStepName(SEGMENT_NAME, STEP_NAME))
+                .findBySupplyChainIdSegmentNameAndStepName(SUPPLY_CHAIN_ID, SEGMENT_NAME, STEP_NAME))
                 .thenReturn(Optional.of(approvalConfiguration));
         when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
                 .thenReturn(approvalConfiguration);
