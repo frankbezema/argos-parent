@@ -60,7 +60,6 @@ jwt:
     # replace with the result of com.rabobank.argos.service.security.TokenProvider.main
     secret: Z2LcVpgCuGtpb5rBDNIIWGe8RXqYGWDpWFjWhYQUS2Z8rjE2/GTJlu0s6BRYG0Mn0kV8StC9cFE83Jkl68RCkw==
 
-
   # After successfully authenticating with the OAuth2 Provider,
   # we'll be generating an auth token for the user and sending the token to the
   # redirectUri mentioned by the client in the /oauth2/authorize request.

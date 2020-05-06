@@ -1,0 +1,12 @@
+{
+  "approvalConfigurationId": "id",
+  "stepName": "stepName",
+  "segmentName": "segmentName",
+  "supplyChainId": "supplyChainId",
+  "artifactCollectors": [
+    {
+      "type": "XLDEPLOY",
+      "uri": "http://xldeploy.nl"
+    }
+  ]
+}

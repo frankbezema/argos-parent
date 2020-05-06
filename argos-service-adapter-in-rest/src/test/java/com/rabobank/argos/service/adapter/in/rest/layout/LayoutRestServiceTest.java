@@ -15,11 +15,17 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.layout;
 
+import com.rabobank.argos.domain.layout.ApprovalConfiguration;
 import com.rabobank.argos.domain.layout.Layout;
 import com.rabobank.argos.domain.layout.LayoutMetaBlock;
+import com.rabobank.argos.domain.layout.LayoutSegment;
+import com.rabobank.argos.domain.layout.Step;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestApprovalConfiguration;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
+import com.rabobank.argos.service.domain.layout.ApprovalConfigurationRepository;
 import com.rabobank.argos.service.domain.layout.LayoutMetaBlockRepository;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,8 +38,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
@@ -44,16 +53,24 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class LayoutRestServiceTest {
 
+    private static final String SEGMENT_NAME = "segmentName";
+    private static final String STEP_NAME = "stepName";
     private static final String SUPPLY_CHAIN_ID = "supplyChainId";
 
     @Mock
     private LayoutMetaBlockMapper converter;
 
     @Mock
-    private LayoutMetaBlockRepository repository;
+    private LayoutMetaBlockRepository layoutMetaBlockRepository;
 
     @Mock
     private RestLayoutMetaBlock restLayoutMetaBlock;
+
+    @Mock
+    private ApprovalConfigurationRepository approvalConfigurationRepository;
+
+    @Mock
+    private ApprovalConfigurationMapper approvalConfigurationMapper;
 
     @Mock
     private RestLayout restLayout;
@@ -72,9 +89,15 @@ class LayoutRestServiceTest {
     @Mock
     private LayoutValidatorService validator;
 
+    @Mock
+    private RestApprovalConfiguration restApprovalConfiguration;
+
+    @Mock
+    private ApprovalConfiguration approvalConfiguration;
+
     @BeforeEach
     void setUp() {
-        service = new LayoutRestService(converter, repository, validator);
+        service = new LayoutRestService(converter, layoutMetaBlockRepository, validator, approvalConfigurationRepository, approvalConfigurationMapper);
     }
 
     @Test
@@ -88,9 +111,9 @@ class LayoutRestServiceTest {
 
         assertThat(responseEntity.getStatusCodeValue(), is(201));
         assertThat(responseEntity.getBody(), sameInstance(restLayoutMetaBlock));
-        assertThat(responseEntity.getHeaders().getLocation().getPath(), is(""));
+        assertThat(Objects.requireNonNull(responseEntity.getHeaders().getLocation()).getPath(), is(""));
 
-        verify(repository).createOrUpdate(layoutMetaBlock);
+        verify(layoutMetaBlockRepository).createOrUpdate(layoutMetaBlock);
         verify(validator).validate(layoutMetaBlock);
 
     }
@@ -106,7 +129,7 @@ class LayoutRestServiceTest {
     @Test
     void getLayout() {
         when(converter.convertToRestLayoutMetaBlock(layoutMetaBlock)).thenReturn(restLayoutMetaBlock);
-        when(repository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
         ResponseEntity<RestLayoutMetaBlock> responseEntity = service.getLayout(SUPPLY_CHAIN_ID);
         assertThat(responseEntity.getStatusCodeValue(), is(200));
         assertThat(responseEntity.getBody(), sameInstance(restLayoutMetaBlock));
@@ -114,12 +137,122 @@ class LayoutRestServiceTest {
 
     @Test
     void getLayoutNotFound() {
-        when(repository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.empty());
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> {
-            service.getLayout(SUPPLY_CHAIN_ID);
-        });
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.empty());
+        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () -> service.getLayout(SUPPLY_CHAIN_ID));
         assertThat(responseStatusException.getStatus(), is(HttpStatus.NOT_FOUND));
         assertThat(responseStatusException.getReason(), is("layout not found"));
+    }
+
+    @Test
+    void createApprovalConfigurationShouldStoreLayout() {
+        ServletRequestAttributes servletRequestAttributes = new ServletRequestAttributes(httpServletRequest);
+        RequestContextHolder.setRequestAttributes(servletRequestAttributes);
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
+        when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
+        when(layoutMetaBlock.getLayout()).thenReturn(layout);
+        when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
+        when(approvalConfigurationRepository
+                .findBySegmentNameAndStepName(SEGMENT_NAME, STEP_NAME))
+                .thenReturn(Optional.empty());
+        when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
+        when(approvalConfiguration.getStepName()).thenReturn(STEP_NAME);
+        when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
+                .thenReturn(approvalConfiguration);
+        when(approvalConfigurationMapper.convertToRestApprovalConfiguration(approvalConfiguration))
+                .thenReturn(restApprovalConfiguration);
+        ResponseEntity<RestApprovalConfiguration> responseEntity = service.
+                createApprovalConfiguration(SUPPLY_CHAIN_ID, restApprovalConfiguration);
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
+        assertThat(responseEntity.getHeaders().getLocation(), IsNull.notNullValue());
+        verify(approvalConfigurationRepository).save(approvalConfiguration);
+        verify(approvalConfiguration).setSupplyChainId(SUPPLY_CHAIN_ID);
+    }
+
+    @Test
+    void createApprovalConfigurationWithIncorrectSegmentNameShouldThrowValidationError() {
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
+        when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
+        when(layoutMetaBlock.getLayout()).thenReturn(layout);
+        when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
+        when(approvalConfiguration.getSegmentName()).thenReturn("wrong-segment");
+        when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
+                .thenReturn(approvalConfiguration);
+
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () ->
+                service.createApprovalConfiguration(SUPPLY_CHAIN_ID, restApprovalConfiguration)
+        );
+
+        assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("segmentName"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("segment with name : wrong-segment does not exist in layout"));
+    }
+
+    @Test
+    void createApprovalConfigurationWithIncorrectStepNameShouldThrowValidationError() {
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
+        when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
+
+        when(layoutMetaBlock.getLayout()).thenReturn(layout);
+        when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
+        when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
+        when(approvalConfiguration.getStepName()).thenReturn("wrong-stepname");
+        when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
+                .thenReturn(approvalConfiguration);
+
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> service.createApprovalConfiguration(SUPPLY_CHAIN_ID, restApprovalConfiguration));
+
+        assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("stepName"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("step with name : wrong-stepname in segment segmentName does not exist in layout"));
+    }
+
+
+    @Test
+    void createApprovalConfigurationWithExistingConfigShouldThrowValidationError() {
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
+        when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
+        when(layoutMetaBlock.getLayout()).thenReturn(layout);
+        when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
+        when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
+        when(approvalConfiguration.getStepName()).thenReturn(STEP_NAME);
+        when(approvalConfigurationRepository
+                .findBySegmentNameAndStepName(SEGMENT_NAME, STEP_NAME))
+                .thenReturn(Optional.of(approvalConfiguration));
+        when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
+                .thenReturn(approvalConfiguration);
+
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () ->
+                service.createApprovalConfiguration(SUPPLY_CHAIN_ID, restApprovalConfiguration)
+        );
+
+        assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("segmentName"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("approval configuration already exists for: stepName in segment segmentName"));
+    }
+
+
+    @Test
+    void createApprovalConfigurationWithoutExistingLayoutShouldThrowValidationError() {
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.empty());
+        when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
+        when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
+                .thenReturn(approvalConfiguration);
+
+        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
+                service.createApprovalConfiguration(SUPPLY_CHAIN_ID, restApprovalConfiguration)
+        );
+        assertThat(responseStatusException.getStatus(), is(HttpStatus.NOT_FOUND));
+        assertThat(responseStatusException.getMessage(), is("404 NOT_FOUND \"layout not found\""));
+    }
+
+    private static List<LayoutSegment> createSegmentAndStep() {
+        return singletonList(LayoutSegment
+                .builder()
+                .name(SEGMENT_NAME)
+                .steps(singletonList(Step.builder()
+                        .name(STEP_NAME)
+                        .build()))
+                .build());
     }
 
 }

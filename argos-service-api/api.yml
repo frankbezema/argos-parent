@@ -280,7 +280,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /supplychain/{supplyChainId}/layout/approval:
+  /supplychain/{supplyChainId}/layout/approvalconfig:
     get:
       summary: returns a list of approval configurations for a layout
       operationId: getApprovalConfigurations
@@ -343,7 +343,7 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
-  /supplychain/{supplyChainId}/layout/approval/{approvalConfigurationId}:
+  /supplychain/{supplyChainId}/layout/approvalconfig/{approvalConfigurationId}:
     get:
       summary: updates an approval configuration for a segment step
       operationId: getApprovalConfiguration
@@ -1507,6 +1507,8 @@ components:
       required:
         - stepName
         - segmentName
+        - supplyChainId
+        - artifactCollectors
       properties:
         approvalConfigurationId:
           type: string
@@ -1515,11 +1517,13 @@ components:
           type: string
         segmentName:
           type: string
-        collectors:
+        supplyChainId:
+          type: string
+        artifactCollectors:
           type: array
           items:
-            $ref: "#/components/schemas/Collector"
-    Collector:
+            $ref: "#/components/schemas/ArtifactCollector"
+    ArtifactCollector:
       type: object
       required:
         - type
@@ -1530,7 +1534,7 @@ components:
           enum:
             - XLDEPLOY
         uri:
-          description: base url of the collector server
+          description: base url of the artifact collector server
           type: string
           format: uri
     Error:
