@@ -5,7 +5,7 @@
   },
   "link": {
     "runId": "69af2dd",
-    "layoutSegmentName": "segment 1",
+    "layoutSegmentName": "segment1",
     "command": [
       "command1",
       "command2"
@@ -20,7 +20,7 @@
         "hash": "materialsHash2"
       }
     ],
-    "stepName": "step name",
+    "stepName": "stepname",
     "products": [
       {
         "uri": "productsUri1",

@@ -30,7 +30,7 @@
     ],
     "layoutSegments": [
       {
-        "name": "segment 1",
+        "name": "segment1",
         "steps": [
           {
             "name": "stepName1",
@@ -90,7 +90,7 @@
                 "destinationPathPrefix": "destinationPathPrefix",
                 "destinationType": "MATERIALS",
                 "destinationStepName": "destinationStepName",
-                "destinationSegmentName": "segment 1"
+                "destinationSegmentName": "segment1"
               }
             ],
             "expectedProducts": [

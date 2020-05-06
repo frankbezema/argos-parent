@@ -1,8 +1,8 @@
 {
   "link": {
     "runId": "69af2des3",
-    "layoutSegmentName": "segment 3",
-    "stepName": "test segment 3",
+    "layoutSegmentName": "segment3",
+    "stepName": "testsegment3",
     "materials": [
       {
         "uri": "pom.xml",

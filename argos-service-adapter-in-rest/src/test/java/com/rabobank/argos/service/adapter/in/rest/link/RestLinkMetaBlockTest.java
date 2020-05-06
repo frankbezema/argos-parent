@@ -51,9 +51,9 @@ class RestLinkMetaBlockTest {
     @Test
     void emptyArtifacts() {
         assertThat(validate(new RestLinkMetaBlock().link(new RestLink()
-                .layoutSegmentName("segmentName")
+                .layoutSegmentName("segment Name")
                 .runId("runId")
-                .stepName("stepName")
+                .stepName("step Name")
                 .addProductsItem(new RestArtifact())
                 .addMaterialsItem(new RestArtifact())
                 .addCommandItem("command"))
@@ -61,10 +61,12 @@ class RestLinkMetaBlockTest {
                         .signature("signature")
                         .keyId("keyId")
                 )), contains(expectedErrors(
+                "link.layoutSegmentName", "must match \"^([A-Za-z0-9_-]*)?$\"",
                 "link.materials[0].hash", "must not be null",
                 "link.materials[0].uri", "must not be null",
                 "link.products[0].hash", "must not be null",
                 "link.products[0].uri", "must not be null",
+                "link.stepName", "must match \"^([A-Za-z0-9_-]*)?$\"",
                 "signature.keyId", "must match \"^[0-9a-f]*$\"",
                 "signature.keyId", "size must be between 64 and 64",
                 "signature.signature", "must match \"^[0-9a-f]*$\"",

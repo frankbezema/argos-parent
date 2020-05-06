@@ -89,7 +89,7 @@ class RestLayoutMetaBlockTest {
                                 .id("keyId")
                                 .key(new byte[]{1})
                         ).addLayoutSegmentsItem(new RestLayoutSegment()
-                                .name("segment 1")
+                                .name("segment1")
                                 .addStepsItem(new RestStep())
                         ))), contains(expectedErrors(
                 "layout.keys[0].id", "must match \"^[0-9a-f]*$\"",
@@ -105,8 +105,8 @@ class RestLayoutMetaBlockTest {
                 .layout(new RestLayout()
                         .addAuthorizedKeyIdsItem("authorizedKeyId")
                         .addExpectedEndProductsItem(new RestMatchRule()
-                                .destinationSegmentName("segment 1")
-                                .destinationStepName("step 1")
+                                .destinationSegmentName("segment1")
+                                .destinationStepName("step1")
                                 .destinationType(RestMatchRule.DestinationTypeEnum.PRODUCTS)
                                 .pattern("pattern"))
                         .addKeysItem(new RestPublicKey()
@@ -121,10 +121,12 @@ class RestLayoutMetaBlockTest {
                                         .name("step 1")
                                         .addAuthorizedKeyIdsItem("authorizedKeyId"))
                         ))), contains(expectedErrors(
+                "layout.layoutSegments[0].name", "must match \"^([A-Za-z0-9_-]*)?$\"",
                 "layout.layoutSegments[0].steps[0].expectedMaterials[0].pattern", "must not be null",
                 "layout.layoutSegments[0].steps[0].expectedMaterials[0].ruleType", "must not be null",
                 "layout.layoutSegments[0].steps[0].expectedProducts[0].pattern", "must not be null",
-                "layout.layoutSegments[0].steps[0].expectedProducts[0].ruleType", "must not be null"
+                "layout.layoutSegments[0].steps[0].expectedProducts[0].ruleType", "must not be null",
+                "layout.layoutSegments[0].steps[0].name", "must match \"^([A-Za-z0-9_-]*)?$\""
         )));
     }
 
@@ -135,20 +137,20 @@ class RestLayoutMetaBlockTest {
                 .layout(new RestLayout()
                         .addAuthorizedKeyIdsItem("authorizedKeyId")
                         .addExpectedEndProductsItem(new RestMatchRule()
-                                .destinationSegmentName("segment 1")
-                                .destinationStepName("step 1")
+                                .destinationSegmentName("segment1")
+                                .destinationStepName("step1")
                                 .destinationType(RestMatchRule.DestinationTypeEnum.PRODUCTS)
                                 .pattern("pattern"))
                         .addKeysItem(new RestPublicKey()
                                 .id("c8df0a497ab0df7136c4f97892f17914e6e5e021fdc039f0ea7c27d5a95c1254")
                                 .key(new byte[]{1})
                         ).addLayoutSegmentsItem(new RestLayoutSegment()
-                                .name("segment 1")
+                                .name("segment1")
                                 .addStepsItem(new RestStep()
                                         .addExpectedCommandItem("command 1")
                                         .addExpectedMaterialsItem(new RestRule().ruleType(RestRule.RuleTypeEnum.MATCH).pattern("pattern"))
                                         .addExpectedProductsItem(new RestRule().ruleType(RestRule.RuleTypeEnum.CREATE).pattern("pattern"))
-                                        .name("step 1")
+                                        .name("step1")
                                         .addAuthorizedKeyIdsItem("authorizedKeyId"))
                         ))), empty()
         );
