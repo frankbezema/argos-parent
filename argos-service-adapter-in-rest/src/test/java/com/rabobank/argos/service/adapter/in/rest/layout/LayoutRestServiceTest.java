@@ -106,13 +106,10 @@ class LayoutRestServiceTest {
         RequestContextHolder.setRequestAttributes(servletRequestAttributes);
         when(converter.convertFromRestLayoutMetaBlock(restLayoutMetaBlock)).thenReturn(layoutMetaBlock);
         when(converter.convertToRestLayoutMetaBlock(layoutMetaBlock)).thenReturn(restLayoutMetaBlock);
-
         ResponseEntity<RestLayoutMetaBlock> responseEntity = service.createOrUpdateLayout(SUPPLY_CHAIN_ID, restLayoutMetaBlock);
-
         assertThat(responseEntity.getStatusCodeValue(), is(201));
         assertThat(responseEntity.getBody(), sameInstance(restLayoutMetaBlock));
         assertThat(Objects.requireNonNull(responseEntity.getHeaders().getLocation()).getPath(), is(""));
-
         verify(layoutMetaBlockRepository).createOrUpdate(layoutMetaBlock);
         verify(validator).validate(layoutMetaBlock);
 

@@ -22,5 +22,5 @@ import java.util.Optional;
 public interface ApprovalConfigurationRepository {
     void save(ApprovalConfiguration approvalConfiguration);
 
-    Optional<ApprovalConfiguration> findBySegmentNameAndStepName(String segmentName, String stepName);
+    Optional<ApprovalConfiguration> findBySupplyChainIdSegmentNameAndStepName(String supplyChainId, String segmentName, String stepName);
 }

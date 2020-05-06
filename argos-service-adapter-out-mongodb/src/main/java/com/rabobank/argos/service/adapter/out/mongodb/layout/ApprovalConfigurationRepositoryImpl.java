@@ -23,15 +23,18 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class ApprovalConfigurationRepositoryImpl implements ApprovalConfigurationRepository {
-    private static final String COLLECTION = "approvalConfigurations";
-    private static final String SEGMENT_NAME_FIELD = "segmentName";
-    private static final String STEP_NAME_FIELD = "stepName";
-    // static final String APPROVAL_CONFIG_ID_FIELD = "approvalConfigurationId";
+    protected static final String COLLECTION = "approvalConfigurations";
+    protected static final String SUPPLYCHAIN_ID_FIELD = "supplyChainId";
+    protected static final String SEGMENT_NAME_FIELD = "segmentName";
+    protected static final String STEP_NAME_FIELD = "stepName";
+    protected static final String APPROVAL_CONFIG_ID_FIELD = "approvalConfigurationId";
     private final MongoTemplate template;
 
     @Override
@@ -39,10 +42,13 @@ public class ApprovalConfigurationRepositoryImpl implements ApprovalConfiguratio
         template.save(approvalConfiguration, COLLECTION);
     }
 
-    @Override
-    public Optional<ApprovalConfiguration> findBySegmentNameAndStepName(String segmentName, String stepName) {
-        Criteria criteria = Criteria.where(SEGMENT_NAME_FIELD).is(segmentName)
-                .andOperator(Criteria.where(STEP_NAME_FIELD).is(stepName));
-        return Optional.ofNullable(template.findOne(new Query(criteria), ApprovalConfiguration.class, COLLECTION));
+    public Optional<ApprovalConfiguration> findBySupplyChainIdSegmentNameAndStepName(String supplyChainId, String segmentName, String stepName) {
+        Criteria criteria = Criteria.where(SUPPLYCHAIN_ID_FIELD).is(supplyChainId);
+        List<Criteria> andCriteria = new ArrayList<>();
+        andCriteria.add(Criteria.where(SEGMENT_NAME_FIELD).is(segmentName));
+        andCriteria.add(Criteria.where(STEP_NAME_FIELD).is(stepName));
+        criteria.andOperator(andCriteria.toArray(new Criteria[andCriteria.size()]));
+        Query query = new Query(criteria);
+        return Optional.ofNullable(template.findOne(query, ApprovalConfiguration.class, COLLECTION));
     }
 }
