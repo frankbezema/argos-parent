@@ -175,22 +175,6 @@ class JenkinsTestIT {
         assertThat(build.details().getResult(), is(BuildResult.SUCCESS));
     }
 
-    public void verifyEndProducts() throws MalformedURLException {
-
-        Argos4jSettings settings = Argos4jSettings.builder()
-                .argosServerBaseUrl(properties.getApiBaseUrl() + "/api")
-                .supplyChainName("argos-test-app")
-                .pathToLabelRoot(List.of("child_label", "root_label"))
-                .signingKeyId(personalAccount.getKeyId())
-                .build();
-        VerifyBuilder verifyBuilder = new Argos4j(settings).getVerifyBuilder();
-        verifyBuilder.addFileCollector(RemoteFileCollector.builder()
-                .artifactUri("argos-test-app.war")
-                .url(new URL(properties.getNexusWarSnapshotUrl())).build());
-        assertTrue(verifyBuilder.verify(personalAccount.getPassphrase().toCharArray()).isRunIsValid());
-
-    }
-
     private JobWithDetails getJob(String name) throws IOException {
         await().atMost(10, SECONDS).until(() -> jenkins.getJob(name) != null);
         return jenkins.getJob(name);
