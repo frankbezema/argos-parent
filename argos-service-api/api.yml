@@ -1507,7 +1507,6 @@ components:
       required:
         - stepName
         - segmentName
-        - supplyChainId
         - artifactCollectors
       properties:
         approvalConfigurationId:
@@ -1516,8 +1515,6 @@ components:
         stepName:
           type: string
         segmentName:
-          type: string
-        supplyChainId:
           type: string
         artifactCollectors:
           type: array

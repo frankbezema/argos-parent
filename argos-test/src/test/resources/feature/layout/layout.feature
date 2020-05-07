@@ -26,12 +26,13 @@ Feature: Layout
     * call read('classpath:feature/account/set-local-permissions.feature') { accountId: #(accountWithNoReadPermissions.response.id),labelId: #(supplyChain.response.parentLabelId), permissions: ["LAYOUT_ADD"]}
     * def layoutPath = '/api/supplychain/'+ supplyChain.response.id + '/layout'
     * def validLayout = 'classpath:testmessages/layout/valid-layout.json'
-    * def keyPair = defaultTestData.personalAccounts['default-pa1']
-    * configure headers = call read('classpath:headers.js') { token: #(keyPair.token)}
+    * def accountWithLayoutAddPermission = defaultTestData.personalAccounts['default-pa1']
+    * configure headers = call read('classpath:headers.js') { token: #(accountWithLayoutAddPermission.token)}
     * def tokenWithoutLayoutAddPermissions = defaultTestData.adminToken
 
   Scenario: store layout with valid specifications should return a 200
     * call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
+
   Scenario: store layout with invalid specifications should return a 400 error
     Given path layoutPath
     And request read('classpath:testmessages/layout/invalid-layout.json')
@@ -135,3 +136,18 @@ Feature: Layout
     When method POST
     Then status 204
 
+  Scenario: create ApprovalConfiguration should return a 201
+    * call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
+    Given path layoutPath+'/approvalconfig'
+    And request read('classpath:testmessages/layout/approval-config-request.json')
+    When method POST
+    Then status 201
+    And match response == read('classpath:testmessages/layout/approval-config-response.json')
+
+  Scenario: create ApprovalConfiguration without LAYOUT_ADD permission should return a 403
+    * call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
+    * configure headers = call read('classpath:headers.js') { token: #(tokenWithoutLayoutAddPermissions)}
+    Given path layoutPath+'/approvalconfig'
+    And request read('classpath:testmessages/layout/approval-config-request.json')
+    When method POST
+    Then status 403

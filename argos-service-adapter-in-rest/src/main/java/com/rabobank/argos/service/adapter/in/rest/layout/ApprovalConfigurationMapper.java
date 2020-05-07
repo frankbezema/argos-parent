@@ -18,9 +18,11 @@ package com.rabobank.argos.service.adapter.in.rest.layout;
 import com.rabobank.argos.domain.layout.ApprovalConfiguration;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestApprovalConfiguration;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ApprovalConfigurationMapper {
+    @Mapping(target = "approvalConfigurationId", ignore = true)
     ApprovalConfiguration convertFromRestApprovalConfiguration(RestApprovalConfiguration restApprovalConfiguration);
 
     RestApprovalConfiguration convertToRestApprovalConfiguration(ApprovalConfiguration approvalConfiguration);
