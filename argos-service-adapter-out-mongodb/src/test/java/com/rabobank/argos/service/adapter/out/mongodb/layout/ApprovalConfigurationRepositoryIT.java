@@ -44,10 +44,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ApprovalConfigurationRepositoryIT {
-    public static final String SEGMENT_NAME = "segmentName";
-    public static final String STEP_NAME = "stepName";
-    public static final String SUPPLY_CHAIN_ID = "supplyChainId";
+class ApprovalConfigurationRepositoryIT {
+    private static final String SEGMENT_NAME = "segmentName";
+    private static final String STEP_NAME = "stepName";
+    private static final String SUPPLY_CHAIN_ID = "supplyChainId";
     private MongodExecutable mongodExecutable;
 
     private ApprovalConfigurationRepository approvalConfigurationRepository;

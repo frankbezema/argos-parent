@@ -56,6 +56,7 @@ class LayoutRestServiceTest {
     private static final String SEGMENT_NAME = "segmentName";
     private static final String STEP_NAME = "stepName";
     private static final String SUPPLY_CHAIN_ID = "supplyChainId";
+    public static final String APPROVAL_CONFIG_ID = "approvalConfigId";
 
     @Mock
     private LayoutMetaBlockMapper converter;
@@ -240,6 +241,30 @@ class LayoutRestServiceTest {
         );
         assertThat(responseStatusException.getStatus(), is(HttpStatus.NOT_FOUND));
         assertThat(responseStatusException.getMessage(), is("404 NOT_FOUND \"layout not found\""));
+    }
+
+    @Test
+    void getApprovalConfigurationWithValidIdShouldReturn200() {
+        when(approvalConfigurationRepository
+                .findById(APPROVAL_CONFIG_ID))
+                .thenReturn(Optional.of(approvalConfiguration));
+        when(approvalConfigurationMapper.convertToRestApprovalConfiguration(approvalConfiguration))
+                .thenReturn(restApprovalConfiguration);
+        ResponseEntity<RestApprovalConfiguration> responseEntity = service.getApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID);
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        assertThat(responseEntity.getBody(), is(restApprovalConfiguration));
+    }
+
+    @Test
+    void getApprovalConfigurationWithInValidIdShouldReturn404() {
+        when(approvalConfigurationRepository
+                .findById(APPROVAL_CONFIG_ID))
+                .thenReturn(Optional.empty());
+        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
+                service.getApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID)
+        );
+        assertThat(responseStatusException.getStatus(), is(HttpStatus.NOT_FOUND));
+        assertThat(responseStatusException.getMessage(), is("404 NOT_FOUND \"approval configuration not found\""));
     }
 
     private static List<LayoutSegment> createSegmentAndStep() {

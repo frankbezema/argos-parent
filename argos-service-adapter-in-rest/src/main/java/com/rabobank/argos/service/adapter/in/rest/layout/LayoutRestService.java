@@ -112,6 +112,16 @@ public class LayoutRestService implements LayoutApi {
                 .body(approvalConfigurationConverter.convertToRestApprovalConfiguration(approvalConfiguration));
     }
 
+    @Override
+    @PermissionCheck(permissions = Permission.READ)
+    public ResponseEntity<RestApprovalConfiguration> getApprovalConfiguration(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String approvalConfigurationId) {
+        return approvalConfigurationRepository.findById(approvalConfigurationId)
+                .map(approvalConfigurationConverter::convertToRestApprovalConfiguration)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "approval configuration not found"));
+
+    }
+
     private void verifyConfigurationDoesNotExistForSegmentAndStepName(ApprovalConfiguration approvalConfiguration) {
         Optional<ApprovalConfiguration> storedApprovalConf = approvalConfigurationRepository
                 .findBySupplyChainIdSegmentNameAndStepName(approvalConfiguration.getSupplyChainId(), approvalConfiguration.getSegmentName(), approvalConfiguration.getStepName());

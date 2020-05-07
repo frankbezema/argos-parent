@@ -30,11 +30,11 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class ApprovalConfigurationRepositoryImpl implements ApprovalConfigurationRepository {
-    protected static final String COLLECTION = "approvalConfigurations";
-    protected static final String SUPPLYCHAIN_ID_FIELD = "supplyChainId";
-    protected static final String SEGMENT_NAME_FIELD = "segmentName";
-    protected static final String STEP_NAME_FIELD = "stepName";
-    protected static final String APPROVAL_CONFIG_ID_FIELD = "approvalConfigurationId";
+    static final String COLLECTION = "approvalConfigurations";
+    static final String SUPPLYCHAIN_ID_FIELD = "supplyChainId";
+    static final String SEGMENT_NAME_FIELD = "segmentName";
+    static final String STEP_NAME_FIELD = "stepName";
+    static final String APPROVAL_CONFIG_ID_FIELD = "approvalConfigurationId";
     private final MongoTemplate template;
 
     @Override
@@ -47,8 +47,20 @@ public class ApprovalConfigurationRepositoryImpl implements ApprovalConfiguratio
         List<Criteria> andCriteria = new ArrayList<>();
         andCriteria.add(Criteria.where(SEGMENT_NAME_FIELD).is(segmentName));
         andCriteria.add(Criteria.where(STEP_NAME_FIELD).is(stepName));
-        criteria.andOperator(andCriteria.toArray(new Criteria[andCriteria.size()]));
+        criteria.andOperator(andCriteria.toArray(new Criteria[0]));
         Query query = new Query(criteria);
         return Optional.ofNullable(template.findOne(query, ApprovalConfiguration.class, COLLECTION));
     }
+
+    @Override
+    public Optional<ApprovalConfiguration> findById(String approvalConfigurationId) {
+        Query query = primaryKeyQuery(approvalConfigurationId);
+        return Optional.ofNullable(template.findOne(query, ApprovalConfiguration.class, COLLECTION));
+    }
+
+    private Query primaryKeyQuery(String approvalConfigurationId) {
+        Criteria criteria = Criteria.where(APPROVAL_CONFIG_ID_FIELD).is(approvalConfigurationId);
+        return new Query(criteria);
+    }
+
 }

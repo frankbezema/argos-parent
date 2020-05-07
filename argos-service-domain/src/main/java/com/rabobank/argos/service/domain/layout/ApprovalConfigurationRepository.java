@@ -23,4 +23,6 @@ public interface ApprovalConfigurationRepository {
     void save(ApprovalConfiguration approvalConfiguration);
 
     Optional<ApprovalConfiguration> findBySupplyChainIdSegmentNameAndStepName(String supplyChainId, String segmentName, String stepName);
+
+    Optional<ApprovalConfiguration> findById(String approvalConfigurationId);
 }
