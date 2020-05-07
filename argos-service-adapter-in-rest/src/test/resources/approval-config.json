@@ -1,5 +1,5 @@
 {
-  "approvalConfigurationId": "id",
+  "approvalConfigurationId": "x",
   "stepName": "stepName",
   "segmentName": "segmentName",
   "artifactCollectors": [
