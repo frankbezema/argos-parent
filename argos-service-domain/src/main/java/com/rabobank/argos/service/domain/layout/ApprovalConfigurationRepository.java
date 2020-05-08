@@ -17,6 +17,7 @@ package com.rabobank.argos.service.domain.layout;
 
 import com.rabobank.argos.domain.layout.ApprovalConfiguration;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ApprovalConfigurationRepository {
@@ -25,4 +26,8 @@ public interface ApprovalConfigurationRepository {
     Optional<ApprovalConfiguration> findBySupplyChainIdSegmentNameAndStepName(String supplyChainId, String segmentName, String stepName);
 
     Optional<ApprovalConfiguration> findById(String approvalConfigurationId);
+
+    Optional<ApprovalConfiguration> update(ApprovalConfiguration approvalConfiguration);
+
+    List<ApprovalConfiguration> findBySupplyChainId(String supplyChainId);
 }

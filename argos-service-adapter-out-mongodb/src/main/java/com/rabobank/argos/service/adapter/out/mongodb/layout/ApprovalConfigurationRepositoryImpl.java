@@ -15,12 +15,18 @@
  */
 package com.rabobank.argos.service.adapter.out.mongodb.layout;
 
+import com.mongodb.client.result.UpdateResult;
+import com.rabobank.argos.domain.ArgosError;
+import com.rabobank.argos.domain.hierarchy.Label;
 import com.rabobank.argos.domain.layout.ApprovalConfiguration;
 import com.rabobank.argos.service.domain.layout.ApprovalConfigurationRepository;
 import lombok.RequiredArgsConstructor;
+import org.bson.Document;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -58,9 +64,36 @@ public class ApprovalConfigurationRepositoryImpl implements ApprovalConfiguratio
         return Optional.ofNullable(template.findOne(query, ApprovalConfiguration.class, COLLECTION));
     }
 
+    @Override
+    public Optional<ApprovalConfiguration> update(ApprovalConfiguration approvalConfiguration) {
+        Query query = primaryKeyQuery(approvalConfiguration.getApprovalConfigurationId());
+        Document document = new Document();
+        template.getConverter().write(approvalConfiguration, document);
+        try {
+            UpdateResult updateResult = template.updateFirst(query, Update.fromDocument(document), Label.class, COLLECTION);
+            if (updateResult.getMatchedCount() > 0) {
+                return Optional.of(approvalConfiguration);
+            } else {
+                return Optional.empty();
+            }
+        } catch (DuplicateKeyException e) {
+            throw duplicateKeyException(approvalConfiguration, e);
+        }
+    }
+
+    @Override
+    public List<ApprovalConfiguration> findBySupplyChainId(String supplyChainId) {
+        Criteria criteria = Criteria.where(SUPPLYCHAIN_ID_FIELD).is(supplyChainId);
+        return template.find(new Query(criteria), ApprovalConfiguration.class, COLLECTION);
+    }
+
     private Query primaryKeyQuery(String approvalConfigurationId) {
         Criteria criteria = Criteria.where(APPROVAL_CONFIG_ID_FIELD).is(approvalConfigurationId);
         return new Query(criteria);
+    }
+
+    private ArgosError duplicateKeyException(ApprovalConfiguration approvalConfiguration, DuplicateKeyException e) {
+        return new ArgosError("approvalConfiguration with supplychain id: " + approvalConfiguration.getSupplyChainId() + " segmentName: " + approvalConfiguration.getSegmentName() + "and StepName:" + approvalConfiguration.getStepName() + "already exists", e, ArgosError.Level.WARNING);
     }
 
 }

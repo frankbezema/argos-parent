@@ -143,7 +143,7 @@ Feature: Layout
     * call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
     * configure headers = call read('classpath:headers.js') { token: #(tokenWithoutLayoutAddPermissions)}
     Given path layoutPath+'/approvalconfig'
-    And request read('classpath:testmessages/layout/approval-config-request.json')
+    And request read('classpath:testmessages/layout/approval-config-create-request.json')
     When method POST
     Then status 403
 
@@ -152,7 +152,7 @@ Feature: Layout
     Given path layoutPath+'/approvalconfig/'+createcall.response.approvalConfigurationId
     When method GET
     Then status 200
-    And match response == read('classpath:testmessages/layout/approval-config-response.json')
+    And match response == read('classpath:testmessages/layout/approval-config-create-response.json')
 
   Scenario: get ApprovalConfiguration with no READ permission should return a 403
     * def createcall = call read('create-approval-config.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1,layoutPath:#(layoutPath)}
@@ -161,3 +161,32 @@ Feature: Layout
     When method GET
     Then status 403
 
+  Scenario: update ApprovalConfiguration should return a 200
+    * def createcall = call read('create-approval-config.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1,layoutPath:#(layoutPath)}
+    Given path layoutPath+'/approvalconfig/'+createcall.response.approvalConfigurationId
+    And request read('classpath:testmessages/layout/approval-config-update-request.json')
+    When method PUT
+    Then status 200
+    And match response == read('classpath:testmessages/layout/approval-config-update-response.json')
+
+  Scenario: update ApprovalConfiguration without LAYOUT_ADD permission should return a 403
+    * def createcall = call read('create-approval-config.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1,layoutPath:#(layoutPath)}
+    * configure headers = call read('classpath:headers.js') { token: #(tokenWithoutLayoutAddPermissions)}
+    Given path layoutPath+'/approvalconfig/'+createcall.response.approvalConfigurationId
+    And request read('classpath:testmessages/layout/approval-config-update-request.json')
+    When method PUT
+    Then status 403
+
+  Scenario: get approvalConfigurations should return a 200
+    * def createcall = call read('create-approval-config.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1,layoutPath:#(layoutPath)}
+    Given path layoutPath+'/approvalconfig/'
+    When method GET
+    Then status 200
+    And match response == read('classpath:testmessages/layout/approval-configs-response.json')
+
+  Scenario: get approvalConfigurations with no READ permission should return a 403
+    * def createcall = call read('create-approval-config.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1,layoutPath:#(layoutPath)}
+    * configure headers = call read('classpath:headers.js') { token: #(accountWithNoReadPermissions.response.token)}
+    Given path layoutPath+'/approvalconfig/'
+    When method GET
+    Then status 403

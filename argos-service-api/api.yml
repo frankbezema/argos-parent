@@ -410,6 +410,29 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
+    delete:
+      summary: deletes an approvalconfiguration
+      operationId: deleteApprovalConfiguration
+      tags:
+        - layout
+      parameters:
+        - name: supplyChainId
+          in: path
+          description: supply chain id
+          required: true
+          schema:
+            type: string
+        - name: approvalConfigurationId
+          in: path
+          description: approval configuration id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: deleted successfully
+        '500':
+          $ref: '#/components/responses/Error'
 
   /supplychain/{supplyChainId}/verification:
     post:

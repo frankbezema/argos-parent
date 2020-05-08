@@ -44,6 +44,7 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -201,7 +202,7 @@ class LayoutRestServiceTest {
 
         assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
         assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("stepName"));
-        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("step with name : wrong-stepname in segment segmentName does not exist in layout"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("step with name: wrong-stepname in segment: segmentName does not exist in layout"));
     }
 
 
@@ -265,6 +266,58 @@ class LayoutRestServiceTest {
         );
         assertThat(responseStatusException.getStatus(), is(HttpStatus.NOT_FOUND));
         assertThat(responseStatusException.getMessage(), is("404 NOT_FOUND \"approval configuration not found\""));
+    }
+
+    @Test
+    void updateApprovalConfigurationShouldReturn200() {
+        when(approvalConfigurationRepository
+                .update(approvalConfiguration))
+                .thenReturn(Optional.of(approvalConfiguration));
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
+        when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
+        when(layoutMetaBlock.getLayout()).thenReturn(layout);
+        when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
+        when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
+        when(approvalConfiguration.getStepName()).thenReturn(STEP_NAME);
+        when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
+                .thenReturn(approvalConfiguration);
+        when(approvalConfigurationMapper.convertToRestApprovalConfiguration(approvalConfiguration))
+                .thenReturn(restApprovalConfiguration);
+        ResponseEntity<RestApprovalConfiguration> responseEntity = service.updateApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID, restApprovalConfiguration);
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        verify(approvalConfigurationRepository).update(approvalConfiguration);
+        verify(approvalConfiguration).setSupplyChainId(SUPPLY_CHAIN_ID);
+        verify(approvalConfiguration).setApprovalConfigurationId(APPROVAL_CONFIG_ID);
+    }
+
+    @Test
+    void updateApprovalConfigurationWithInvalidIdShouldReturn403() {
+        when(approvalConfigurationRepository
+                .update(approvalConfiguration))
+                .thenReturn(Optional.empty());
+        when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
+                .thenReturn(approvalConfiguration);
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
+        when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
+        when(layoutMetaBlock.getLayout()).thenReturn(layout);
+        when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
+        when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
+        when(approvalConfiguration.getStepName()).thenReturn(STEP_NAME);
+        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
+                service.updateApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID, restApprovalConfiguration)
+        );
+        assertThat(responseStatusException.getStatus(), is(HttpStatus.NOT_FOUND));
+        assertThat(responseStatusException.getMessage(), is("404 NOT_FOUND \"approval configuration not found\""));
+    }
+
+    @Test
+    void getApprovalConfigurations() {
+        when(approvalConfigurationRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(List.of(approvalConfiguration));
+        when(approvalConfigurationMapper.convertToRestApprovalConfiguration(approvalConfiguration))
+                .thenReturn(restApprovalConfiguration);
+        ResponseEntity<List<RestApprovalConfiguration>> responseEntity = service.getApprovalConfigurations(SUPPLY_CHAIN_ID);
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        assertThat(responseEntity.getBody(), hasSize(1));
     }
 
     private static List<LayoutSegment> createSegmentAndStep() {

@@ -81,6 +81,20 @@ class ApprovalConfigurationRepositoryIT {
         assertThat(approvalConfiguration.isPresent(), is(true));
     }
 
+    @Test
+    void testUpdate() {
+        Optional<ApprovalConfiguration> approvalConfiguration = approvalConfigurationRepository
+                .findById("uuid");
+        assertThat(approvalConfiguration.isPresent(), is(true));
+        ApprovalConfiguration approvalForUpdate = approvalConfiguration.get();
+        approvalForUpdate.setSegmentName("updatedSegmentName");
+        Optional<ApprovalConfiguration> updatedApproval = approvalConfigurationRepository.update(approvalForUpdate);
+        assertThat(updatedApproval, is(Optional.of(approvalForUpdate)));
+        Optional<ApprovalConfiguration> checkForUpdate = approvalConfigurationRepository
+                .findById("uuid");
+        assertThat(checkForUpdate.get().getSegmentName(), is("updatedSegmentName"));
+    }
+
     private void loadData() {
         approvalConfigurationRepository.save(ApprovalConfiguration
                 .builder()

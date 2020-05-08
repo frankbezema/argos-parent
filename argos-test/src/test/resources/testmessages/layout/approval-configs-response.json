@@ -1,0 +1,13 @@
+[
+  {
+    "approvalConfigurationId": "#uuid",
+    "stepName": "build",
+    "segmentName": "segment 1",
+    "artifactCollectors": [
+      {
+        "type": "XLDEPLOY",
+        "uri": "http://xldeploy.com"
+      }
+    ]
+  }
+]

@@ -64,6 +64,7 @@ public class LayoutRestService implements LayoutApi {
     private final ApprovalConfigurationMapper approvalConfigurationConverter;
 
 
+
     @Override
     @PermissionCheck(permissions = Permission.LAYOUT_ADD)
     public ResponseEntity<Void> validateLayout(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, RestLayout restLayout) {
@@ -98,7 +99,7 @@ public class LayoutRestService implements LayoutApi {
         ApprovalConfiguration approvalConfiguration = approvalConfigurationConverter.convertFromRestApprovalConfiguration(restApprovalConfiguration);
         approvalConfiguration.setSupplyChainId(supplyChainId);
 
-        verifyStepNameAndSegmentNameExistsInLayout(approvalConfiguration);
+        verifyStepNameAndSegmentNameExistInLayout(approvalConfiguration);
         verifyConfigurationDoesNotExistForSegmentAndStepName(approvalConfiguration);
         approvalConfigurationRepository.save(approvalConfiguration);
 
@@ -122,6 +123,38 @@ public class LayoutRestService implements LayoutApi {
 
     }
 
+    @Override
+    @PermissionCheck(permissions = Permission.LAYOUT_ADD)
+    public ResponseEntity<RestApprovalConfiguration> updateApprovalConfiguration(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String approvalConfigurationId, @Valid RestApprovalConfiguration restApprovalConfiguration) {
+        ApprovalConfiguration approvalConfiguration = approvalConfigurationConverter.convertFromRestApprovalConfiguration(restApprovalConfiguration);
+        approvalConfiguration.setSupplyChainId(supplyChainId);
+        approvalConfiguration.setApprovalConfigurationId(approvalConfigurationId);
+        verifyStepNameAndSegmentNameExistInLayout(approvalConfiguration);
+        return approvalConfigurationRepository.update(approvalConfiguration)
+                .map(approvalConfigurationConverter::convertToRestApprovalConfiguration)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "approval configuration not found"));
+
+    }
+
+    @Override
+    @PermissionCheck(permissions = Permission.READ)
+    public ResponseEntity<Void> deleteApprovalConfiguration(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String approvalConfigurationId) {
+
+
+        return null;
+    }
+
+    @Override
+    @PermissionCheck(permissions = Permission.READ)
+    public ResponseEntity<List<RestApprovalConfiguration>> getApprovalConfigurations(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId) {
+        return ResponseEntity.ok(approvalConfigurationRepository
+                .findBySupplyChainId(supplyChainId)
+                .stream()
+                .map(approvalConfigurationConverter::convertToRestApprovalConfiguration)
+                .collect(Collectors.toList()));
+    }
+
     private void verifyConfigurationDoesNotExistForSegmentAndStepName(ApprovalConfiguration approvalConfiguration) {
         Optional<ApprovalConfiguration> storedApprovalConf = approvalConfigurationRepository
                 .findBySupplyChainIdSegmentNameAndStepName(approvalConfiguration.getSupplyChainId(), approvalConfiguration.getSegmentName(), approvalConfiguration.getStepName());
@@ -133,7 +166,7 @@ public class LayoutRestService implements LayoutApi {
         }
     }
 
-    private void verifyStepNameAndSegmentNameExistsInLayout(ApprovalConfiguration approvalConfiguration) {
+    private void verifyStepNameAndSegmentNameExistInLayout(ApprovalConfiguration approvalConfiguration) {
         Map<String, Set<String>> segmentStepNameCombinations = getSegmentsAndSteps(approvalConfiguration);
         if (segmentNameIsNotPresentInLayout(approvalConfiguration, segmentStepNameCombinations)) {
             throwLayoutValidationException(
@@ -143,7 +176,7 @@ public class LayoutRestService implements LayoutApi {
         } else if (stepNameIsNotPresentInSegment(approvalConfiguration, segmentStepNameCombinations)) {
             throwLayoutValidationException(
                     "stepName",
-                    "step with name : " + approvalConfiguration.getStepName() + " in segment " + approvalConfiguration.getSegmentName() + " does not exist in layout"
+                    "step with name: " + approvalConfiguration.getStepName() + " in segment: " + approvalConfiguration.getSegmentName() + " does not exist in layout"
             );
         }
     }
