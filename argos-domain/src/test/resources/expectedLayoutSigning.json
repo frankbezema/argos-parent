@@ -20,7 +20,7 @@
   ],
   "layoutSegments": [
     {
-      "name": "segment 1",
+      "name": "segment1",
       "steps": [
         {
           "authorizedKeyIds": [
@@ -40,7 +40,7 @@
             },
             {
               "destinationPathPrefix": "destinationPathPrefix",
-              "destinationSegmentName": "segment 1",
+              "destinationSegmentName": "segment1",
               "destinationStepName": "destinationStepName",
               "destinationType": "MATERIALS",
               "pattern": "MatchRule",
@@ -52,7 +52,7 @@
               "ruleType": "DELETE"
             }
           ],
-          "name": "step a",
+          "name": "stepa",
           "requiredNumberOfLinks": 23
         },
         {
@@ -78,7 +78,7 @@
               "ruleType": "MODIFY"
             }
           ],
-          "name": "step b",
+          "name": "stepb",
           "requiredNumberOfLinks": 1
         }
       ]

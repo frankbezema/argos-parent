@@ -21,16 +21,16 @@
       {
         "pattern": "target/argos-test-0.0.1-SNAPSHOT.jar",
         "destinationType": "PRODUCTS",
-        "destinationStepName": "build segment 1",
-        "destinationSegmentName": "segment 1"
+        "destinationStepName": "buildsegment1",
+        "destinationSegmentName": "segment1"
       }
     ],
     "layoutSegments": [
       {
-        "name": "segment 1",
+        "name": "segment1",
         "steps": [
           {
-            "name": "build segment 1",
+            "name": "buildsegment1",
             "authorizedKeyIds": [
               "b91bec49e7aaaeeda162970c03193baef561c10337483a8bc0741d514dc63b9c"
             ],
@@ -44,8 +44,8 @@
                 "ruleType": "MATCH",
                 "pattern": "**/argos-frontend.jar",
                 "destinationType": "PRODUCTS",
-                "destinationStepName": "build segment 2",
-                "destinationSegmentName": "segment 2"
+                "destinationStepName": "buildsegment2",
+                "destinationSegmentName": "segment2"
               },
               {
                 "ruleType": "REQUIRE",
@@ -76,7 +76,7 @@
             ]
           },
           {
-            "name": "test segment 1",
+            "name": "testsegment1",
             "authorizedKeyIds": [
               "b91bec49e7aaaeeda162970c03193baef561c10337483a8bc0741d514dc63b9c"
             ],
@@ -101,8 +101,8 @@
                 "sourcePathPrefix": "",
                 "destinationPathPrefix": "target/",
                 "destinationType": "PRODUCTS",
-                "destinationStepName": "build segment 1",
-                "destinationSegmentName": "segment 1"
+                "destinationStepName": "buildsegment1",
+                "destinationSegmentName": "segment1"
               },
               {
                 "ruleType": "REQUIRE",
@@ -121,10 +121,10 @@
         ]
       },
       {
-        "name": "segment 2",
+        "name": "segment2",
         "steps": [
           {
-            "name": "build segment 2",
+            "name": "buildsegment2",
             "authorizedKeyIds": [
               "a97daeaf3afaed859472a367da7a860b4b90eefb97fe51384bd45e9eed020b5b"
             ],
@@ -163,7 +163,7 @@
             ]
           },
           {
-            "name": "test segment 2",
+            "name": "testsegment2",
             "authorizedKeyIds": [
               "a97daeaf3afaed859472a367da7a860b4b90eefb97fe51384bd45e9eed020b5b"
             ],
@@ -176,8 +176,8 @@
                 "ruleType": "MATCH",
                 "pattern": "pom.xml",
                 "destinationType": "MATERIALS",
-                "destinationStepName": "build segment 2",
-                "destinationSegmentName": "segment 2"
+                "destinationStepName": "buildsegment2",
+                "destinationSegmentName": "segment2"
               },
               {
                 "ruleType": "DISALLOW",
@@ -195,8 +195,8 @@
                 "sourcePathPrefix": "",
                 "destinationPathPrefix": "target/",
                 "destinationType": "PRODUCTS",
-                "destinationStepName": "build segment 2",
-                "destinationSegmentName": "segment 2"
+                "destinationStepName": "buildsegment2",
+                "destinationSegmentName": "segment2"
               },
               {
                 "ruleType": "REQUIRE",

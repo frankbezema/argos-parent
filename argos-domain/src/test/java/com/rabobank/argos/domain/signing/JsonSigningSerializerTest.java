@@ -17,8 +17,8 @@ package com.rabobank.argos.domain.signing;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabobank.argos.domain.layout.ArtifactType;
 import com.rabobank.argos.domain.key.RSAPublicKeyFactory;
+import com.rabobank.argos.domain.layout.ArtifactType;
 import com.rabobank.argos.domain.layout.Layout;
 import com.rabobank.argos.domain.layout.LayoutSegment;
 import com.rabobank.argos.domain.layout.PublicKey;
@@ -74,10 +74,10 @@ class JsonSigningSerializerTest {
                         .destinationType(ArtifactType.PRODUCTS)
                         .destinationStepName("destinationStepName")
                         .pattern("MatchFiler").build()))
-                .layoutSegments(singletonList(LayoutSegment.builder().name("segment 1")
+                .layoutSegments(singletonList(LayoutSegment.builder().name("segment1")
                         .steps(Arrays.asList(
                                 Step.builder()
-                                        .name("step b")
+                                        .name("stepb")
                                         .requiredNumberOfLinks(1)
                                         .expectedMaterials(Arrays.asList(
                                                 new Rule(RuleType.ALLOW, "AllowRule"),
@@ -89,7 +89,7 @@ class JsonSigningSerializerTest {
                                         ))
                                         .build(),
                                 Step.builder()
-                                        .name("step a")
+                                        .name("stepa")
                                         .authorizedKeyIds(Arrays.asList("step a key 2", "step a key 1"))
                                         .requiredNumberOfLinks(23)
                                         .expectedCommand(Arrays.asList("3", "2", "1"))
@@ -99,7 +99,7 @@ class JsonSigningSerializerTest {
                                                         .destinationPathPrefix("destinationPathPrefix")
                                                         .sourcePathPrefix("sourcePathPrefix")
                                                         .destinationStepName("destinationStepName")
-                                                        .destinationSegmentName("segment 1")
+                                                        .destinationSegmentName("segment1")
                                                         .destinationType(ArtifactType.MATERIALS)
                                                         .build(),
                                                 new Rule(RuleType.DELETE, "DeleteRule")
