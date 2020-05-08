@@ -171,6 +171,8 @@ steps:
 
 - name: xldeploy
   image: argosnotary/argos-xldeploy-ittest:${DRONE_BRANCH/\//_}${DRONE_TAG}
+  pull: always
+  detach: true
   environment:
     ADMIN_PASSWORD: admin
     ACCEPT_EULA: Y
