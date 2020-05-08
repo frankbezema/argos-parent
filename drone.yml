@@ -99,6 +99,21 @@ steps:
   - pitest
   - sonar
   
+- name: build xldeploy
+  image: plugins/docker
+  settings:
+    context: argos-docker
+    dockerfile: argos-docker/XLDeployDockerfile
+    password:
+      from_secret: docker_login_token
+    repo: argosnotary/argos-xldeploy-ittest
+    tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
+    username:
+      from_secret: docker_login_user
+  depends_on:
+  - pitest
+  - sonar
+  
 - name: mongodb
   image: mongo:4.2.1-bionic
   detach: true
@@ -153,6 +168,14 @@ steps:
     path: /root/.m2/repository
   depends_on:
   - build argos jenkins image
+
+- name: xldeploy
+  image: argosnotary/argos-xldeploy-ittest:${DRONE_BRANCH/\//_}${DRONE_TAG}
+  environment:
+    ADMIN_PASSWORD: admin
+    ACCEPT_EULA: Y
+  depends_on:
+  - build xldeploy
 
 - name: regression test
   image: argosnotary/argos-build:latest
@@ -267,12 +290,6 @@ services:
 - name: tomcat
   image: argosnotary/xld-tomcat-target:9.0
   
-- name: xldeploy
-  image: argosnotary/argos-xldeploy-snapshot:xld-collect-link
-  environment:
-    ADMIN_PASSWORD: admin
-    ACCEPT_EULA: Y
-
 volumes:
 - name: mvn_cache
   temp: {}
