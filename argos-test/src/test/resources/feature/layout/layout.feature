@@ -177,6 +177,22 @@ Feature: Layout
     When method PUT
     Then status 403
 
+  Scenario: delete ApprovalConfiguration should return a 204 and a 404 on the get
+    * def createcall = call read('create-approval-config.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1,layoutPath:#(layoutPath)}
+    Given path layoutPath+'/approvalconfig/'+createcall.response.approvalConfigurationId
+    When method DELETE
+    Then status 204
+    Given path layoutPath+'/approvalconfig/'+createcall.response.approvalConfigurationId
+    When method GET
+    Then status 404
+
+  Scenario: delete ApprovalConfiguration without LAYOUT_ADD permission should return a 403
+    * def createcall = call read('create-approval-config.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1,layoutPath:#(layoutPath)}
+    * configure headers = call read('classpath:headers.js') { token: #(tokenWithoutLayoutAddPermissions)}
+    Given path layoutPath+'/approvalconfig/'+createcall.response.approvalConfigurationId
+    When method DELETE
+    Then status 403
+
   Scenario: get approvalConfigurations should return a 200
     * def createcall = call read('create-approval-config.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1,layoutPath:#(layoutPath)}
     Given path layoutPath+'/approvalconfig/'

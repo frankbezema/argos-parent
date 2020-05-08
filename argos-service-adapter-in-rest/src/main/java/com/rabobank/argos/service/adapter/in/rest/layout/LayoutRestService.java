@@ -56,13 +56,12 @@ import static com.rabobank.argos.service.adapter.in.rest.supplychain.SupplyChain
 @RequestMapping("/api")
 public class LayoutRestService implements LayoutApi {
 
-    public static final String SEGMENT_NAME = "segmentName";
+    private static final String SEGMENT_NAME = "segmentName";
     private final LayoutMetaBlockMapper layoutMetaBlockConverter;
     private final LayoutMetaBlockRepository layoutMetaBlockRepository;
     private final LayoutValidatorService validator;
     private final ApprovalConfigurationRepository approvalConfigurationRepository;
     private final ApprovalConfigurationMapper approvalConfigurationConverter;
-
 
 
     @Override
@@ -138,11 +137,10 @@ public class LayoutRestService implements LayoutApi {
     }
 
     @Override
-    @PermissionCheck(permissions = Permission.READ)
+    @PermissionCheck(permissions = Permission.LAYOUT_ADD)
     public ResponseEntity<Void> deleteApprovalConfiguration(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String approvalConfigurationId) {
-
-
-        return null;
+        approvalConfigurationRepository.delete(approvalConfigurationId);
+        return ResponseEntity.noContent().build();
     }
 
     @Override

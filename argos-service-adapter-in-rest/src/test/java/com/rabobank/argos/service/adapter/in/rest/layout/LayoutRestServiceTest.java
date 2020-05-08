@@ -320,6 +320,14 @@ class LayoutRestServiceTest {
         assertThat(responseEntity.getBody(), hasSize(1));
     }
 
+    @Test
+    void deleteApprovalConfiguration() {
+        ResponseEntity<Void> responseEntity = service.deleteApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID);
+        verify(approvalConfigurationRepository).delete(APPROVAL_CONFIG_ID);
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.NO_CONTENT));
+
+    }
+
     private static List<LayoutSegment> createSegmentAndStep() {
         return singletonList(LayoutSegment
                 .builder()

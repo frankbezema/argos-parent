@@ -107,10 +107,11 @@ class ApprovalConfigurationRepositoryImplTest {
         when(template.getConverter()).thenReturn(converter);
         when(template.updateFirst(any(), any(), eq(Label.class), eq(COLLECTION))).thenReturn(updateResult);
         when(updateResult.getMatchedCount()).thenReturn(1L);
+        when(approvalConfiguration.getApprovalConfigurationId()).thenReturn("id");
         Optional<ApprovalConfiguration> update = approvalConfigurationRepository.update(approvalConfiguration);
         assertThat(update, Matchers.is(Optional.of(approvalConfiguration)));
         verify(template).updateFirst(queryArgumentCaptor.capture(), updateArgumentCaptor.capture(), eq(Label.class), eq(COLLECTION));
-        assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"approvalConfigurationId\" : null}, Fields: {}, Sort: {}"));
+        assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"approvalConfigurationId\" : \"id\"}, Fields: {}, Sort: {}"));
         verify(converter).write(eq(approvalConfiguration), any());
         assertThat(updateArgumentCaptor.getValue().toString(), Matchers.is("{}"));
     }
@@ -120,10 +121,11 @@ class ApprovalConfigurationRepositoryImplTest {
         when(template.getConverter()).thenReturn(converter);
         when(template.updateFirst(any(), any(), eq(Label.class), eq(COLLECTION))).thenReturn(updateResult);
         when(updateResult.getMatchedCount()).thenReturn(0L);
+        when(approvalConfiguration.getApprovalConfigurationId()).thenReturn("id");
         Optional<ApprovalConfiguration> update = approvalConfigurationRepository.update(approvalConfiguration);
         assertThat(update.isEmpty(), Matchers.is(true));
         verify(template).updateFirst(queryArgumentCaptor.capture(), updateArgumentCaptor.capture(), eq(Label.class), eq(COLLECTION));
-        assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"approvalConfigurationId\" : null}, Fields: {}, Sort: {}"));
+        assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"approvalConfigurationId\" : \"id\"}, Fields: {}, Sort: {}"));
         verify(converter).write(eq(approvalConfiguration), any());
         assertThat(updateArgumentCaptor.getValue().toString(), Matchers.is("{}"));
     }
@@ -145,5 +147,11 @@ class ApprovalConfigurationRepositoryImplTest {
         assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"supplyChainId\" : \"supplyChain\"}, Fields: {}, Sort: {}"));
     }
 
+    @Test
+    void deleteById() {
+        approvalConfigurationRepository.delete("id");
+        verify(template).remove(queryArgumentCaptor.capture(), eq(ApprovalConfiguration.class), eq(COLLECTION));
+        assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"approvalConfigurationId\" : \"id\"}, Fields: {}, Sort: {}"));
+    }
 
 }

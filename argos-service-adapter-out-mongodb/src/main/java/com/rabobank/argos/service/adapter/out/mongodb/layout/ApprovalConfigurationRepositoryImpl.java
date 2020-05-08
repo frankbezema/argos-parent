@@ -87,6 +87,11 @@ public class ApprovalConfigurationRepositoryImpl implements ApprovalConfiguratio
         return template.find(new Query(criteria), ApprovalConfiguration.class, COLLECTION);
     }
 
+    @Override
+    public void delete(String approvalConfigurationId) {
+        template.remove(primaryKeyQuery(approvalConfigurationId), ApprovalConfiguration.class, COLLECTION);
+    }
+
     private Query primaryKeyQuery(String approvalConfigurationId) {
         Criteria criteria = Criteria.where(APPROVAL_CONFIG_ID_FIELD).is(approvalConfigurationId);
         return new Query(criteria);

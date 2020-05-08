@@ -30,4 +30,6 @@ public interface ApprovalConfigurationRepository {
     Optional<ApprovalConfiguration> update(ApprovalConfiguration approvalConfiguration);
 
     List<ApprovalConfiguration> findBySupplyChainId(String supplyChainId);
+
+    void delete(String approvalConfigurationId);
 }
