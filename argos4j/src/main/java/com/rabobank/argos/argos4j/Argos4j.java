@@ -17,12 +17,15 @@ package com.rabobank.argos.argos4j;
 
 import com.rabobank.argos.argos4j.internal.LinkBuilderImpl;
 import com.rabobank.argos.argos4j.internal.VerifyBuilderImpl;
+
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 
 @RequiredArgsConstructor
+@EqualsAndHashCode
 public class Argos4j implements Serializable {
 
     @Getter

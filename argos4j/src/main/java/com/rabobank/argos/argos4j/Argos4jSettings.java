@@ -16,6 +16,7 @@
 package com.rabobank.argos.argos4j;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Builder
 @Getter
+@EqualsAndHashCode
 public class Argos4jSettings implements Serializable {
 
     private final String supplyChainName;
