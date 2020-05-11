@@ -35,12 +35,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
+import static com.rabobank.argos.service.adapter.out.mongodb.layout.ApprovalConfigurationRepositoryImpl.COLLECTION;
 import static de.flapdoodle.embed.process.config.io.ProcessOutput.getDefaultInstanceSilent;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -49,7 +53,7 @@ class ApprovalConfigurationRepositoryIT {
     private static final String STEP_NAME = "stepName";
     private static final String SUPPLY_CHAIN_ID = "supplyChainId";
     private MongodExecutable mongodExecutable;
-
+    private MongoTemplate mongoTemplate;
     private ApprovalConfigurationRepository approvalConfigurationRepository;
 
     @BeforeAll
@@ -64,25 +68,59 @@ class ApprovalConfigurationRepositoryIT {
         mongodExecutable = starter.prepare(mongodConfig);
         mongodExecutable.start();
         String connectionString = "mongodb://localhost:" + port;
-        MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(connectionString), "test");
+        mongoTemplate = new MongoTemplate(MongoClients.create(connectionString), "test");
         approvalConfigurationRepository = new ApprovalConfigurationRepositoryImpl(mongoTemplate);
         Mongobee runner = new Mongobee(connectionString);
         runner.setChangeLogsScanPackage("com.rabobank.argos.service.adapter.out.mongodb.layout");
         runner.setMongoTemplate(mongoTemplate);
         runner.setDbName("test");
         runner.execute();
-        loadData();
     }
 
     @Test
     void findBySupplyChainIdSegmentNameAndStepName() {
+        loadData();
         Optional<ApprovalConfiguration> approvalConfiguration = approvalConfigurationRepository
                 .findBySupplyChainIdSegmentNameAndStepName(SUPPLY_CHAIN_ID, SEGMENT_NAME, STEP_NAME);
         assertThat(approvalConfiguration.isPresent(), is(true));
+        clearData();
+    }
+
+
+    @Test
+    void saveAll() {
+        loadData();
+        approvalConfigurationRepository.save(ApprovalConfiguration
+                .builder()
+                .approvalConfigurationId("uuid2")
+                .segmentName("segment2")
+                .stepName("step2")
+                .supplyChainId(SUPPLY_CHAIN_ID)
+                .build());
+
+        approvalConfigurationRepository.save(ApprovalConfiguration
+                .builder()
+                .approvalConfigurationId("uuid3")
+                .segmentName(SEGMENT_NAME)
+                .stepName(STEP_NAME)
+                .supplyChainId("otherSupplyChainId")
+                .build());
+
+        approvalConfigurationRepository.saveAll(SUPPLY_CHAIN_ID, List.of(ApprovalConfiguration
+                .builder()
+                .segmentName("new segment name")
+                .stepName(STEP_NAME)
+                .supplyChainId(SUPPLY_CHAIN_ID)
+                .build()));
+        assertThat(approvalConfigurationRepository.findBySupplyChainId(SUPPLY_CHAIN_ID), hasSize(1));
+        assertThat(approvalConfigurationRepository.findBySupplyChainId(SUPPLY_CHAIN_ID).iterator().next().getSegmentName(), is("new segment name"));
+        assertThat(approvalConfigurationRepository.findBySupplyChainId("otherSupplyChainId"), hasSize(1));
+        clearData();
     }
 
     @Test
     void testUpdate() {
+        loadData();
         Optional<ApprovalConfiguration> approvalConfiguration = approvalConfigurationRepository
                 .findById("uuid");
         assertThat(approvalConfiguration.isPresent(), is(true));
@@ -93,6 +131,7 @@ class ApprovalConfigurationRepositoryIT {
         Optional<ApprovalConfiguration> checkForUpdate = approvalConfigurationRepository
                 .findById("uuid");
         assertThat(checkForUpdate.get().getSegmentName(), is("updatedSegmentName"));
+        clearData();
     }
 
     private void loadData() {
@@ -103,6 +142,10 @@ class ApprovalConfigurationRepositoryIT {
                 .stepName(STEP_NAME)
                 .supplyChainId(SUPPLY_CHAIN_ID)
                 .build());
+    }
+
+    private void clearData() {
+        mongoTemplate.remove(new Query(), COLLECTION);
     }
 
     @AfterAll

@@ -25,7 +25,6 @@ import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
 import com.rabobank.argos.service.domain.layout.ApprovalConfigurationRepository;
 import com.rabobank.argos.service.domain.layout.LayoutMetaBlockRepository;
-import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +56,7 @@ class LayoutRestServiceTest {
     private static final String SEGMENT_NAME = "segmentName";
     private static final String STEP_NAME = "stepName";
     private static final String SUPPLY_CHAIN_ID = "supplyChainId";
-    public static final String APPROVAL_CONFIG_ID = "approvalConfigId";
+    private static final String APPROVAL_CONFIG_ID = "approvalConfigId";
 
     @Mock
     private LayoutMetaBlockMapper converter;
@@ -144,8 +143,6 @@ class LayoutRestServiceTest {
 
     @Test
     void createApprovalConfigurationShouldStoreLayout() {
-        ServletRequestAttributes servletRequestAttributes = new ServletRequestAttributes(httpServletRequest);
-        RequestContextHolder.setRequestAttributes(servletRequestAttributes);
         when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
         when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
         when(layoutMetaBlock.getLayout()).thenReturn(layout);
@@ -159,11 +156,10 @@ class LayoutRestServiceTest {
                 .thenReturn(approvalConfiguration);
         when(approvalConfigurationMapper.convertToRestApprovalConfiguration(approvalConfiguration))
                 .thenReturn(restApprovalConfiguration);
-        ResponseEntity<RestApprovalConfiguration> responseEntity = service.
-                createApprovalConfiguration(SUPPLY_CHAIN_ID, restApprovalConfiguration);
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
-        assertThat(responseEntity.getHeaders().getLocation(), IsNull.notNullValue());
-        verify(approvalConfigurationRepository).save(approvalConfiguration);
+        ResponseEntity<List<RestApprovalConfiguration>> responseEntity = service.
+                createApprovalConfigurations(SUPPLY_CHAIN_ID, List.of(restApprovalConfiguration));
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+        verify(approvalConfigurationRepository).saveAll(SUPPLY_CHAIN_ID, List.of(approvalConfiguration));
         verify(approvalConfiguration).setSupplyChainId(SUPPLY_CHAIN_ID);
     }
 
@@ -178,7 +174,7 @@ class LayoutRestServiceTest {
                 .thenReturn(approvalConfiguration);
 
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () ->
-                service.createApprovalConfiguration(SUPPLY_CHAIN_ID, restApprovalConfiguration)
+                service.createApprovalConfigurations(SUPPLY_CHAIN_ID, List.of(restApprovalConfiguration))
         );
 
         assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
@@ -198,7 +194,7 @@ class LayoutRestServiceTest {
         when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
                 .thenReturn(approvalConfiguration);
 
-        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> service.createApprovalConfiguration(SUPPLY_CHAIN_ID, restApprovalConfiguration));
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> service.createApprovalConfigurations(SUPPLY_CHAIN_ID, List.of(restApprovalConfiguration)));
 
         assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
         assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("stepName"));
@@ -221,7 +217,7 @@ class LayoutRestServiceTest {
                 .thenReturn(approvalConfiguration);
 
         LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () ->
-                service.createApprovalConfiguration(SUPPLY_CHAIN_ID, restApprovalConfiguration)
+                service.createApprovalConfigurations(SUPPLY_CHAIN_ID, List.of(restApprovalConfiguration))
         );
 
         assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
@@ -238,7 +234,7 @@ class LayoutRestServiceTest {
                 .thenReturn(approvalConfiguration);
 
         ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
-                service.createApprovalConfiguration(SUPPLY_CHAIN_ID, restApprovalConfiguration)
+                service.createApprovalConfigurations(SUPPLY_CHAIN_ID, List.of(restApprovalConfiguration))
         );
         assertThat(responseStatusException.getStatus(), is(HttpStatus.NOT_FOUND));
         assertThat(responseStatusException.getMessage(), is("404 NOT_FOUND \"layout not found\""));

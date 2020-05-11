@@ -27,8 +27,8 @@ import java.net.URI;
 @Builder
 @ToString
 public class ArtifactCollector {
+    private String name;
     private URI uri;
     private CollectorType type;
-
     public enum CollectorType {XLDEPLOY}
 }

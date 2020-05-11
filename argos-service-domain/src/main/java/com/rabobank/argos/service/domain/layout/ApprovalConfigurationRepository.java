@@ -23,6 +23,8 @@ import java.util.Optional;
 public interface ApprovalConfigurationRepository {
     void save(ApprovalConfiguration approvalConfiguration);
 
+    void saveAll(String supplyChainId, List<ApprovalConfiguration> approvalConfigurations);
+
     Optional<ApprovalConfiguration> findBySupplyChainIdSegmentNameAndStepName(String supplyChainId, String segmentName, String stepName);
 
     Optional<ApprovalConfiguration> findById(String approvalConfigurationId);

@@ -1,6 +1,6 @@
 {
   "approvalConfigurationId": "#uuid",
-  "stepName": "stepName2",
+  "stepName": "build",
   "segmentName": "segment 1",
   "artifactCollectors": [
     {

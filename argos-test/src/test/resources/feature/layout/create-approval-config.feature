@@ -31,6 +31,5 @@ Feature: create a valid approval config
     Given path layoutPath+'/approvalconfig'
     And request read('classpath:testmessages/layout/approval-config-create-request.json')
     When method POST
-    Then status 201
+    Then status 200
     And match response == read('classpath:testmessages/layout/approval-config-create-response.json')
-    Then match header Location contains layoutPath+'/approvalconfig/'+response.approvalConfigurationId

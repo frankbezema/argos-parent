@@ -148,6 +148,15 @@ class ApprovalConfigurationRepositoryImplTest {
     }
 
     @Test
+    void saveAll() {
+        approvalConfigurationRepository.saveAll("supplyChain", List.of(approvalConfiguration));
+        verify(template).remove(queryArgumentCaptor.capture(), eq(COLLECTION));
+        verify(template).insert(List.of(approvalConfiguration), COLLECTION);
+        assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"supplyChainId\" : \"supplyChain\"}, Fields: {}, Sort: {}"));
+    }
+
+
+    @Test
     void deleteById() {
         approvalConfigurationRepository.delete("id");
         verify(template).remove(queryArgumentCaptor.capture(), eq(ApprovalConfiguration.class), eq(COLLECTION));

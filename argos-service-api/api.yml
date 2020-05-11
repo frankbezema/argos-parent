@@ -307,8 +307,8 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     post:
-      summary: creates an approval configuration for a segment step
-      operationId: createApprovalConfiguration
+      summary: create approval configurations for a layout
+      operationId: createApprovalConfigurations
       tags:
         - layout
       security:
@@ -325,20 +325,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ApprovalConfiguration"
+              type: array
+              items:
+                $ref: "#/components/schemas/ApprovalConfiguration"
       responses:
-        '201':
-          description: created
-          headers:
-            Location:
-              schema:
-                type: string
-                format: uri
-              description: location where the created approval configuration can be found
+        '200':
+          description: ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApprovalConfiguration'
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApprovalConfiguration"
         '400':
           $ref: '#/components/responses/ValidationError'
         '500':
@@ -374,7 +372,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     put:
-      summary: creates an approval configuration for a segment step
+      summary: updates an approval configuration for a segment step
       operationId: updateApprovalConfiguration
       tags:
         - layout
@@ -1546,9 +1544,12 @@ components:
     ArtifactCollector:
       type: object
       required:
+        - name
         - type
         - uri
       properties:
+        name:
+          type: string
         type:
           type: string
           enum:

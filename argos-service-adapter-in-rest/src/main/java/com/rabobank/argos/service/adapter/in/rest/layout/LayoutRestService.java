@@ -94,22 +94,24 @@ public class LayoutRestService implements LayoutApi {
 
     @Override
     @PermissionCheck(permissions = Permission.LAYOUT_ADD)
-    public ResponseEntity<RestApprovalConfiguration> createApprovalConfiguration(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, @Valid RestApprovalConfiguration restApprovalConfiguration) {
+    public ResponseEntity<List<RestApprovalConfiguration>> createApprovalConfigurations(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, @Valid List<RestApprovalConfiguration> restApprovalConfigurations) {
+
+        List<ApprovalConfiguration> approvalConfigurations = restApprovalConfigurations.stream()
+                .map(restApprovalConfiguration -> convertAndValidate(supplyChainId, restApprovalConfiguration))
+                .collect(Collectors.toList());
+        approvalConfigurationRepository.saveAll(supplyChainId, approvalConfigurations);
+        return ResponseEntity.ok(approvalConfigurations.stream()
+                .map(approvalConfigurationConverter::convertToRestApprovalConfiguration)
+                .collect(Collectors.toList()));
+
+    }
+
+    private ApprovalConfiguration convertAndValidate(String supplyChainId, RestApprovalConfiguration restApprovalConfiguration) {
         ApprovalConfiguration approvalConfiguration = approvalConfigurationConverter.convertFromRestApprovalConfiguration(restApprovalConfiguration);
         approvalConfiguration.setSupplyChainId(supplyChainId);
-
         verifyStepNameAndSegmentNameExistInLayout(approvalConfiguration);
         verifyConfigurationDoesNotExistForSegmentAndStepName(approvalConfiguration);
-        approvalConfigurationRepository.save(approvalConfiguration);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{approvalConfigurationId}")
-                .buildAndExpand(approvalConfiguration.getApprovalConfigurationId())
-                .toUri();
-        return ResponseEntity
-                .created(location)
-                .body(approvalConfigurationConverter.convertToRestApprovalConfiguration(approvalConfiguration));
+        return approvalConfiguration;
     }
 
     @Override

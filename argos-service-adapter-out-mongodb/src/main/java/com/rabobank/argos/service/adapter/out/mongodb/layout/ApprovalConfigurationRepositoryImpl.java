@@ -48,6 +48,13 @@ public class ApprovalConfigurationRepositoryImpl implements ApprovalConfiguratio
         template.save(approvalConfiguration, COLLECTION);
     }
 
+    @Override
+    public void saveAll(String supplyChainId, List<ApprovalConfiguration> approvalConfigurations) {
+        Criteria criteria = Criteria.where(SUPPLYCHAIN_ID_FIELD).is(supplyChainId);
+        template.remove(new Query(criteria), COLLECTION);
+        template.insert(approvalConfigurations, COLLECTION);
+    }
+
     public Optional<ApprovalConfiguration> findBySupplyChainIdSegmentNameAndStepName(String supplyChainId, String segmentName, String stepName) {
         Criteria criteria = Criteria.where(SUPPLYCHAIN_ID_FIELD).is(supplyChainId);
         List<Criteria> andCriteria = new ArrayList<>();
