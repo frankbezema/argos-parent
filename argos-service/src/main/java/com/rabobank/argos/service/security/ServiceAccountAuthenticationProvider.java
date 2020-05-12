@@ -15,7 +15,7 @@
  */
 package com.rabobank.argos.service.security;
 
-import com.rabobank.argos.domain.account.NonPersonalAccountKeyPair;
+import com.rabobank.argos.domain.account.ServiceAccountKeyPair;
 import com.rabobank.argos.service.domain.security.AccountUserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,34 +26,34 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Slf4j
 @RequiredArgsConstructor
-public class NonPersonalAccountAuthenticationProvider implements AuthenticationProvider {
+public class ServiceAccountAuthenticationProvider implements AuthenticationProvider {
 
     private static final String NOT_AUTHENTICATED = "not authenticated";
-    private final NonPersonalAccountUserDetailsService nonPersonalAccountUserDetailsService;
+    private final ServiceAccountUserDetailsService serviceAccountUserDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final LogContextHelper logContextHelper;
 
     @Override
-    public Authentication authenticate(Authentication notAuthenticatedNonPersonalAccount) {
-        NonPersonalAccountAuthenticationToken nonPersonalAccountAuthenticationToken = (NonPersonalAccountAuthenticationToken) notAuthenticatedNonPersonalAccount;
+    public Authentication authenticate(Authentication notAuthenticatedServiceAccount) {
+        ServiceAccountAuthenticationToken serviceAccountAuthenticationToken = (ServiceAccountAuthenticationToken) notAuthenticatedServiceAccount;
         try {
-            AccountUserDetailsAdapter userDetails = (AccountUserDetailsAdapter) nonPersonalAccountUserDetailsService
-                    .loadUserById(nonPersonalAccountAuthenticationToken.getNonPersonalAccountCredentials().getKeyId());
-            log.debug("successfully found non personal account by key id {}", userDetails.getUsername());
-            String password = nonPersonalAccountAuthenticationToken.getNonPersonalAccountCredentials().getPassword();
-            NonPersonalAccountKeyPair nonPersonalAccountKeyPair = (NonPersonalAccountKeyPair) userDetails.getAccount().getActiveKeyPair();
-            if (passwordEncoder.matches(password, nonPersonalAccountKeyPair.getEncryptedHashedKeyPassphrase())) {
-                log.debug("successfully authenticated non personal account {}", userDetails.getUsername());
+            AccountUserDetailsAdapter userDetails = (AccountUserDetailsAdapter) serviceAccountUserDetailsService
+                    .loadUserById(serviceAccountAuthenticationToken.getServiceAccountCredentials().getKeyId());
+            log.debug("successfully found service account by key id {}", userDetails.getUsername());
+            String password = serviceAccountAuthenticationToken.getServiceAccountCredentials().getPassword();
+            ServiceAccountKeyPair serviceAccountKeyPair = (ServiceAccountKeyPair) userDetails.getAccount().getActiveKeyPair();
+            if (passwordEncoder.matches(password, serviceAccountKeyPair.getEncryptedHashedKeyPassphrase())) {
+                log.debug("successfully authenticated service account {}", userDetails.getUsername());
                 logContextHelper.addAccountInfoToLogContext(userDetails);
-                return new NonPersonalAccountAuthenticationToken(nonPersonalAccountAuthenticationToken.getNonPersonalAccountCredentials(),
+                return new ServiceAccountAuthenticationToken(serviceAccountAuthenticationToken.getServiceAccountCredentials(),
                         userDetails,
                         userDetails.getAuthorities());
             } else {
-                log.warn("invalid access attempt {}", nonPersonalAccountAuthenticationToken);
+                log.warn("invalid access attempt {}", serviceAccountAuthenticationToken);
                 throw new BadCredentialsException(NOT_AUTHENTICATED);
             }
         } catch (Exception ex) {
-            log.warn("invalid access attempt {}", nonPersonalAccountAuthenticationToken);
+            log.warn("invalid access attempt {}", serviceAccountAuthenticationToken);
             throw new BadCredentialsException(NOT_AUTHENTICATED);
         }
     }
@@ -61,6 +61,6 @@ public class NonPersonalAccountAuthenticationProvider implements AuthenticationP
 
     @Override
     public boolean supports(Class<?> authenticationTokenClass) {
-        return authenticationTokenClass.equals(NonPersonalAccountAuthenticationToken.class);
+        return authenticationTokenClass.equals(ServiceAccountAuthenticationToken.class);
     }
 }

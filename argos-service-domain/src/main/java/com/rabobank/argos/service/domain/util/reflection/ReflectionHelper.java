@@ -15,8 +15,9 @@
  */
 package com.rabobank.argos.service.domain.util.reflection;
 
-import com.codepoetics.protonpack.StreamUtils;
 import org.springframework.stereotype.Component;
+
+import com.codepoetics.protonpack.StreamUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

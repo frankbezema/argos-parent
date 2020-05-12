@@ -18,13 +18,13 @@ package com.rabobank.argos.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabobank.argos.argos4j.internal.ArgosServiceClient;
-import com.rabobank.argos.argos4j.rest.api.client.NonPersonalAccountApi;
+import com.rabobank.argos.argos4j.rest.api.client.ServiceAccountApi;
 import com.rabobank.argos.argos4j.rest.api.client.PersonalAccountApi;
 import com.rabobank.argos.argos4j.rest.api.model.RestKeyPair;
 import com.rabobank.argos.argos4j.rest.api.model.RestLabel;
 import com.rabobank.argos.argos4j.rest.api.model.RestLayoutMetaBlock;
-import com.rabobank.argos.argos4j.rest.api.model.RestNonPersonalAccount;
-import com.rabobank.argos.argos4j.rest.api.model.RestNonPersonalAccountKeyPair;
+import com.rabobank.argos.argos4j.rest.api.model.RestServiceAccount;
+import com.rabobank.argos.argos4j.rest.api.model.RestServiceAccountKeyPair;
 import com.rabobank.argos.argos4j.rest.api.model.RestPersonalAccount;
 import com.rabobank.argos.domain.ArgosError;
 import com.rabobank.argos.test.rest.api.ApiClient;
@@ -39,12 +39,12 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.rabobank.argos.argos4j.rest.api.model.RestPermission.LAYOUT_ADD;
-import static com.rabobank.argos.argos4j.rest.api.model.RestPermission.NPA_EDIT;
+import static com.rabobank.argos.argos4j.rest.api.model.RestPermission.SERVICE_ACCOUNT_EDIT;
 import static com.rabobank.argos.argos4j.rest.api.model.RestPermission.READ;
 import static com.rabobank.argos.argos4j.rest.api.model.RestPermission.VERIFY;
 import static com.rabobank.argos.test.ServiceStatusHelper.getHierarchyApi;
 import static com.rabobank.argos.test.ServiceStatusHelper.getLayoutApi;
-import static com.rabobank.argos.test.ServiceStatusHelper.getNonPersonalAccountApi;
+import static com.rabobank.argos.test.ServiceStatusHelper.getServiceAccountApi;
 import static com.rabobank.argos.test.ServiceStatusHelper.getPersonalAccountApi;
 import static com.rabobank.argos.test.ServiceStatusHelper.getToken;
 
@@ -72,7 +72,7 @@ class TestServiceHelper {
         defaultTestData.setAdminToken(getToken("Luke Skywalker", "Skywalker", "luke@skywalker.imp"));
         createDefaultRootLabel(defaultTestData);
         createDefaultPersonalAccount(defaultTestData);
-        createDefaultNpaAccounts(defaultTestData);
+        createDefaultSaAccounts(defaultTestData);
         return defaultTestData;
     }
 
@@ -84,7 +84,7 @@ class TestServiceHelper {
         String defaultUser1Token = getToken(DEFAULT_USER1, "User", "default@nl.nl");
         PersonalAccountApi personalAccountApi = getPersonalAccountApi(defaultTestData.getAdminToken());
         RestPersonalAccount defaultUser1 = personalAccountApi.searchPersonalAccounts(null, null, DEFAULT_USER1).iterator().next();
-        personalAccountApi.updateLocalPermissionsForLabel(defaultUser1.getId(), defaultTestData.getDefaultRootLabel().getId(), List.of(LAYOUT_ADD, READ, VERIFY, NPA_EDIT));
+        personalAccountApi.updateLocalPermissionsForLabel(defaultUser1.getId(), defaultTestData.getDefaultRootLabel().getId(), List.of(LAYOUT_ADD, READ, VERIFY, SERVICE_ACCOUNT_EDIT));
 
         TestDateKeyPair keyPair = readKeyPair(1);
         getPersonalAccountApi(defaultUser1Token).createKey(new RestKeyPair()
@@ -108,27 +108,27 @@ class TestServiceHelper {
                 .build());
     }
 
-    private static void createDefaultNpaAccounts(DefaultTestData defaultTestData) {
-        createNpaWithActiveKey(defaultTestData, readKeyPair(1), "default-npa1");
-        createNpaWithActiveKey(defaultTestData, readKeyPair(2), "default-npa2");
-        createNpaWithActiveKey(defaultTestData, readKeyPair(3), "default-npa3");
-        createNpaWithActiveKey(defaultTestData, readKeyPair(4), "default-npa4");
-        createNpaWithActiveKey(defaultTestData, readKeyPair(5), "default-npa5");
+    private static void createDefaultSaAccounts(DefaultTestData defaultTestData) {
+        createSaWithActiveKey(defaultTestData, readKeyPair(1), "default-sa1");
+        createSaWithActiveKey(defaultTestData, readKeyPair(2), "default-sa2");
+        createSaWithActiveKey(defaultTestData, readKeyPair(3), "default-sa3");
+        createSaWithActiveKey(defaultTestData, readKeyPair(4), "default-sa4");
+        createSaWithActiveKey(defaultTestData, readKeyPair(5), "default-sa5");
     }
 
-    private static void createNpaWithActiveKey(DefaultTestData defaultTestData, TestDateKeyPair keyPair, String name) {
-        NonPersonalAccountApi nonPersonalAccountApi = getNonPersonalAccountApi(defaultTestData.getPersonalAccounts().get("default-pa1").getToken());
-        RestNonPersonalAccount npa = nonPersonalAccountApi.createNonPersonalAccount(new RestNonPersonalAccount().parentLabelId(defaultTestData.getDefaultRootLabel().getId()).name(name));
+    private static void createSaWithActiveKey(DefaultTestData defaultTestData, TestDateKeyPair keyPair, String name) {
+        ServiceAccountApi serviceAccountApi = getServiceAccountApi(defaultTestData.getPersonalAccounts().get("default-pa1").getToken());
+        RestServiceAccount sa = serviceAccountApi.createServiceAccount(new RestServiceAccount().parentLabelId(defaultTestData.getDefaultRootLabel().getId()).name(name));
 
         String hashedKeyPassphrase = ArgosServiceClient.calculatePassphrase(keyPair.getKeyId(), keyPair.getPassphrase());
 
-        nonPersonalAccountApi.createNonPersonalAccountKeyById(npa.getId(),
-                new RestNonPersonalAccountKeyPair().keyId(keyPair.getKeyId())
+        serviceAccountApi.createServiceAccountKeyById(sa.getId(),
+                new RestServiceAccountKeyPair().keyId(keyPair.getKeyId())
                         .hashedKeyPassphrase(hashedKeyPassphrase)
                         .encryptedPrivateKey(keyPair.getEncryptedPrivateKey())
                         .publicKey(keyPair.getPublicKey()));
-        defaultTestData.getNonPersonalAccount().put(name,
-                DefaultTestData.NonPersonalAccount.builder()
+        defaultTestData.getServiceAccount().put(name,
+                DefaultTestData.ServiceAccount.builder()
                         .passphrase(keyPair.getPassphrase())
                         .keyId(keyPair.getKeyId())
                         .hashedKeyPassphrase(hashedKeyPassphrase)

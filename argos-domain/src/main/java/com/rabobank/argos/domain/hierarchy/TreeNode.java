@@ -29,7 +29,7 @@ import java.util.List;
 @Setter
 public class TreeNode {
     public enum Type {
-        LABEL(false), SUPPLY_CHAIN(true), NON_PERSONAL_ACCOUNT(true);
+        LABEL(false), SUPPLY_CHAIN(true), SERVICE_ACCOUNT(true);
         private boolean isLeafNode;
 
         Type(boolean isLeafNode) {

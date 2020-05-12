@@ -15,7 +15,7 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.account;
 
-import com.rabobank.argos.service.domain.account.NonPersonalAccountRepository;
+import com.rabobank.argos.service.domain.account.ServiceAccountRepository;
 import com.rabobank.argos.service.domain.security.LabelIdCheckParam;
 import com.rabobank.argos.service.domain.security.LabelIdExtractor;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +23,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component(NonPersonalAccountLabelIdExtractor.NPA_LABEL_ID_EXTRACTOR)
+@Component(ServiceAccountLabelIdExtractor.SERVICE_ACCOUNT_LABEL_ID_EXTRACTOR)
 @RequiredArgsConstructor
-public class NonPersonalAccountLabelIdExtractor implements LabelIdExtractor {
-    public static final String NPA_LABEL_ID_EXTRACTOR = "NonPersonalAccountLabelIdExtractor";
+public class ServiceAccountLabelIdExtractor implements LabelIdExtractor {
+    public static final String SERVICE_ACCOUNT_LABEL_ID_EXTRACTOR = "ServiceAccountLabelIdExtractor";
 
-    private final NonPersonalAccountRepository nonPersonalAccountRepository;
+    private final ServiceAccountRepository serviceAccountRepository;
 
     @Override
     public Optional<String> extractLabelId(LabelIdCheckParam checkParam, Object accountId) {
-        return nonPersonalAccountRepository.findParentLabelIdByAccountId((String) accountId);
+        return serviceAccountRepository.findParentLabelIdByAccountId((String) accountId);
     }
 }

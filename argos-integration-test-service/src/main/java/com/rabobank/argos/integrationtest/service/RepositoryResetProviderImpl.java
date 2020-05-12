@@ -37,7 +37,7 @@ public class RepositoryResetProviderImpl implements RepositoryResetProvider {
         IGNORED_COLLECTIONS.addAll(IGNORED_COLLECTIONS_FOR_ALL);
         IGNORED_COLLECTIONS.add("personalaccounts");
         IGNORED_COLLECTIONS.add("labels");
-        IGNORED_COLLECTIONS.add("nonPersonalAccounts");
+        IGNORED_COLLECTIONS.add("serviceAccounts");
     }
 
     @Override
@@ -54,7 +54,7 @@ public class RepositoryResetProviderImpl implements RepositoryResetProvider {
                 .forEach(name -> template.remove(new Query(), name));
         template.remove(new Query(Criteria.where("email").nin("luke@skywalker.imp", "default@nl.nl", "default2@nl.nl")), "personalaccounts");
         template.remove(new Query(Criteria.where("name").nin("default_root_label")), "labels");
-        template.remove(new Query(Criteria.where("name").nin("default-npa1", "default-npa2", "default-npa3", "default-npa4", "default-npa5")), "nonPersonalAccounts");
+        template.remove(new Query(Criteria.where("name").nin("default-sa1", "default-sa2", "default-sa3", "default-sa4", "default-sa5")), "serviceAccounts");
     }
 
     @Override

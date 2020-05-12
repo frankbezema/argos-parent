@@ -17,8 +17,8 @@ package com.rabobank.argos.service.adapter.in.rest.account;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabobank.argos.domain.account.NonPersonalAccount;
-import com.rabobank.argos.service.adapter.in.rest.api.model.RestNonPersonalAccount;
+import com.rabobank.argos.domain.account.ServiceAccount;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestServiceAccount;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,26 +33,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasLength;
 import static org.hamcrest.Matchers.is;
 
-class NonPersonalAccountMapperTest {
+class ServiceAccountMapperTest {
 
-    private NonPersonalAccountMapper converter;
+    private ServiceAccountMapper converter;
     private ObjectMapper mapper;
     private String linkJson;
 
     @BeforeEach
     void setUp() throws IOException {
-        converter = Mappers.getMapper(NonPersonalAccountMapper.class);
+        converter = Mappers.getMapper(ServiceAccountMapper.class);
         mapper = new ObjectMapper();
-        linkJson = IOUtils.toString(NonPersonalAccountMapperTest.class.getResourceAsStream("/non-personal-account.json"), StandardCharsets.UTF_8);
+        linkJson = IOUtils.toString(ServiceAccountMapperTest.class.getResourceAsStream("/service-account.json"), StandardCharsets.UTF_8);
     }
 
     @Test
     void convertFromRestLinkMetaBlock() throws JsonProcessingException, JSONException {
-        NonPersonalAccount nonPersonalAccount = converter.convertFromRestNonPersonalAccount(mapper.readValue(linkJson, RestNonPersonalAccount.class));
-        RestNonPersonalAccount restNonPersonalAccount = converter.convertToRestNonPersonalAccount(nonPersonalAccount);
-        assertThat(restNonPersonalAccount.getId(), is(nonPersonalAccount.getAccountId()));
-        assertThat(restNonPersonalAccount.getId(), hasLength(36));
-        restNonPersonalAccount.setId("accountId");
-        JSONAssert.assertEquals(linkJson, mapper.writeValueAsString(restNonPersonalAccount), true);
+        ServiceAccount serviceAccount = converter.convertFromRestServiceAccount(mapper.readValue(linkJson, RestServiceAccount.class));
+        RestServiceAccount restServiceAccount = converter.convertToRestServiceAccount(serviceAccount);
+        assertThat(restServiceAccount.getId(), is(serviceAccount.getAccountId()));
+        assertThat(restServiceAccount.getId(), hasLength(36));
+        restServiceAccount.setId("accountId");
+        JSONAssert.assertEquals(linkJson, mapper.writeValueAsString(restServiceAccount), true);
     }
 }

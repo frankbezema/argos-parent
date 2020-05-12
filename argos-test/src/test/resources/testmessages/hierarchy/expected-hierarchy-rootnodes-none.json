@@ -8,8 +8,8 @@
     ],
     "permissions": [
       "LAYOUT_ADD",
-      "NPA_EDIT",
       "READ",
+      "SERVICE_ACCOUNT_EDIT",
       "VERIFY"
     ]
   },
@@ -21,8 +21,8 @@
     "children": [
     ],
     "permissions": [
-      "NPA_EDIT",
       "READ",
+      "SERVICE_ACCOUNT_EDIT",
       "TREE_EDIT"
     ]
   },
@@ -34,8 +34,8 @@
     "children": [
     ],
     "permissions": [
-      "NPA_EDIT",
       "READ",
+      "SERVICE_ACCOUNT_EDIT",
       "TREE_EDIT"
     ]
   },
@@ -47,8 +47,8 @@
     "children": [
     ],
     "permissions": [
-      "NPA_EDIT",
       "READ",
+      "SERVICE_ACCOUNT_EDIT",
       "TREE_EDIT"
     ]
   }

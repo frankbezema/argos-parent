@@ -22,8 +22,8 @@ Feature: using __arg
     * def accountId = __arg.accountId
     * def key = __arg.key;
 
-  Scenario: create non personal account key
-    Given path '/api/nonpersonalaccount/'+accountId+'/key'
+  Scenario: create service account key
+    Given path '/api/serviceaccount/'+accountId+'/key'
     And request key
     When method POST
     Then status 201

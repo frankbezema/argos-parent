@@ -16,8 +16,8 @@
 package com.rabobank.argos.service.adapter.out.mongodb.account;
 
 import com.rabobank.argos.domain.ArgosError;
-import com.rabobank.argos.domain.account.NonPersonalAccount;
-import com.rabobank.argos.service.domain.account.NonPersonalAccountRepository;
+import com.rabobank.argos.domain.account.ServiceAccount;
+import com.rabobank.argos.service.domain.account.ServiceAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.springframework.dao.DuplicateKeyException;
@@ -31,9 +31,9 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-public class NonPersonalAccountRepositoryImpl implements NonPersonalAccountRepository {
+public class ServiceAccountRepositoryImpl implements ServiceAccountRepository {
 
-    static final String COLLECTION = "nonPersonalAccounts";
+    static final String COLLECTION = "serviceAccounts";
     static final String ACCOUNT_ID_FIELD = "accountId";
     static final String ACCOUNT_NAME_FIELD = "name";
     static final String ACTIVE_KEY_ID_FIELD = "activeKeyPair.keyId";
@@ -41,7 +41,7 @@ public class NonPersonalAccountRepositoryImpl implements NonPersonalAccountRepos
     private final MongoTemplate template;
 
     @Override
-    public void save(NonPersonalAccount account) {
+    public void save(ServiceAccount account) {
         try {
             template.save(account, COLLECTION);
         } catch (DuplicateKeyException e) {
@@ -50,22 +50,22 @@ public class NonPersonalAccountRepositoryImpl implements NonPersonalAccountRepos
     }
 
     @Override
-    public Optional<NonPersonalAccount> findById(String id) {
-        return Optional.ofNullable(template.findOne(getPrimaryKeyQuery(id), NonPersonalAccount.class, COLLECTION));
+    public Optional<ServiceAccount> findById(String id) {
+        return Optional.ofNullable(template.findOne(getPrimaryKeyQuery(id), ServiceAccount.class, COLLECTION));
     }
 
     @Override
-    public Optional<NonPersonalAccount> findByActiveKeyId(String activeKeyId) {
-        return Optional.ofNullable(template.findOne(getActiveKeyQuery(activeKeyId), NonPersonalAccount.class, COLLECTION));
+    public Optional<ServiceAccount> findByActiveKeyId(String activeKeyId) {
+        return Optional.ofNullable(template.findOne(getActiveKeyQuery(activeKeyId), ServiceAccount.class, COLLECTION));
     }
 
     @Override
-    public void update(NonPersonalAccount account) {
+    public void update(ServiceAccount account) {
         Query query = getPrimaryKeyQuery(account.getAccountId());
         Document document = new Document();
         template.getConverter().write(account, document);
         try {
-            template.updateFirst(query, Update.fromDocument(document), NonPersonalAccount.class, COLLECTION);
+            template.updateFirst(query, Update.fromDocument(document), ServiceAccount.class, COLLECTION);
         } catch (DuplicateKeyException e) {
             throw duplicateKeyException(account, e);
         }
@@ -73,14 +73,14 @@ public class NonPersonalAccountRepositoryImpl implements NonPersonalAccountRepos
 
     @Override
     public boolean activeKeyExists(String activeKeyId) {
-        return template.exists(getActiveKeyQuery(activeKeyId), NonPersonalAccount.class, COLLECTION);
+        return template.exists(getActiveKeyQuery(activeKeyId), ServiceAccount.class, COLLECTION);
     }
 
     @Override
     public Optional<String> findParentLabelIdByAccountId(String accountId) {
         Query query = getPrimaryKeyQuery(accountId);
         query.fields().include(PARENT_LABEL_ID_FIELD);
-        return Optional.ofNullable(template.findOne(query, NonPersonalAccount.class, COLLECTION)).map(NonPersonalAccount::getParentLabelId);
+        return Optional.ofNullable(template.findOne(query, ServiceAccount.class, COLLECTION)).map(ServiceAccount::getParentLabelId);
     }
 
     private Query getActiveKeyQuery(String activekeyId) {
@@ -91,8 +91,8 @@ public class NonPersonalAccountRepositoryImpl implements NonPersonalAccountRepos
         return new Query(Criteria.where(ACCOUNT_ID_FIELD).is(id));
     }
 
-    private ArgosError duplicateKeyException(NonPersonalAccount account, DuplicateKeyException e) {
-        return new ArgosError("non personal account with name: " + account.getName() + " and parentLabelId: " + account.getParentLabelId() + " already exists",
+    private ArgosError duplicateKeyException(ServiceAccount account, DuplicateKeyException e) {
+        return new ArgosError("service account with name: " + account.getName() + " and parentLabelId: " + account.getParentLabelId() + " already exists",
                 e, ArgosError.Level.WARNING);
     }
 

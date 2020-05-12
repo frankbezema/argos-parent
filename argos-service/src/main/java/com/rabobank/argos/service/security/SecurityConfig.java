@@ -59,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PersonalAccountUserDetailsService personalAccountUserDetailsService;
 
-    private final NonPersonalAccountUserDetailsService nonPersonalAccountUserDetailsService;
+    private final ServiceAccountUserDetailsService serviceAccountUserDetailsService;
 
     private TokenAuthenticationFilter tokenAuthenticationFilter() {
         return new TokenAuthenticationFilter(tokenProvider);
@@ -102,7 +102,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authenticationProvider(new PersonalAccountAuthenticationProvider(personalAccountUserDetailsService, logContextHelper()));
-        http.authenticationProvider(new NonPersonalAccountAuthenticationProvider(nonPersonalAccountUserDetailsService, passwordEncoder(), logContextHelper()));
+        http.authenticationProvider(new ServiceAccountAuthenticationProvider(serviceAccountUserDetailsService, passwordEncoder(), logContextHelper()));
         http
                 .cors()
                 .and()

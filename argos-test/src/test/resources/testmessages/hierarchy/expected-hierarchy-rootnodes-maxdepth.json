@@ -6,80 +6,80 @@
     "hasChildren": true,
     "children": [
       {
-        "name": "default-npa1",
-        "type": "NON_PERSONAL_ACCOUNT",
+        "name": "default-sa1",
+        "type": "SERVICE_ACCOUNT",
         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "LAYOUT_ADD",
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "VERIFY"
         ]
       },
       {
-        "name": "default-npa2",
-        "type": "NON_PERSONAL_ACCOUNT",
+        "name": "default-sa2",
+        "type": "SERVICE_ACCOUNT",
         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "LAYOUT_ADD",
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "VERIFY"
         ]
       },
       {
-        "name": "default-npa3",
-        "type": "NON_PERSONAL_ACCOUNT",
+        "name": "default-sa3",
+        "type": "SERVICE_ACCOUNT",
         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "LAYOUT_ADD",
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "VERIFY"
         ]
       },
       {
-        "name": "default-npa4",
-        "type": "NON_PERSONAL_ACCOUNT",
+        "name": "default-sa4",
+        "type": "SERVICE_ACCOUNT",
         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "LAYOUT_ADD",
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "VERIFY"
         ]
       },
       {
-        "name": "default-npa5",
-        "type": "NON_PERSONAL_ACCOUNT",
+        "name": "default-sa5",
+        "type": "SERVICE_ACCOUNT",
         "referenceId": "#uuid",
         "hasChildren": false,
         "children": [
         ],
         "permissions": [
           "LAYOUT_ADD",
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "VERIFY"
         ]
       }
     ],
     "permissions": [
       "LAYOUT_ADD",
-      "NPA_EDIT",
       "READ",
+      "SERVICE_ACCOUNT_EDIT",
       "VERIFY"
     ]
   },
@@ -97,8 +97,8 @@
         "children": [
         ],
         "permissions": [
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "TREE_EDIT"
         ]
       },
@@ -110,15 +110,15 @@
         "children": [
         ],
         "permissions": [
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "TREE_EDIT"
         ]
       }
     ],
     "permissions": [
-      "NPA_EDIT",
       "READ",
+      "SERVICE_ACCOUNT_EDIT",
       "TREE_EDIT"
     ]
   },
@@ -136,8 +136,8 @@
         "children": [
         ],
         "permissions": [
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "TREE_EDIT"
         ]
       },
@@ -149,15 +149,15 @@
         "children": [
         ],
         "permissions": [
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "TREE_EDIT"
         ]
       }
     ],
     "permissions": [
-      "NPA_EDIT",
       "READ",
+      "SERVICE_ACCOUNT_EDIT",
       "TREE_EDIT"
     ]
   },
@@ -175,8 +175,8 @@
         "children": [
         ],
         "permissions": [
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "TREE_EDIT"
         ]
       },
@@ -188,15 +188,15 @@
         "children": [
         ],
         "permissions": [
-          "NPA_EDIT",
           "READ",
+          "SERVICE_ACCOUNT_EDIT",
           "TREE_EDIT"
         ]
       }
     ],
     "permissions": [
-      "NPA_EDIT",
       "READ",
+      "SERVICE_ACCOUNT_EDIT",
       "TREE_EDIT"
     ]
   }

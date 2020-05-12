@@ -15,16 +15,16 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.account;
 
-import com.rabobank.argos.domain.account.NonPersonalAccount;
-import com.rabobank.argos.service.adapter.in.rest.api.model.RestNonPersonalAccount;
+import com.rabobank.argos.domain.account.ServiceAccount;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestServiceAccount;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface NonPersonalAccountMapper {
+public interface ServiceAccountMapper {
 
-    NonPersonalAccount convertFromRestNonPersonalAccount(RestNonPersonalAccount restNonPersonalAccount);
+    ServiceAccount convertFromRestServiceAccount(RestServiceAccount restServiceAccount);
 
     @Mapping(target = "id", source = "accountId")
-    RestNonPersonalAccount convertToRestNonPersonalAccount(NonPersonalAccount nonPersonalAccount);
+    RestServiceAccount convertToRestServiceAccount(ServiceAccount serviceAccount);
 }

@@ -25,9 +25,9 @@ Feature: Hierarchy
     * def root2 = call read('classpath:feature/label/create-label.feature') { name: 'root2'}
     * def root3 = call read('classpath:feature/label/create-label.feature') { name: 'root3'}
     * def personalAccount = defaultTestData.personalAccounts['default-pa1']
-    * call read('classpath:feature/account/set-local-permissions.feature') {accountId: #(personalAccount.accountId), labelId: #(root1.response.id), permissions: [READ, NPA_EDIT,TREE_EDIT]}
-    * call read('classpath:feature/account/set-local-permissions.feature') {accountId: #(personalAccount.accountId), labelId: #(root2.response.id), permissions: [READ, NPA_EDIT,TREE_EDIT]}
-    * call read('classpath:feature/account/set-local-permissions.feature') {accountId: #(personalAccount.accountId), labelId: #(root3.response.id), permissions: [READ, NPA_EDIT,TREE_EDIT]}
+    * call read('classpath:feature/account/set-local-permissions.feature') {accountId: #(personalAccount.accountId), labelId: #(root1.response.id), permissions: [READ, SERVICE_ACCOUNT_EDIT,TREE_EDIT]}
+    * call read('classpath:feature/account/set-local-permissions.feature') {accountId: #(personalAccount.accountId), labelId: #(root2.response.id), permissions: [READ, SERVICE_ACCOUNT_EDIT,TREE_EDIT]}
+    * call read('classpath:feature/account/set-local-permissions.feature') {accountId: #(personalAccount.accountId), labelId: #(root3.response.id), permissions: [READ, SERVICE_ACCOUNT_EDIT,TREE_EDIT]}
     * configure headers = call read('classpath:headers.js') { token: #(personalAccount.token)}
     * def root1ChildResponse = call read('classpath:feature/label/create-label.feature') { name: 'childaroot1',parentLabelId:#(root1.response.id)}
     * def root2ChildResponse = call read('classpath:feature/label/create-label.feature') { name: 'childaroot2',parentLabelId:#(root2.response.id)}
@@ -38,9 +38,9 @@ Feature: Hierarchy
     * def root1Child2Response = call read('classpath:feature/label/create-label.feature') { name: 'childbroot1',parentLabelId:#(root1.response.id)}
     * def root2Child2Response = call read('classpath:feature/label/create-label.feature') { name: 'childbroot2',parentLabelId:#(root2.response.id)}
     * def root3Child2Response = call read('classpath:feature/label/create-label.feature') { name: 'childbroot3',parentLabelId:#(root3.response.id)}
-    * def nonPersonalAccount1Response = call read('classpath:feature/account/create-non-personal-account.feature') {name: npa-1, parentLabelId: #(root1ChildResponse.response.id)}
-    * def nonPersonalAccount2Response = call read('classpath:feature/account/create-non-personal-account.feature') {name: npa-2, parentLabelId: #(root2ChildResponse.response.id)}
-    * def nonPersonalAccount3Response = call read('classpath:feature/account/create-non-personal-account.feature') {name: npa-3, parentLabelId: #(root3ChildResponse.response.id)}
+    * def serviceAccount1Response = call read('classpath:feature/account/create-service-account.feature') {name: sa-1, parentLabelId: #(root1ChildResponse.response.id)}
+    * def serviceAccount2Response = call read('classpath:feature/account/create-service-account.feature') {name: sa-2, parentLabelId: #(root2ChildResponse.response.id)}
+    * def serviceAccount3Response = call read('classpath:feature/account/create-service-account.feature') {name: sa-3, parentLabelId: #(root3ChildResponse.response.id)}
 
 
   Scenario: get root nodes with HierarchyMode all should return full trees

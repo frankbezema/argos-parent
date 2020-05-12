@@ -12,8 +12,8 @@
       "children": [
       ],
       "permissions": [
-        "NPA_EDIT",
         "READ",
+        "SERVICE_ACCOUNT_EDIT",
         "TREE_EDIT"
       ]
     },
@@ -25,15 +25,15 @@
       "children": [
       ],
       "permissions": [
-        "NPA_EDIT",
         "READ",
+        "SERVICE_ACCOUNT_EDIT",
         "TREE_EDIT"
       ]
     }
   ],
   "permissions": [
-    "NPA_EDIT",
     "READ",
+    "SERVICE_ACCOUNT_EDIT",
     "TREE_EDIT"
   ]
 }

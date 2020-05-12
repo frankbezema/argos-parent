@@ -26,25 +26,25 @@ import java.io.Serializable;
 import java.util.Collection;
 
 @EqualsAndHashCode(callSuper = true)
-public class NonPersonalAccountAuthenticationToken extends UsernamePasswordAuthenticationToken {
+public class ServiceAccountAuthenticationToken extends UsernamePasswordAuthenticationToken {
 
     private final UserDetails principal;
-    private final NonPersonalAccountCredentials nonPersonalAccountCredentials;
+    private final ServiceAccountCredentials serviceAccountCredentials;
 
-    NonPersonalAccountAuthenticationToken(NonPersonalAccountCredentials nonPersonalAccountCredentials, UserDetails principal) {
-        super(principal, nonPersonalAccountCredentials);
+    ServiceAccountAuthenticationToken(ServiceAccountCredentials serviceAccountCredentials, UserDetails principal) {
+        super(principal, serviceAccountCredentials);
         this.principal = principal;
-        this.nonPersonalAccountCredentials = nonPersonalAccountCredentials;
+        this.serviceAccountCredentials = serviceAccountCredentials;
     }
 
-    NonPersonalAccountAuthenticationToken(NonPersonalAccountCredentials nonPersonalAccountCredentials, UserDetails principal, Collection<? extends GrantedAuthority> authorities) {
-        super(principal, nonPersonalAccountCredentials, authorities);
+    ServiceAccountAuthenticationToken(ServiceAccountCredentials serviceAccountCredentials, UserDetails principal, Collection<? extends GrantedAuthority> authorities) {
+        super(principal, serviceAccountCredentials, authorities);
         this.principal = principal;
-        this.nonPersonalAccountCredentials = nonPersonalAccountCredentials;
+        this.serviceAccountCredentials = serviceAccountCredentials;
     }
 
-    NonPersonalAccountCredentials getNonPersonalAccountCredentials() {
-        return nonPersonalAccountCredentials;
+    ServiceAccountCredentials getServiceAccountCredentials() {
+        return serviceAccountCredentials;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class NonPersonalAccountAuthenticationToken extends UsernamePasswordAuthe
     @Builder
     @Getter
     @EqualsAndHashCode
-    static class NonPersonalAccountCredentials implements Serializable {
+    static class ServiceAccountCredentials implements Serializable {
         private String keyId;
         private String password;
     }

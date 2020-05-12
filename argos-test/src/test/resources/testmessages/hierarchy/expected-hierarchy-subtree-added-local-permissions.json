@@ -11,8 +11,8 @@
       "hasChildren": true,
       "children": [
         {
-          "name": "npa-1",
-          "type": "NON_PERSONAL_ACCOUNT",
+          "name": "sa-1",
+          "type": "SERVICE_ACCOUNT",
           "referenceId": "#uuid",
           "hasChildren": false,
           "children": [],

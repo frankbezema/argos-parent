@@ -32,4 +32,5 @@ class PathHelperTest {
     void normalizePathWithNotNullShouldReturnNormalized() {
         assertThat(PathHelper.normalizePath("\\\\path"), is("/path"));
     }
+    
 }

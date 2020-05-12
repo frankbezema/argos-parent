@@ -88,8 +88,8 @@ class ArgosServiceTestIT {
     }
 
     @Karate.Test
-    Karate nonPersonalAccount() {
-        return new Karate().feature("classpath:feature/account/non-personal-account.feature");
+    Karate serviceAccount() {
+        return new Karate().feature("classpath:feature/account/service-account.feature");
     }
 
     @Karate.Test

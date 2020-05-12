@@ -15,8 +15,8 @@
  */
 package com.rabobank.argos.service.domain.account;
 
-import com.rabobank.argos.domain.account.NonPersonalAccount;
-import com.rabobank.argos.domain.account.NonPersonalAccountKeyPair;
+import com.rabobank.argos.domain.account.ServiceAccount;
+import com.rabobank.argos.domain.account.ServiceAccountKeyPair;
 import com.rabobank.argos.domain.account.PersonalAccount;
 import com.rabobank.argos.domain.key.KeyPair;
 import com.rabobank.argos.domain.permission.LocalPermissions;
@@ -27,7 +27,7 @@ import java.util.Optional;
 public interface AccountService {
     Optional<PersonalAccount> activateNewKey(String accountId, KeyPair newKeyPair);
 
-    Optional<NonPersonalAccount> activateNewKey(String accountId, NonPersonalAccountKeyPair newKeyPair);
+    Optional<ServiceAccount> activateNewKey(String accountId, ServiceAccountKeyPair newKeyPair);
 
     boolean keyPairExists(String keyId);
 
@@ -43,11 +43,11 @@ public interface AccountService {
 
     Optional<PersonalAccount> updatePersonalAccountLocalPermissionsById(String accountId, LocalPermissions localPermissions);
 
-    void save(NonPersonalAccount nonPersonalAccount);
+    void save(ServiceAccount serviceAccount);
 
-    Optional<NonPersonalAccount> findNonPersonalAccountById(String accountId);
+    Optional<ServiceAccount> findServiceAccountById(String accountId);
 
-    Optional<NonPersonalAccount> update(String accountId, NonPersonalAccount nonPersonalAccount);
+    Optional<ServiceAccount> update(String accountId, ServiceAccount serviceAccount);
 
 
 }

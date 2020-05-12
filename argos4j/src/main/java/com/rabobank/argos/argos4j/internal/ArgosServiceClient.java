@@ -23,12 +23,12 @@ import com.rabobank.argos.argos4j.VerificationResult;
 import com.rabobank.argos.argos4j.internal.mapper.RestMapper;
 import com.rabobank.argos.argos4j.rest.api.ApiClient;
 import com.rabobank.argos.argos4j.rest.api.client.LinkApi;
-import com.rabobank.argos.argos4j.rest.api.client.NonPersonalAccountApi;
+import com.rabobank.argos.argos4j.rest.api.client.ServiceAccountApi;
 import com.rabobank.argos.argos4j.rest.api.client.SupplychainApi;
 import com.rabobank.argos.argos4j.rest.api.client.VerificationApi;
 import com.rabobank.argos.argos4j.rest.api.model.RestArtifact;
 import com.rabobank.argos.argos4j.rest.api.model.RestLinkMetaBlock;
-import com.rabobank.argos.argos4j.rest.api.model.RestNonPersonalAccountKeyPair;
+import com.rabobank.argos.argos4j.rest.api.model.RestServiceAccountKeyPair;
 import com.rabobank.argos.argos4j.rest.api.model.RestVerifyCommand;
 import com.rabobank.argos.domain.link.Artifact;
 import com.rabobank.argos.domain.link.LinkMetaBlock;
@@ -74,10 +74,10 @@ public class ArgosServiceClient {
         }
     }
 
-    public RestNonPersonalAccountKeyPair getKeyPair() {
+    public RestServiceAccountKeyPair getKeyPair() {
         try {
-            NonPersonalAccountApi keyApi = apiClient.buildClient(NonPersonalAccountApi.class);
-            return keyApi.getNonPersonalAccountKey();
+            ServiceAccountApi keyApi = apiClient.buildClient(ServiceAccountApi.class);
+            return keyApi.getServiceAccountKey();
         } catch (FeignException e) {
             throw convertToArgos4jError(e);
         }

@@ -28,25 +28,25 @@
             }
           }
         ],
-        "joinednonpersonalaccounts": [
+        "joinedserviceaccounts": [
           {
             "$lookup": {
-              "from": "nonPersonalAccounts",
+              "from": "serviceAccounts",
               "localField": "labelId",
               "foreignField": "parentLabelId",
-              "as": "nonpersonalaccounts"
+              "as": "serviceaccounts"
             }
           },
           {
-            "$unwind": "$nonpersonalaccounts"
+            "$unwind": "$serviceaccounts"
           },
           {
             "$project": {
-              "_id": "$nonpersonalaccounts._id",
-              "referenceId": "$nonpersonalaccounts.accountId",
-              "name": "$nonpersonalaccounts.name",
-              "type": "NON_PERSONAL_ACCOUNT",
-              "parentLabelId": "$nonpersonalaccounts.parentLabelId",
+              "_id": "$serviceaccounts._id",
+              "referenceId": "$serviceaccounts.accountId",
+              "name": "$serviceaccounts.name",
+              "type": "SERVICE_ACCOUNT",
+              "parentLabelId": "$serviceaccounts.parentLabelId",
               "idsOfDescendantLabels": [
               ]
             }
@@ -105,7 +105,7 @@
           "$concatArrays": [
             "$labelsprojected",
             "$joinedsupplychains",
-            "$joinednonpersonalaccounts"
+            "$joinedserviceaccounts"
           ]
         }
       }

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.rabobank.argos.domain.permission.Permission.LOCAL_PERMISSION_EDIT;
-import static com.rabobank.argos.domain.permission.Permission.NPA_EDIT;
+import static com.rabobank.argos.domain.permission.Permission.SERVICE_ACCOUNT_EDIT;
 import static com.rabobank.argos.domain.permission.Permission.READ;
 import static com.rabobank.argos.domain.permission.Permission.TREE_EDIT;
 import static com.rabobank.argos.service.domain.security.DefaultLocalPermissionCheckStrategy.DEFAULT_LOCAL_PERMISSION_CHECK_STRATEGY_BEAN_NAME;
@@ -45,7 +45,7 @@ public class DefaultLocalPermissionCheckStrategy implements LocalPermissionCheck
     private final AccountSecurityContext accountSecurityContext;
 
     public static final String DEFAULT_LOCAL_PERMISSION_CHECK_STRATEGY_BEAN_NAME = "defaultLocalPermissionCheckStrategy";
-    private final Set<Permission> implicitReadPermissions = EnumSet.of(TREE_EDIT, NPA_EDIT, LOCAL_PERMISSION_EDIT);
+    private final Set<Permission> implicitReadPermissions = EnumSet.of(TREE_EDIT, SERVICE_ACCOUNT_EDIT, LOCAL_PERMISSION_EDIT);
 
     @Override
     public boolean hasLocalPermission(LocalPermissionCheckData localPermissionCheckData, Set<Permission> permissionsToCheck) {

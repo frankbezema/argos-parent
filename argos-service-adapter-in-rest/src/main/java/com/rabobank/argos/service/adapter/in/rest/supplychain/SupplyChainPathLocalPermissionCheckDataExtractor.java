@@ -38,7 +38,7 @@ public class SupplyChainPathLocalPermissionCheckDataExtractor implements LocalPe
 
     @Override
     public LocalPermissionCheckData extractLocalPermissionCheckData(Method method, Object[] argumentValues) {
-    	List<String> pathToRoot = SupplyChainHelper.reversePath((List<String>) argumentValues[1]);
+        List<String> pathToRoot = SupplyChainHelper.reversePath((List<String>) argumentValues[1]);
         return hierarchyRepository
                 .findByNamePathToRootAndType((String) argumentValues[0], pathToRoot, TreeNode.Type.SUPPLY_CHAIN)
                 .map(TreeNode::getParentLabelId)

@@ -16,8 +16,8 @@
 package com.rabobank.argos.service.security;
 
 import com.rabobank.argos.domain.ArgosError;
-import com.rabobank.argos.domain.account.NonPersonalAccount;
-import com.rabobank.argos.service.domain.account.NonPersonalAccountRepository;
+import com.rabobank.argos.domain.account.ServiceAccount;
+import com.rabobank.argos.service.domain.account.ServiceAccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,30 +34,30 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class NonPersonalAccountUserDetailsServiceTest {
+class ServiceAccountUserDetailsServiceTest {
     private static final String USER_NAME = "test";
     private static final String KEY_ID = "keyId";
     @Mock
-    private NonPersonalAccountRepository nonPersonalAccountRepository;
-    private NonPersonalAccount nonPersonalAccount = NonPersonalAccount.builder().name(USER_NAME).build();
-    private NonPersonalAccountUserDetailsService nonPersonalAccountUserDetailsService;
+    private ServiceAccountRepository serviceAccountRepository;
+    private ServiceAccount serviceAccount = ServiceAccount.builder().name(USER_NAME).build();
+    private ServiceAccountUserDetailsService serviceAccountUserDetailsService;
 
     @BeforeEach
     void setup() {
-        nonPersonalAccountUserDetailsService = new NonPersonalAccountUserDetailsService(nonPersonalAccountRepository);
+        serviceAccountUserDetailsService = new ServiceAccountUserDetailsService(serviceAccountRepository);
     }
 
     @Test
     void loadUserByIdWithValidIdShouldReturnUserdetails() {
-        when(nonPersonalAccountRepository.findByActiveKeyId(anyString())).thenReturn(Optional.of(nonPersonalAccount));
-        UserDetails userDetails = nonPersonalAccountUserDetailsService.loadUserById(KEY_ID);
+        when(serviceAccountRepository.findByActiveKeyId(anyString())).thenReturn(Optional.of(serviceAccount));
+        UserDetails userDetails = serviceAccountUserDetailsService.loadUserById(KEY_ID);
         assertThat(userDetails.getUsername(), is(USER_NAME));
     }
 
     @Test
     void loadUserByIdWithInValidIdShouldReturnError() {
-        when(nonPersonalAccountRepository.findByActiveKeyId(anyString())).thenReturn(Optional.empty());
-        Exception exception = assertThrows(ArgosError.class, () -> nonPersonalAccountUserDetailsService.loadUserById("keyId"));
+        when(serviceAccountRepository.findByActiveKeyId(anyString())).thenReturn(Optional.empty());
+        Exception exception = assertThrows(ArgosError.class, () -> serviceAccountUserDetailsService.loadUserById("keyId"));
         assertThat(exception.getMessage(), is("Non personal account with keyid keyId not found"));
     }
 

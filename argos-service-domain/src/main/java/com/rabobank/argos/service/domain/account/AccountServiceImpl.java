@@ -17,8 +17,8 @@ package com.rabobank.argos.service.domain.account;
 
 import com.rabobank.argos.domain.ArgosError;
 import com.rabobank.argos.domain.account.Account;
-import com.rabobank.argos.domain.account.NonPersonalAccount;
-import com.rabobank.argos.domain.account.NonPersonalAccountKeyPair;
+import com.rabobank.argos.domain.account.ServiceAccount;
+import com.rabobank.argos.domain.account.ServiceAccountKeyPair;
 import com.rabobank.argos.domain.account.PersonalAccount;
 import com.rabobank.argos.domain.key.KeyPair;
 import com.rabobank.argos.domain.permission.LocalPermissions;
@@ -44,7 +44,7 @@ import static com.rabobank.argos.domain.permission.Role.USER_ROLE;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
 
-    private final NonPersonalAccountRepository nonPersonalAccountRepository;
+    private final ServiceAccountRepository serviceAccountRepository;
     private final PersonalAccountRepository personalAccountRepository;
     private final RoleRepository roleRepository;
     private final AccountSecurityContext accountSecurityContext;
@@ -59,24 +59,24 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<NonPersonalAccount> activateNewKey(String accountId, NonPersonalAccountKeyPair newKeyPair) {
-        return nonPersonalAccountRepository.findById(accountId).map(account -> {
+    public Optional<ServiceAccount> activateNewKey(String accountId, ServiceAccountKeyPair newKeyPair) {
+        return serviceAccountRepository.findById(accountId).map(account -> {
             activateNewKey(account, newKeyPair);
-            nonPersonalAccountRepository.update(account);
+            serviceAccountRepository.update(account);
             return account;
         });
     }
 
     @Override
     public boolean keyPairExists(String keyId) {
-        return nonPersonalAccountRepository.activeKeyExists(keyId) ||
+        return serviceAccountRepository.activeKeyExists(keyId) ||
                 personalAccountRepository.activeKeyExists(keyId);
     }
 
     @Override
     public Optional<KeyPair> findKeyPairByKeyId(String keyId) {
-        return nonPersonalAccountRepository
-                .findByActiveKeyId(keyId).map(nonPersonalAccount -> (Account) nonPersonalAccount)
+        return serviceAccountRepository
+                .findByActiveKeyId(keyId).map(serviceAccount -> (Account) serviceAccount)
                 .or(() -> personalAccountRepository.findByActiveKeyId(keyId)).map(Account::getActiveKeyPair);
     }
 
@@ -163,22 +163,22 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void save(NonPersonalAccount nonPersonalAccount) {
-        nonPersonalAccountRepository.save(nonPersonalAccount);
+    public void save(ServiceAccount serviceAccount) {
+        serviceAccountRepository.save(serviceAccount);
     }
 
     @Override
-    public Optional<NonPersonalAccount> findNonPersonalAccountById(String accountId) {
-        return nonPersonalAccountRepository.findById(accountId);
+    public Optional<ServiceAccount> findServiceAccountById(String accountId) {
+        return serviceAccountRepository.findById(accountId);
     }
 
     @Override
-    public Optional<NonPersonalAccount> update(String accountId, NonPersonalAccount nonPersonalAccount) {
-        return nonPersonalAccountRepository.findById(accountId).map(account -> {
-            account.setParentLabelId(nonPersonalAccount.getParentLabelId());
-            account.setName(nonPersonalAccount.getName());
-            account.setEmail(nonPersonalAccount.getEmail());
-            nonPersonalAccountRepository.update(account);
+    public Optional<ServiceAccount> update(String accountId, ServiceAccount serviceAccount) {
+        return serviceAccountRepository.findById(accountId).map(account -> {
+            account.setParentLabelId(serviceAccount.getParentLabelId());
+            account.setName(serviceAccount.getName());
+            account.setEmail(serviceAccount.getEmail());
+            serviceAccountRepository.update(account);
             return account;
         });
     }

@@ -27,11 +27,11 @@
 		"id": "Applications/argos/argos-test-app",
 		"type": "udm.Application",
 		"argosSupplyChain": "root_label.child_label:argos-test-app",
-		"argosNonPersonalAccount": "Environments/argos/default-npa3"
+		"argosServiceAccount": "Environments/argos/default-sa3"
 	},
 	{
-		"id": "Environments/argos/default-npa3",
-		"type": "argos.NonPersonalAccount",
+		"id": "Environments/argos/default-sa3",
+		"type": "argos.ServiceAccount",
 		"keyId": "a97daeaf3afaed859472a367da7a860b4b90eefb97fe51384bd45e9eed020b5b",
 		"passphrase": "test"
 	},

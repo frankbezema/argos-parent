@@ -24,7 +24,6 @@ import com.rabobank.argos.argos4j.Argos4jError;
 import com.rabobank.argos.argos4j.Argos4jSettings;
 import com.rabobank.argos.argos4j.LinkBuilder;
 import com.rabobank.argos.argos4j.LinkBuilderSettings;
-import com.rabobank.argos.domain.PathHelper;
 import com.rabobank.argos.domain.SupplyChainHelper;
 
 import hudson.Plugin;

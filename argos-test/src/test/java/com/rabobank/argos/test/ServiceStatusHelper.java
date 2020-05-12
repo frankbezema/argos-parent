@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.rabobank.argos.argos4j.rest.api.ApiClient;
 import com.rabobank.argos.argos4j.rest.api.client.HierarchyApi;
 import com.rabobank.argos.argos4j.rest.api.client.LayoutApi;
-import com.rabobank.argos.argos4j.rest.api.client.NonPersonalAccountApi;
+import com.rabobank.argos.argos4j.rest.api.client.ServiceAccountApi;
 import com.rabobank.argos.argos4j.rest.api.client.PersonalAccountApi;
 import com.rabobank.argos.argos4j.rest.api.client.SupplychainApi;
 import lombok.extern.slf4j.Slf4j;
@@ -151,8 +151,8 @@ public class ServiceStatusHelper {
         return getApiClient(bearerToken).buildClient(PersonalAccountApi.class);
     }
 
-    public static NonPersonalAccountApi getNonPersonalAccountApi(String bearerToken) {
-        return getApiClient(bearerToken).buildClient(NonPersonalAccountApi.class);
+    public static ServiceAccountApi getServiceAccountApi(String bearerToken) {
+        return getApiClient(bearerToken).buildClient(ServiceAccountApi.class);
     }
 
     public static LayoutApi getLayoutApi(String bearerToken) {

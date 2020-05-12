@@ -16,7 +16,7 @@
 package com.rabobank.argos.argos4j.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabobank.argos.argos4j.rest.api.model.RestNonPersonalAccountKeyPair;
+import com.rabobank.argos.argos4j.rest.api.model.RestServiceAccountKeyPair;
 import com.rabobank.argos.domain.Signature;
 import com.rabobank.argos.domain.key.RSAPublicKeyFactory;
 import org.apache.commons.codec.DecoderException;
@@ -41,12 +41,12 @@ class Argos4JSignerTest {
     private static final char[] PASSWORD = "gBM1Q4sc3kh05E".toCharArray();
     private Argos4JSigner signer;
 
-    private RestNonPersonalAccountKeyPair pair;
+    private RestServiceAccountKeyPair pair;
     private PublicKey publicKey;
 
     @BeforeEach
     void setUp() throws GeneralSecurityException, IOException {
-        pair = new ObjectMapper().readValue(this.getClass().getResourceAsStream("/keypair.json"), RestNonPersonalAccountKeyPair.class);
+        pair = new ObjectMapper().readValue(this.getClass().getResourceAsStream("/keypair.json"), RestServiceAccountKeyPair.class);
         publicKey = RSAPublicKeyFactory.instance(pair.getPublicKey());
         signer = new Argos4JSigner();
     }

@@ -188,8 +188,8 @@ Feature: SupplyChain
     Then status 200
     And match response == { name: 'supply-chain-name', id: '#(supplyChain.response.id)', parentLabelId: '#(info.labelId)' }
 
-  Scenario: query supplychain with npa account should return a 200
-    * def keyPair = defaultTestData.nonPersonalAccount['default-npa1']
+  Scenario: query supplychain with sa account should return a 200
+    * def keyPair = defaultTestData.serviceAccount['default-sa1']
     * def supplyChain = call read('create-supplychain.feature') {supplyChainName: supply-chain-name, parentLabelId: #(defaultTestData.defaultRootLabel.id)}
     * configure headers = call read('classpath:headers.js') { username: #(keyPair.keyId), password: #(keyPair.hashedKeyPassphrase)}
     Given path '/api/supplychain'
@@ -199,8 +199,8 @@ Feature: SupplyChain
     Then status 200
     And match response == { name: 'supply-chain-name', id: '#(supplyChain.response.id)', parentLabelId: '#(defaultTestData.defaultRootLabel.id)' }
 
-  Scenario: query supplychain with npa and incorrect search term should return a 403
-    * def keyPair = defaultTestData.nonPersonalAccount['default-npa1']
+  Scenario: query supplychain with sa and incorrect search term should return a 403
+    * def keyPair = defaultTestData.serviceAccount['default-sa1']
     * def supplyChain = call read('create-supplychain.feature') {supplyChainName: supply-chain-name, parentLabelId: #(defaultTestData.defaultRootLabel.id)}
     * configure headers = call read('classpath:headers.js') { username: #(keyPair.keyId), password: #(keyPair.hashedKeyPassphrase)}
     Given path '/api/supplychain'

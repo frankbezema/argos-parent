@@ -24,12 +24,12 @@ import java.security.PublicKey;
 
 @Getter
 @Setter
-public class NonPersonalAccountKeyPair extends KeyPair {
+public class ServiceAccountKeyPair extends KeyPair {
 
     private String encryptedHashedKeyPassphrase;
 
     @Builder
-    public NonPersonalAccountKeyPair(String keyId, byte[] encryptedPrivateKey, PublicKey publicKey, String encryptedHashedKeyPassphrase) {
+    public ServiceAccountKeyPair(String keyId, byte[] encryptedPrivateKey, PublicKey publicKey, String encryptedHashedKeyPassphrase) {
         super(keyId, encryptedPrivateKey, publicKey);
         this.encryptedHashedKeyPassphrase = encryptedHashedKeyPassphrase;
     }

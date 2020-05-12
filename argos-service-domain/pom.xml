@@ -72,7 +72,7 @@
         <dependency>
             <groupId>com.codepoetics</groupId>
             <artifactId>protonpack</artifactId>
-            <version>1.16</version>
+            <version>1.15</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
         <dependency>

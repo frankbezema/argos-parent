@@ -16,10 +16,10 @@
 package com.rabobank.argos.service.security;
 
 import com.rabobank.argos.domain.ArgosError;
-import com.rabobank.argos.domain.account.NonPersonalAccount;
-import com.rabobank.argos.domain.account.NonPersonalAccountKeyPair;
+import com.rabobank.argos.domain.account.ServiceAccount;
+import com.rabobank.argos.domain.account.ServiceAccountKeyPair;
 import com.rabobank.argos.service.domain.security.AccountUserDetailsAdapter;
-import com.rabobank.argos.service.security.NonPersonalAccountAuthenticationToken.NonPersonalAccountCredentials;
+import com.rabobank.argos.service.security.ServiceAccountAuthenticationToken.ServiceAccountCredentials;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,42 +39,42 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class NonPersonalAccountAuthenticationProviderTest {
+class ServiceAccountAuthenticationProviderTest {
 
     private static final String KEYID = "keyid";
     private static final String PASSWORD = "password";
     private static final String ENCRYPTEDPASSWORD = "encryptedpassword";
     private static final String NOT_AUTHENTICATED = "not authenticated";
     @Mock
-    private NonPersonalAccountUserDetailsService nonPersonalAccountUserDetailsService;
+    private ServiceAccountUserDetailsService serviceAccountUserDetailsService;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private LogContextHelper logContextHelper;
 
     private Authentication authentication;
-    private NonPersonalAccountAuthenticationProvider nonPersonalAccountAuthenticationProvider;
-    private AccountUserDetailsAdapter userDetails = new AccountUserDetailsAdapter(NonPersonalAccount.builder()
+    private ServiceAccountAuthenticationProvider serviceAccountAuthenticationProvider;
+    private AccountUserDetailsAdapter userDetails = new AccountUserDetailsAdapter(ServiceAccount.builder()
             .name("test")
-            .activeKeyPair(new NonPersonalAccountKeyPair(KEYID, null, null, ENCRYPTEDPASSWORD))
+            .activeKeyPair(new ServiceAccountKeyPair(KEYID, null, null, ENCRYPTEDPASSWORD))
             .build());
 
     @BeforeEach
     void setup() {
-        NonPersonalAccountCredentials credentials = NonPersonalAccountCredentials
+        ServiceAccountCredentials credentials = ServiceAccountCredentials
                 .builder()
                 .keyId(KEYID)
                 .password(PASSWORD)
                 .build();
-        authentication = new NonPersonalAccountAuthenticationToken(credentials, null);
-        nonPersonalAccountAuthenticationProvider = new NonPersonalAccountAuthenticationProvider(nonPersonalAccountUserDetailsService, passwordEncoder, logContextHelper);
+        authentication = new ServiceAccountAuthenticationToken(credentials, null);
+        serviceAccountAuthenticationProvider = new ServiceAccountAuthenticationProvider(serviceAccountUserDetailsService, passwordEncoder, logContextHelper);
     }
 
     @Test
     void authenticateWithValidCredentialsShouldReturnAuthenticated() {
-        when(nonPersonalAccountUserDetailsService.loadUserById(eq(KEYID))).thenReturn(userDetails);
+        when(serviceAccountUserDetailsService.loadUserById(eq(KEYID))).thenReturn(userDetails);
         when(passwordEncoder.matches(eq(PASSWORD), eq(ENCRYPTEDPASSWORD))).thenReturn(true);
-        Authentication authenticatedAccount = nonPersonalAccountAuthenticationProvider.authenticate(authentication);
+        Authentication authenticatedAccount = serviceAccountAuthenticationProvider.authenticate(authentication);
         assertThat(authenticatedAccount.getPrincipal(), sameInstance(userDetails));
         assertThat(authenticatedAccount.isAuthenticated(), is(true));
         verify(logContextHelper).addAccountInfoToLogContext(userDetails);
@@ -88,23 +88,23 @@ class NonPersonalAccountAuthenticationProviderTest {
 
     @Test
     void authenticateWithInValidIdShouldReturnUnAuthenticated() {
-        when(nonPersonalAccountUserDetailsService.loadUserById(eq(KEYID))).thenThrow(new ArgosError("non personal account not found"));
-        BadCredentialsException exception = assertThrows(BadCredentialsException.class, () -> nonPersonalAccountAuthenticationProvider.authenticate(authentication));
+        when(serviceAccountUserDetailsService.loadUserById(eq(KEYID))).thenThrow(new ArgosError("service account not found"));
+        BadCredentialsException exception = assertThrows(BadCredentialsException.class, () -> serviceAccountAuthenticationProvider.authenticate(authentication));
         assertThat(exception.getMessage(), is(NOT_AUTHENTICATED));
     }
 
     @Test
     void authenticateWithInValidPasswordShouldThrowBadCredentials() {
-        when(nonPersonalAccountUserDetailsService.loadUserById(eq(KEYID))).thenReturn(userDetails);
+        when(serviceAccountUserDetailsService.loadUserById(eq(KEYID))).thenReturn(userDetails);
         when(passwordEncoder.matches(eq(PASSWORD), eq(ENCRYPTEDPASSWORD))).thenReturn(false);
-        BadCredentialsException exception = assertThrows(BadCredentialsException.class, () -> nonPersonalAccountAuthenticationProvider.authenticate(authentication));
+        BadCredentialsException exception = assertThrows(BadCredentialsException.class, () -> serviceAccountAuthenticationProvider.authenticate(authentication));
         assertThat(exception.getMessage(), is(NOT_AUTHENTICATED));
     }
 
     @Test
     void supports() {
-        assertThat(nonPersonalAccountAuthenticationProvider
-                        .supports(NonPersonalAccountAuthenticationToken.class),
+        assertThat(serviceAccountAuthenticationProvider
+                        .supports(ServiceAccountAuthenticationToken.class),
                 is(true));
     }
 }
