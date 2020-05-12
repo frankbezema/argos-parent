@@ -15,10 +15,6 @@
  */
 package com.rabobank.argos.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -30,11 +26,5 @@ public class PathHelper {
             return null;
         }
         return path.replace("\\\\", "/").replace("\\", "/");
-    }
-    
-    public static List<String> reversePath(List<String> path) {
-    	List<String> reversedPath = new ArrayList<>(path);
-    	Collections.reverse(reversedPath);
-    	return reversedPath;
     }
 }

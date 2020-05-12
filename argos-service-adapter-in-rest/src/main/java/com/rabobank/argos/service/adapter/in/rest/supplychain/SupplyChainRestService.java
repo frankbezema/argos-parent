@@ -15,7 +15,7 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.supplychain;
 
-import com.rabobank.argos.domain.PathHelper;
+import com.rabobank.argos.domain.SupplyChainHelper;
 import com.rabobank.argos.domain.hierarchy.TreeNode;
 import com.rabobank.argos.domain.permission.Permission;
 import com.rabobank.argos.domain.supplychain.SupplyChain;
@@ -36,8 +36,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.rabobank.argos.service.adapter.in.rest.supplychain.SupplyChainLabelIdExtractor.SUPPLY_CHAIN_LABEL_ID_EXTRACTOR;
@@ -84,7 +82,7 @@ public class SupplyChainRestService implements SupplychainApi {
     @Override
     @PermissionCheck(permissions = {Permission.READ, Permission.LINK_ADD, Permission.VERIFY}, localPermissionDataExtractorBean = SUPPLY_CHAIN_PATH_LOCAL_DATA_EXTRACTOR)
     public ResponseEntity<RestSupplyChain> getSupplyChainByPath(String name, List<String> path) {
-    	List<String> pathToRoot = PathHelper.reversePath(path);
+    	List<String> pathToRoot = SupplyChainHelper.reversePath(path);
         return hierarchyRepository.findByNamePathToRootAndType(name, pathToRoot, TreeNode.Type.SUPPLY_CHAIN)
                 .map(TreeNode::getReferenceId)
                 .flatMap(supplyChainRepository::findBySupplyChainId)

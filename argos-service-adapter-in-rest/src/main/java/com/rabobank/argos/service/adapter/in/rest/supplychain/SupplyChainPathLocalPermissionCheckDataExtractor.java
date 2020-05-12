@@ -15,7 +15,7 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.supplychain;
 
-import com.rabobank.argos.domain.PathHelper;
+import com.rabobank.argos.domain.SupplyChainHelper;
 import com.rabobank.argos.domain.hierarchy.TreeNode;
 import com.rabobank.argos.service.domain.hierarchy.HierarchyRepository;
 import com.rabobank.argos.service.domain.security.LocalPermissionCheckData;
@@ -38,7 +38,7 @@ public class SupplyChainPathLocalPermissionCheckDataExtractor implements LocalPe
 
     @Override
     public LocalPermissionCheckData extractLocalPermissionCheckData(Method method, Object[] argumentValues) {
-    	List<String> pathToRoot = PathHelper.reversePath((List<String>) argumentValues[1]);
+    	List<String> pathToRoot = SupplyChainHelper.reversePath((List<String>) argumentValues[1]);
         return hierarchyRepository
                 .findByNamePathToRootAndType((String) argumentValues[0], pathToRoot, TreeNode.Type.SUPPLY_CHAIN)
                 .map(TreeNode::getParentLabelId)

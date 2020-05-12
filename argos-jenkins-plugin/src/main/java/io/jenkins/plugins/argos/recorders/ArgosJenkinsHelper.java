@@ -24,6 +24,9 @@ import com.rabobank.argos.argos4j.Argos4jError;
 import com.rabobank.argos.argos4j.Argos4jSettings;
 import com.rabobank.argos.argos4j.LinkBuilder;
 import com.rabobank.argos.argos4j.LinkBuilderSettings;
+import com.rabobank.argos.domain.PathHelper;
+import com.rabobank.argos.domain.SupplyChainHelper;
+
 import hudson.Plugin;
 import hudson.PluginWrapper;
 import hudson.security.ACL;
@@ -44,8 +47,6 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @Slf4j
 public class ArgosJenkinsHelper {
-
-    private static final Pattern SUPPLY_CHAIN_PATH_REGEX = Pattern.compile("([\\w.]+):([\\w\\-]+)");
 
     private final String privateKeyCredentialId;
     private final String layoutSegmentName;
@@ -76,8 +77,8 @@ public class ArgosJenkinsHelper {
         log.info("argos4j version = {}", Argos4j.getVersion());
         log.info("argosServiceBaseUrl = {}", argosServiceBaseUrl);
 
-        String supplyChainName = getSupplyChainName(supplyChainIdentifier);
-        List<String> path = getSupplyChainPath(supplyChainIdentifier);
+        String supplyChainName = SupplyChainHelper.getSupplyChainName(supplyChainIdentifier);
+        List<String> path = SupplyChainHelper.getSupplyChainPath(supplyChainIdentifier);
 
         return new Argos4j(Argos4jSettings.builder()
                 .path(path)
@@ -88,25 +89,6 @@ public class ArgosJenkinsHelper {
                         .layoutSegmentName(layoutSegmentName)
                         .stepName(stepName)
                         .runId(runId).build());
-    }
-
-    private String getSupplyChainName(String supplyChainPath) {
-        Matcher matcher = SUPPLY_CHAIN_PATH_REGEX.matcher(supplyChainPath);
-        if (matcher.matches()) {
-            return matcher.group(2);
-        } else {
-            throw new Argos4jError(supplyChainPath + " not correct should be <label>.<label>:<supplyChainName>");
-        }
-    }
-
-    private List<String> getSupplyChainPath(String supplyChainPath) {
-        Matcher matcher = SUPPLY_CHAIN_PATH_REGEX.matcher(supplyChainPath);
-        if (matcher.matches()) {
-            List<String> path = new ArrayList<>(Arrays.asList(StringUtils.split(matcher.group(1), '.')));
-            return path;
-        } else {
-            throw new Argos4jError(supplyChainPath + " not correct should be <label>.<label>:<supplyChainName>");
-        }
     }
 
     public static char[] getPrivateKeyPassword(String privateKeyCredentialId) {
