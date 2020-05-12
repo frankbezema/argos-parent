@@ -89,7 +89,7 @@ public class ArgosServiceClient {
 
     private String getSupplyChainId() {
         SupplychainApi supplychainApi = apiClient.buildClient(SupplychainApi.class);
-        return supplychainApi.getSupplyChainByPathToRoot(settings.getSupplyChainName(), settings.getPathToLabelRoot()).getId();
+        return supplychainApi.getSupplyChainByPath(settings.getSupplyChainName(), settings.getPath()).getId();
     }
 
     public static String calculatePassphrase(String keyId, String passphrase) {

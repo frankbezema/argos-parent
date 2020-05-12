@@ -15,6 +15,7 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.supplychain;
 
+import com.rabobank.argos.domain.PathHelper;
 import com.rabobank.argos.domain.hierarchy.TreeNode;
 import com.rabobank.argos.domain.permission.Permission;
 import com.rabobank.argos.domain.supplychain.SupplyChain;
@@ -35,6 +36,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.rabobank.argos.service.adapter.in.rest.supplychain.SupplyChainLabelIdExtractor.SUPPLY_CHAIN_LABEL_ID_EXTRACTOR;
@@ -80,13 +83,14 @@ public class SupplyChainRestService implements SupplychainApi {
 
     @Override
     @PermissionCheck(permissions = {Permission.READ, Permission.LINK_ADD, Permission.VERIFY}, localPermissionDataExtractorBean = SUPPLY_CHAIN_PATH_LOCAL_DATA_EXTRACTOR)
-    public ResponseEntity<RestSupplyChain> getSupplyChainByPathToRoot(String supplyChainName, List<String> pathToRoot) {
-        return hierarchyRepository.findByNamePathToRootAndType(supplyChainName, pathToRoot, TreeNode.Type.SUPPLY_CHAIN)
+    public ResponseEntity<RestSupplyChain> getSupplyChainByPath(String name, List<String> path) {
+    	List<String> pathToRoot = PathHelper.reversePath(path);
+        return hierarchyRepository.findByNamePathToRootAndType(name, pathToRoot, TreeNode.Type.SUPPLY_CHAIN)
                 .map(TreeNode::getReferenceId)
                 .flatMap(supplyChainRepository::findBySupplyChainId)
                 .map(converter::convertToRestRestSupplyChainItem)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> supplyChainNotFound(supplyChainName, pathToRoot));
+                .orElseThrow(() -> supplyChainNotFound(name, path));
     }
 
     @Override
@@ -116,7 +120,7 @@ public class SupplyChainRestService implements SupplychainApi {
     }
 
     private ResponseStatusException supplyChainNotFound(String supplyChainName, List<String> pathToRoot) {
-        return new ResponseStatusException(HttpStatus.NOT_FOUND, "supply chain not found : " + supplyChainName + " with path to root " + String.join(",", pathToRoot));
+        return new ResponseStatusException(HttpStatus.NOT_FOUND, "supply chain not found : " + supplyChainName + " with path " + String.join(",", pathToRoot));
     }
 
 }

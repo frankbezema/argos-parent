@@ -77,10 +77,10 @@ public class ArgosJenkinsHelper {
         log.info("argosServiceBaseUrl = {}", argosServiceBaseUrl);
 
         String supplyChainName = getSupplyChainName(supplyChainIdentifier);
-        List<String> pathToRoot = getPathToRoot(supplyChainIdentifier);
+        List<String> path = getSupplyChainPath(supplyChainIdentifier);
 
         return new Argos4j(Argos4jSettings.builder()
-                .pathToLabelRoot(pathToRoot)
+                .path(path)
                 .argosServerBaseUrl(argosServiceBaseUrl)
                 .signingKeyId(getCredentials(privateKeyCredentialId).getUsername())
                 .supplyChainName(supplyChainName).build())
@@ -99,11 +99,10 @@ public class ArgosJenkinsHelper {
         }
     }
 
-    private List<String> getPathToRoot(String supplyChainPath) {
+    private List<String> getSupplyChainPath(String supplyChainPath) {
         Matcher matcher = SUPPLY_CHAIN_PATH_REGEX.matcher(supplyChainPath);
         if (matcher.matches()) {
             List<String> path = new ArrayList<>(Arrays.asList(StringUtils.split(matcher.group(1), '.')));
-            Collections.reverse(path);
             return path;
         } else {
             throw new Argos4jError(supplyChainPath + " not correct should be <label>.<label>:<supplyChainName>");

@@ -55,17 +55,17 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     get:
-      summary: get supply chain by path to root
-      operationId: getSupplyChainByPathToRoot
+      summary: get supply chain by path
+      operationId: getSupplyChainByPath
       tags:
         - supplychain
       parameters:
-        - name: supplyChainName
+        - name: name
           in: query
           required: true
           schema:
             type: string
-        - name: pathToRoot
+        - name: path
           in: query
           style: simple
           explode: true

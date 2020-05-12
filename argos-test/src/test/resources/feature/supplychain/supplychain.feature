@@ -159,19 +159,31 @@ Feature: SupplyChain
     * def result = call read('create-supplychain-with-label.feature') { supplyChainName: 'supply-chain-name'}
     * configure headers = call read('classpath:headers.js') { token: #(defaultTestData.adminToken)}
     Given path '/api/supplychain'
-    And param supplyChainName = 'supply-chain-name'
-    And param pathToRoot = 'label'
+    And param name = 'supply-chain-name'
+    And param path = 'label'
     When method GET
     Then status 200
     And match response == { name: 'supply-chain-name', id: '#uuid', parentLabelId: '#uuid' }
+    
+  Scenario: query supplychain with name and several labels should return a 200
+    * def root = call read('classpath:feature/label/create-label.feature') { name: 'root'}
+    * def rootChildResponse = call read('classpath:feature/label/create-label.feature') { name: 'childaroot',parentLabelId:#(root.response.id)}
+    * def supplyChainResponse = call read('classpath:feature/supplychain/create-supplychain.feature') {supplyChainName: supply-chain-1, parentLabelId: #(rootChildResponse.response.id)}
+    * configure headers = call read('classpath:headers.js') { token: #(defaultTestData.adminToken)}
+    Given path '/api/supplychain'
+    And param name = 'supply-chain-1'
+    And param path = 'root,childaroot'
+    When method GET
+    Then status 200
+    And match response == { name: 'supply-chain-1', id: '#uuid', parentLabelId: '#uuid' }
 
   Scenario: query supplychain with local permission READ should return a 200
     * def info = call read('classpath:create-local-authorized-account.js') {permissions: ["READ"]}
     * def supplyChain = call read('create-supplychain.feature') {supplyChainName: supply-chain-name, parentLabelId: #(info.labelId)}
     * configure headers = call read('classpath:headers.js') { token: #(info.token)}
     Given path '/api/supplychain'
-    And param supplyChainName = 'supply-chain-name'
-    And param pathToRoot = 'otherlabel'
+    And param name = 'supply-chain-name'
+    And param path = 'otherlabel'
     When method GET
     Then status 200
     And match response == { name: 'supply-chain-name', id: '#(supplyChain.response.id)', parentLabelId: '#(info.labelId)' }
@@ -181,8 +193,8 @@ Feature: SupplyChain
     * def supplyChain = call read('create-supplychain.feature') {supplyChainName: supply-chain-name, parentLabelId: #(defaultTestData.defaultRootLabel.id)}
     * configure headers = call read('classpath:headers.js') { username: #(keyPair.keyId), password: #(keyPair.hashedKeyPassphrase)}
     Given path '/api/supplychain'
-    And param supplyChainName = 'supply-chain-name'
-    And param pathToRoot = 'default_root_label'
+    And param name = 'supply-chain-name'
+    And param path = 'default_root_label'
     When method GET
     Then status 200
     And match response == { name: 'supply-chain-name', id: '#(supplyChain.response.id)', parentLabelId: '#(defaultTestData.defaultRootLabel.id)' }
@@ -192,8 +204,8 @@ Feature: SupplyChain
     * def supplyChain = call read('create-supplychain.feature') {supplyChainName: supply-chain-name, parentLabelId: #(defaultTestData.defaultRootLabel.id)}
     * configure headers = call read('classpath:headers.js') { username: #(keyPair.keyId), password: #(keyPair.hashedKeyPassphrase)}
     Given path '/api/supplychain'
-    And param supplyChainName = 'supply-chain-name'
-    And param pathToRoot = 'incorrect search term'
+    And param name = 'supply-chain-name'
+    And param path = 'incorrect search term'
     When method GET
     Then status 403
 
@@ -202,8 +214,8 @@ Feature: SupplyChain
     * def supplyChain = call read('create-supplychain.feature') {supplyChainName: supply-chain-name, parentLabelId: #(info.labelId)}
     * configure headers = call read('classpath:headers.js') { token: #(info.token)}
     Given path '/api/supplychain'
-    And param supplyChainName = 'supply-chain-name'
-    And param pathToRoot = 'otherlabel'
+    And param name = 'supply-chain-name'
+    And param path = 'otherlabel'
     When method GET
     Then status 403
 
@@ -212,8 +224,8 @@ Feature: SupplyChain
     * def supplyChain = call read('create-supplychain.feature') {supplyChainName: supply-chain-name, parentLabelId: #(info.labelId)}
     * configure headers = call read('classpath:headers.js') { token: #(info.token)}
     Given path '/api/supplychain'
-    And param supplyChainName = 'supply-chain-name'
-    And param pathToRoot = 'otherlabel'
+    And param name = 'supply-chain-name'
+    And param path = 'otherlabel'
     When method GET
     Then status 200
     And match response == { name: 'supply-chain-name', id: '#(supplyChain.response.id)', parentLabelId: '#(info.labelId)' }
@@ -221,7 +233,7 @@ Feature: SupplyChain
   Scenario: query supplychain with name and non existing label should return a 404
     * def result = call read('create-supplychain-with-label.feature') { supplyChainName: 'supply-chain-name'}
     Given path '/api/supplychain'
-    And param supplyChainName = 'supply-chain-name'
-    And param pathToRoot = 'otherlabel'
+    And param name = 'supply-chain-name'
+    And param path = 'otherlabel'
     When method GET
     Then status 404

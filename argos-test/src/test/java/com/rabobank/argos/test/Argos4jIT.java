@@ -83,7 +83,7 @@ class Argos4jIT {
         Argos4jSettings settings = Argos4jSettings.builder()
                 .argosServerBaseUrl(properties.getApiBaseUrl() + "/api")
                 .supplyChainName("test-supply-chain")
-                .pathToLabelRoot(List.of("child_label", "root_label"))
+                .path(List.of("root_label", "child_label"))
                 .signingKeyId(nonPersonalAccount.getKeyId())
                 .build();
         Argos4j argos4j = new Argos4j(settings);
