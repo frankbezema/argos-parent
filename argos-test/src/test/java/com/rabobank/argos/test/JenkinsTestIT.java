@@ -51,6 +51,7 @@ import java.util.stream.Stream;
 
 import static com.rabobank.argos.test.ServiceStatusHelper.getHierarchyApi;
 import static com.rabobank.argos.test.ServiceStatusHelper.getSupplychainApi;
+import static com.rabobank.argos.test.ServiceStatusHelper.waitForArgosIntegrationTestServiceToStart;
 import static com.rabobank.argos.test.ServiceStatusHelper.waitForArgosServiceToStart;
 import static com.rabobank.argos.test.TestServiceHelper.createDefaultTestData;
 import static com.rabobank.argos.test.TestServiceHelper.signAndStoreLayout;
@@ -85,6 +86,7 @@ class JenkinsTestIT {
         XLDeployHelper.initXLDeploy();
         waitForJenkinsToStart();
         waitForArgosServiceToStart();
+        waitForArgosIntegrationTestServiceToStart();
     }
 
     @BeforeEach
@@ -171,22 +173,6 @@ class JenkinsTestIT {
             Stream.of(build.details().getConsoleOutputText().split("\\r?\\n")).forEach(log::error);
         }
         assertThat(build.details().getResult(), is(BuildResult.SUCCESS));
-    }
-
-    public void verifyEndProducts() throws MalformedURLException {
-
-        Argos4jSettings settings = Argos4jSettings.builder()
-                .argosServerBaseUrl(properties.getApiBaseUrl() + "/api")
-                .supplyChainName("argos-test-app")
-                .pathToLabelRoot(List.of("child_label", "root_label"))
-                .signingKeyId(personalAccount.getKeyId())
-                .build();
-        VerifyBuilder verifyBuilder = new Argos4j(settings).getVerifyBuilder();
-        verifyBuilder.addFileCollector(RemoteFileCollector.builder()
-                .artifactUri("argos-test-app.war")
-                .url(new URL(properties.getNexusWarSnapshotUrl())).build());
-        assertTrue(verifyBuilder.verify(personalAccount.getPassphrase().toCharArray()).isRunIsValid());
-
     }
 
     private JobWithDetails getJob(String name) throws IOException {

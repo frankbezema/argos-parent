@@ -1135,8 +1135,12 @@ components:
           type: string
         stepName:
           type: string
+          minLength: 1
+          pattern: '^([A-Za-z0-9_-]*)?$'
         layoutSegmentName:
           type: string
+          minLength: 1
+          pattern: '^([A-Za-z0-9_-]*)?$'
         command:
           type: array
           items:
@@ -1282,6 +1286,8 @@ components:
       properties:
         name:
           type: string
+          minLength: 1
+          pattern: '^([A-Za-z0-9_-]*)?$'
         steps:
           type: array
           minItems: 1
@@ -1326,6 +1332,8 @@ components:
       properties:
         name:
           type: string
+          minLength: 1
+          pattern: '^([A-Za-z0-9_-]*)?$'
         authorizedKeyIds:
           type: array
           minItems: 1

@@ -1,8 +1,8 @@
 {
   "link": {
     "runId": "69af2dd",
-    "layoutSegmentName": "segment 1",
-    "stepName": "build segment 1",
+    "layoutSegmentName": "segment1",
+    "stepName": "buildsegment1",
     "materials": [
       {
         "uri": "src/pom.xml",

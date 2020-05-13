@@ -88,13 +88,13 @@ services:
       - xldeploy
 
   xldeploy:
-    image: argosnotary/argos-xldeploy:0.0.1-RC4
+    build:
+      context: .
+      dockerfile: XLDeployDockerfile
     environment:
       ADMIN_PASSWORD: admin
       ACCEPT_EULA: Y
       JAVA_OPTS: '-Xmx1g'
-    volumes:
-      - ./xldeploy_config/argos.properties:/opt/xebialabs/xl-deploy-server/conf/argos.properties
     ports:
       - 4516:4516
       

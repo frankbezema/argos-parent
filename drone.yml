@@ -99,6 +99,21 @@ steps:
   - pitest
   - sonar
   
+- name: build xldeploy
+  image: plugins/docker
+  settings:
+    context: argos-docker
+    dockerfile: argos-docker/XLDeployDockerfile
+    password:
+      from_secret: docker_login_token
+    repo: argosnotary/argos-xldeploy-ittest
+    tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
+    username:
+      from_secret: docker_login_user
+  depends_on:
+  - pitest
+  - sonar
+  
 - name: mongodb
   image: mongo:4.2.1-bionic
   detach: true
@@ -154,6 +169,16 @@ steps:
   depends_on:
   - build argos jenkins image
 
+- name: xldeploy
+  image: argosnotary/argos-xldeploy-ittest:${DRONE_BRANCH/\//_}${DRONE_TAG}
+  pull: always
+  detach: true
+  environment:
+    ADMIN_PASSWORD: admin
+    ACCEPT_EULA: Y
+  depends_on:
+  - build xldeploy
+
 - name: regression test
   image: argosnotary/argos-build:latest
   commands:
@@ -198,17 +223,34 @@ steps:
     - argos4j/dependency-reduced-pom.xml
     - argos-service/target/*.jar
     - argos-service/target/pom.xml
-    - argos/target/*.hpi
-    - argos/target/pom.xml
+    - argos-jenkins-plugin/target/*.hpi
+    - argos-jenkins-plugin/pom.xml
     key:
       from_secret: argos-signing-private-key
     passphrase:
       from_secret: argos-signing-private-key-passphrase
-  when:
-    event:
-    - tag
   depends_on:
   - regression test
+
+- name: deploy argos4j snapshot to sonatype
+  image: rabobanknl/argos-build:latest
+  volumes:
+    - name: mvn_cache
+      path: /root/.m2/repository
+  environment:
+    ossrh_username:
+      from_secret: ossrh_login_user
+    ossrh_password:
+      from_secret: ossrh_login_password
+  commands:
+    - cp argos4j/dependency-reduced-pom.xml argos4j/target/pom.xml
+    - cp argos4j/dependency-reduced-pom.xml.asc argos4j/target/pom.xml.asc
+    - mvn -q -f argos4j/pom.xml deploy:deploy-file -Durl=https://oss.sonatype.org/content/repositories/snapshots
+  depends_on:
+    - sign artifacts
+  when:
+    event:
+      - push
 
 - name: deploy release to sonatype
   image: argosnotary/argos-build:latest
@@ -217,7 +259,7 @@ steps:
   - cp argos4j/dependency-reduced-pom.xml.asc argos4j/target/pom.xml.asc
   - mvn -q -f argos4j/pom.xml deploy:deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/
   - mvn -q -f argos-service/pom.xml deploy:deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/
-  - mvn -q -f argos/pom.xml deploy:deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/
+  - mvn -q -f argos-jenkins-plugin/pom.xml deploy:deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/
   environment:
     ossrh_password:
       from_secret: ossrh_login_password
@@ -238,9 +280,10 @@ steps:
     webhook:
       from_secret: slack_webhook
   depends_on:
+  - regression test
+  - deploy argos4j snapshot to sonatype
   - release argos service image
   - deploy release to sonatype
-  - regression test
 
 services:
 - name: nexus
@@ -249,12 +292,6 @@ services:
 - name: tomcat
   image: argosnotary/xld-tomcat-target:9.0
   
-- name: xldeploy
-  image: argosnotary/argos-xldeploy:0.0.1-RC4
-  environment:
-    ADMIN_PASSWORD: admin
-    ACCEPT_EULA: Y
-
 volumes:
 - name: mvn_cache
   temp: {}

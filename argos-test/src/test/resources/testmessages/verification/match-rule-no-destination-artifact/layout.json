@@ -22,12 +22,12 @@
         "pattern": "target/argos-test-0.0.1-SNAPSHOT.jar",
         "destinationType": "PRODUCTS",
         "destinationStepName": "test",
-        "destinationSegmentName": "segment 1"
+        "destinationSegmentName": "segment1"
       }
     ],
     "layoutSegments": [
       {
-        "name": "segment 1",
+        "name": "segment1",
         "steps": [
           {
             "name": "build",
@@ -64,7 +64,7 @@
                 "destinationStepName": "build",
                 "sourcePathPrefix": "",
                 "destinationPathPrefix": "target/",
-                "destinationSegmentName": "segment 1"
+                "destinationSegmentName": "segment1"
               }
             ],
             "expectedProducts": [
@@ -75,7 +75,7 @@
                 "destinationStepName": "build",
                 "sourcePathPrefix": "source/",
                 "destinationPathPrefix": "",
-                "destinationSegmentName": "segment 1"
+                "destinationSegmentName": "segment1"
               }
             ]
           }
