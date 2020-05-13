@@ -44,7 +44,7 @@ public class RestArtifactCollectorTest {
     }
 
     @Test
-    void emptytype() throws URISyntaxException {
+    void emptyType() throws URISyntaxException {
         assertThat(validate(new RestArtifactCollector()
                 .name("name")
                 .uri(new URI("http://uri.com"))
