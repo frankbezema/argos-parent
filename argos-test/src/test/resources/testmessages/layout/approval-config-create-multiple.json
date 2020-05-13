@@ -10,7 +10,7 @@
         "uri": "https://deploy.nl"
       },
       {
-        "name": "xkdeploy-2",
+        "name": "xkdeploy2",
         "type": "XLDEPLOY",
         "uri": "http://xldeploy2.nl"
       }
