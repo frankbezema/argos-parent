@@ -1550,6 +1550,7 @@ components:
       properties:
         name:
           type: string
+          pattern: '^([a-z]{1}[a-z0-9_]*)?$'
         type:
           type: string
           enum:
