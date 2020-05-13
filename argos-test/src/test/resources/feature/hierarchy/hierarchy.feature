@@ -73,6 +73,7 @@ Feature: Hierarchy
     When method GET
     Then status 200
     * def expectedResponse =  read('classpath:testmessages/hierarchy/expected-hierarchy-rootnodes-none.json')
+    * print response
     And match response == expectedResponse
 
   Scenario: get root nodes with HierarchyMode maxdepth should return maxdepth descendant entries only

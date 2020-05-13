@@ -139,6 +139,18 @@ Feature: Layout
   Scenario: create ApprovalConfiguration should return a 201
     * def response = call read('create-approval-config.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1,layoutPath:#(layoutPath)}
 
+  Scenario: create ApprovalConfiguration with repeated posts should return a 200
+    * call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
+    Given path layoutPath+'/approvalconfig'
+    And request read('classpath:testmessages/layout/approval-config-create-multiple.json')
+    When method POST
+    Then status 200
+    Given path layoutPath+'/approvalconfig'
+    And request read('classpath:testmessages/layout/approval-config-create-multiple.json')
+    When method POST
+    Then status 200
+    And match response == read('classpath:testmessages/layout/approval-config-create-multiple-response.json')
+
   Scenario: create ApprovalConfiguration without LAYOUT_ADD permission should return a 403
     * call read('create-layout.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLayout), keyNumber:1}
     * configure headers = call read('classpath:headers.js') { token: #(tokenWithoutLayoutAddPermissions)}

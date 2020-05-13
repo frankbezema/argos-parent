@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -125,7 +126,7 @@ public class RestServiceExceptionHandler {
 
     private RestValidationError createValidationError(LayoutValidationException ex) {
         RestValidationError restValidationError = new RestValidationError();
-        List<RestValidationMessage> validationMessages = ex.getValidationMessages();
+        List<RestValidationMessage> validationMessages = new ArrayList(ex.getValidationMessages());
         sortValidationMessages(validationMessages);
         restValidationError.setMessages(validationMessages);
         return restValidationError;

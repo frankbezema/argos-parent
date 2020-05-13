@@ -43,7 +43,6 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -95,7 +94,6 @@ public class LayoutRestService implements LayoutApi {
     @Override
     @PermissionCheck(permissions = Permission.LAYOUT_ADD)
     public ResponseEntity<List<RestApprovalConfiguration>> createApprovalConfigurations(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, @Valid List<RestApprovalConfiguration> restApprovalConfigurations) {
-
         List<ApprovalConfiguration> approvalConfigurations = restApprovalConfigurations.stream()
                 .map(restApprovalConfiguration -> convertAndValidate(supplyChainId, restApprovalConfiguration))
                 .collect(Collectors.toList());
@@ -110,7 +108,6 @@ public class LayoutRestService implements LayoutApi {
         ApprovalConfiguration approvalConfiguration = approvalConfigurationConverter.convertFromRestApprovalConfiguration(restApprovalConfiguration);
         approvalConfiguration.setSupplyChainId(supplyChainId);
         verifyStepNameAndSegmentNameExistInLayout(approvalConfiguration);
-        verifyConfigurationDoesNotExistForSegmentAndStepName(approvalConfiguration);
         return approvalConfiguration;
     }
 
@@ -155,16 +152,6 @@ public class LayoutRestService implements LayoutApi {
                 .collect(Collectors.toList()));
     }
 
-    private void verifyConfigurationDoesNotExistForSegmentAndStepName(ApprovalConfiguration approvalConfiguration) {
-        Optional<ApprovalConfiguration> storedApprovalConf = approvalConfigurationRepository
-                .findBySupplyChainIdSegmentNameAndStepName(approvalConfiguration.getSupplyChainId(), approvalConfiguration.getSegmentName(), approvalConfiguration.getStepName());
-        if (storedApprovalConf.isPresent()) {
-            throwLayoutValidationException(
-                    SEGMENT_NAME,
-                    "approval configuration already exists for: " + approvalConfiguration.getStepName() + " in segment " + approvalConfiguration.getSegmentName()
-            );
-        }
-    }
 
     private void verifyStepNameAndSegmentNameExistInLayout(ApprovalConfiguration approvalConfiguration) {
         Map<String, Set<String>> segmentStepNameCombinations = getSegmentsAndSteps(approvalConfiguration);
@@ -205,7 +192,7 @@ public class LayoutRestService implements LayoutApi {
         return !segmentStepNameCombinations.containsKey(approvalConfiguration.getSegmentName());
     }
 
-    private static void throwLayoutValidationException(String field, String message) {
+    private void throwLayoutValidationException(String field, String message) {
         throw LayoutValidationException
                 .builder()
                 .validationMessages(List

@@ -147,9 +147,6 @@ class LayoutRestServiceTest {
         when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
         when(layoutMetaBlock.getLayout()).thenReturn(layout);
         when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
-        when(approvalConfigurationRepository
-                .findBySupplyChainIdSegmentNameAndStepName(SUPPLY_CHAIN_ID, SEGMENT_NAME, STEP_NAME))
-                .thenReturn(Optional.empty());
         when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
         when(approvalConfiguration.getStepName()).thenReturn(STEP_NAME);
         when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
@@ -199,30 +196,6 @@ class LayoutRestServiceTest {
         assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
         assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("stepName"));
         assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("step with name: wrong-stepname in segment: segmentName does not exist in layout"));
-    }
-
-
-    @Test
-    void createApprovalConfigurationWithExistingConfigShouldThrowValidationError() {
-        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
-        when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
-        when(layoutMetaBlock.getLayout()).thenReturn(layout);
-        when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
-        when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
-        when(approvalConfiguration.getStepName()).thenReturn(STEP_NAME);
-        when(approvalConfigurationRepository
-                .findBySupplyChainIdSegmentNameAndStepName(SUPPLY_CHAIN_ID, SEGMENT_NAME, STEP_NAME))
-                .thenReturn(Optional.of(approvalConfiguration));
-        when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
-                .thenReturn(approvalConfiguration);
-
-        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () ->
-                service.createApprovalConfigurations(SUPPLY_CHAIN_ID, List.of(restApprovalConfiguration))
-        );
-
-        assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
-        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("segmentName"));
-        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("approval configuration already exists for: stepName in segment segmentName"));
     }
 
 
