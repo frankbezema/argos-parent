@@ -26,11 +26,10 @@ import static com.rabobank.argos.service.adapter.in.rest.ValidateHelper.validate
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 
-public class RestArtifactCollectorTest {
+public class RestArtifactCollectorSpecificationTest {
 
     @Test
     void incorrectName() throws URISyntaxException {
-
         assertThat(validate(new RestArtifactCollectorSpecification()
                 .name("Name$")
                 .uri(new URI("http://uri.com"))
@@ -39,6 +38,7 @@ public class RestArtifactCollectorTest {
                 "name", "must match \"^([A-Za-z0-9_-]*)?$\"")));
 
     }
+
 
     @Test
     void emptyName() throws URISyntaxException {

@@ -18,6 +18,8 @@ package com.rabobank.argos.service.adapter.in.rest.layout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestApprovalConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.net.URISyntaxException;
+
 import static com.rabobank.argos.service.adapter.in.rest.ValidateHelper.expectedErrors;
 import static com.rabobank.argos.service.adapter.in.rest.ValidateHelper.validate;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,4 +33,19 @@ public class RestApprovalConfigurationTest {
                 "stepName", "must not be null")));
     }
 
+    @Test
+    void incorrectStepName() throws URISyntaxException {
+        assertThat(validate(new RestApprovalConfiguration().stepName("name%").segmentName("segment")
+        ), contains(expectedErrors(
+                "stepName", "must match \"^([A-Za-z0-9_-]*)?$\"")));
+
+    }
+
+    @Test
+    void incorrectSegmentName() throws URISyntaxException {
+        assertThat(validate(new RestApprovalConfiguration().stepName("name").segmentName("&segment")
+        ), contains(expectedErrors(
+                "segmentName", "must match \"^([A-Za-z0-9_-]*)?$\"")));
+
+    }
 }
