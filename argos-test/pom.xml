@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>argos-test</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.1-RC5-SNAPSHOT</version>
+    <version>0.0.1-RC5</version>
     <groupId>com.rabobank.argos</groupId>
     <description>Test application for Argos Supply Chain Notary</description>
     <url>https://github.com/argosnotary/argos-parent/argos-test</url>
@@ -424,7 +424,7 @@
                                     http://nexus:8081/nexus/service/local/artifact/maven/redirect?r=snapshots&amp;g=com.rabobank.argos&amp;a=argos-test-app&amp;v=1.0-SNAPSHOT&amp;e=war
                                 </nexus.war-snapshot-url>
                                 <argos-test-app.branch>
-                                    npa-to-serviceaccount
+                                    master
                                 </argos-test-app.branch>
                             </systemPropertyVariables>
                         </configuration>

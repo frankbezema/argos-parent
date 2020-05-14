@@ -21,7 +21,7 @@
     <parent>
         <artifactId>argos-parent</artifactId>
         <groupId>com.rabobank.argos</groupId>
-        <version>0.0.1-RC5-SNAPSHOT</version>
+        <version>0.0.1-RC5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <properties>

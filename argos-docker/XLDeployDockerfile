@@ -14,6 +14,6 @@
 # limitations under the License.
 #
 
-FROM argosnotary/argos-xldeploy-snapshot:npa-to-serviceaccount
+FROM argosnotary/argos-xldeploy-snapshot:master
 
 COPY xldeploy_config/argos.properties /opt/xebialabs/xl-deploy-server/conf/argos.properties
