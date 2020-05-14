@@ -1,0 +1,12 @@
+{
+  "approvalConfigurationId": "x",
+  "stepName": "stepName",
+  "segmentName": "segmentName",
+  "artifactCollectorSpecifications": [
+    {
+      "name": "xl deploy rabobank",
+      "type": "XLDEPLOY",
+      "uri": "http://xldeploy.nl"
+    }
+  ]
+}

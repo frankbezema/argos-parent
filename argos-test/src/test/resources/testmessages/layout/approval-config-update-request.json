@@ -1,0 +1,11 @@
+{
+  "stepName": "stepName2",
+  "segmentName": "segment1",
+  "artifactCollectorSpecifications": [
+    {
+      "name": "xldeploy",
+      "type": "XLDEPLOY",
+      "uri": "http://xldeploy.com"
+    }
+  ]
+}

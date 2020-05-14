@@ -1,0 +1,31 @@
+[
+  {
+    "approvalConfigurationId": "#uuid",
+    "stepName": "stepName2",
+    "segmentName": "segment1",
+    "artifactCollectorSpecifications": [
+      {
+        "name": "xldeploy1",
+        "type": "XLDEPLOY",
+        "uri": "https://deploy.nl"
+      },
+      {
+        "name": "xkdeploy2",
+        "type": "XLDEPLOY",
+        "uri": "http://xldeploy2.nl"
+      }
+    ]
+  },
+  {
+    "approvalConfigurationId": "#uuid",
+    "stepName": "build",
+    "segmentName": "segment1",
+    "artifactCollectorSpecifications": [
+      {
+        "name": "xldeploy1",
+        "type": "XLDEPLOY",
+        "uri": "http://deploy.nl"
+      }
+    ]
+  }
+]

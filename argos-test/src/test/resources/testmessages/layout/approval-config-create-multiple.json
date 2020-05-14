@@ -1,0 +1,31 @@
+[
+  {
+    "approvalConfigurationId": "9e728f1a-9cec-448c-9ed7-82bad39681e0",
+    "stepName": "stepName2",
+    "segmentName": "segment1",
+    "artifactCollectorSpecifications": [
+      {
+        "name": "xldeploy1",
+        "type": "XLDEPLOY",
+        "uri": "https://deploy.nl"
+      },
+      {
+        "name": "xkdeploy2",
+        "type": "XLDEPLOY",
+        "uri": "http://xldeploy2.nl"
+      }
+    ]
+  },
+  {
+    "approvalConfigurationId": "9f027bc7-09a4-4042-a687-f2449be58fc7",
+    "stepName": "build",
+    "segmentName": "segment1",
+    "artifactCollectorSpecifications": [
+      {
+        "name": "xldeploy1",
+        "type": "XLDEPLOY",
+        "uri": "http://deploy.nl"
+      }
+    ]
+  }
+]

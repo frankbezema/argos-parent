@@ -48,7 +48,6 @@ public class DefaultLocalPermissionCheckDataExtractor implements LocalPermission
     private Optional<String> getValue(Object value, LabelIdCheckParam checkParam) {
         LabelIdExtractor labelIdExtractor = applicationContext.getBean(checkParam.dataExtractor(), LabelIdExtractor.class);
         return labelIdExtractor.extractLabelId(checkParam, value);
-
     }
 
 }

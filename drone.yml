@@ -233,7 +233,7 @@ steps:
   - regression test
 
 - name: deploy argos4j snapshot to sonatype
-  image: rabobanknl/argos-build:latest
+  image: argosnotary/argos-build:latest
   volumes:
     - name: mvn_cache
       path: /root/.m2/repository
