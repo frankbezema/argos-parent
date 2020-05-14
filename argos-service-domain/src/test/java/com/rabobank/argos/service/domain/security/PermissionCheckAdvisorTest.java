@@ -111,7 +111,7 @@ class PermissionCheckAdvisorTest {
     }
 
     @Test
-    void checkPermissionsNpaHasNoGlobalPermission() {
+    void checkPermissionsSaHasNoGlobalPermission() {
         mockPermissionCheck();
         when(permissionCheck.permissions()).thenReturn(new Permission[]{Permission.LOCAL_PERMISSION_EDIT});
         when(accountSecurityContext.getGlobalPermission()).thenReturn(Collections.emptySet());

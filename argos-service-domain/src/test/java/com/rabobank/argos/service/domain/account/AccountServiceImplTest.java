@@ -17,8 +17,8 @@ package com.rabobank.argos.service.domain.account;
 
 import com.rabobank.argos.domain.ArgosError;
 import com.rabobank.argos.domain.account.Account;
-import com.rabobank.argos.domain.account.NonPersonalAccount;
-import com.rabobank.argos.domain.account.NonPersonalAccountKeyPair;
+import com.rabobank.argos.domain.account.ServiceAccount;
+import com.rabobank.argos.domain.account.ServiceAccountKeyPair;
 import com.rabobank.argos.domain.account.PersonalAccount;
 import com.rabobank.argos.domain.key.KeyPair;
 import com.rabobank.argos.domain.permission.LocalPermissions;
@@ -74,7 +74,7 @@ class AccountServiceImplTest {
     private AccountServiceImpl accountService;
 
     @Mock
-    private NonPersonalAccountRepository nonPersonalAccountRepository;
+    private ServiceAccountRepository serviceAccountRepository;
 
     @Mock
     private PersonalAccountRepository personalAccountRepository;
@@ -89,16 +89,16 @@ class AccountServiceImplTest {
     private Role role;
 
     @Mock
-    private NonPersonalAccountKeyPair nonPersonalAccountKeyPair;
+    private ServiceAccountKeyPair serviceAccountKeyPair;
 
     @Mock
     private PersonalAccount existingAccount;
 
     @Mock
-    private NonPersonalAccount existingNonPersonalAccount;
+    private ServiceAccount existingServiceAccount;
 
     @Mock
-    private NonPersonalAccount nonPersonalAccount;
+    private ServiceAccount serviceAccount;
 
     @Mock
     private AccountSearchParams params;
@@ -123,7 +123,7 @@ class AccountServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        accountService = new AccountServiceImpl(nonPersonalAccountRepository, personalAccountRepository, roleRepository, accountSecurityContext);
+        accountService = new AccountServiceImpl(serviceAccountRepository, personalAccountRepository, roleRepository, accountSecurityContext);
     }
 
     @Test
@@ -204,10 +204,10 @@ class AccountServiceImplTest {
 
     @Test
     void activateNewKey() {
-        when(nonPersonalAccountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.of(nonPersonalAccount));
-        assertThat(accountService.activateNewKey(ACCOUNT_ID, nonPersonalAccountKeyPair), is(Optional.of(nonPersonalAccount)));
-        verify(nonPersonalAccount).setActiveKeyPair(nonPersonalAccountKeyPair);
-        verify(nonPersonalAccountRepository).update(nonPersonalAccount);
+        when(serviceAccountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.of(serviceAccount));
+        assertThat(accountService.activateNewKey(ACCOUNT_ID, serviceAccountKeyPair), is(Optional.of(serviceAccount)));
+        verify(serviceAccount).setActiveKeyPair(serviceAccountKeyPair);
+        verify(serviceAccountRepository).update(serviceAccount);
     }
 
     @Test
@@ -216,8 +216,8 @@ class AccountServiceImplTest {
     }
 
     @Test
-    void nonPersonalAccountKeyPairExists() {
-        when(nonPersonalAccountRepository.activeKeyExists(KEY_ID)).thenReturn(true);
+    void serviceAccountKeyPairExists() {
+        when(serviceAccountRepository.activeKeyExists(KEY_ID)).thenReturn(true);
         assertThat(accountService.keyPairExists(KEY_ID), is(true));
     }
 
@@ -233,9 +233,9 @@ class AccountServiceImplTest {
     }
 
     @Test
-    void nonPersonalAccountFindKeyPairByKeyId() {
-        when(nonPersonalAccount.getActiveKeyPair()).thenReturn(activeKeyPair);
-        when(nonPersonalAccountRepository.findByActiveKeyId(KEY_ID)).thenReturn(Optional.of(nonPersonalAccount));
+    void serviceAccountFindKeyPairByKeyId() {
+        when(serviceAccount.getActiveKeyPair()).thenReturn(activeKeyPair);
+        when(serviceAccountRepository.findByActiveKeyId(KEY_ID)).thenReturn(Optional.of(serviceAccount));
         assertThat(accountService.findKeyPairByKeyId(KEY_ID), is(Optional.of(activeKeyPair)));
     }
 
@@ -324,27 +324,27 @@ class AccountServiceImplTest {
 
     @Test
     void save() {
-        accountService.save(nonPersonalAccount);
-        verify(nonPersonalAccountRepository).save(nonPersonalAccount);
+        accountService.save(serviceAccount);
+        verify(serviceAccountRepository).save(serviceAccount);
     }
 
     @Test
-    void findNonPersonalAccountById() {
-        when(nonPersonalAccountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.of(nonPersonalAccount));
-        assertThat(accountService.findNonPersonalAccountById(ACCOUNT_ID), is(Optional.of(nonPersonalAccount)));
+    void findServiceAccountById() {
+        when(serviceAccountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.of(serviceAccount));
+        assertThat(accountService.findServiceAccountById(ACCOUNT_ID), is(Optional.of(serviceAccount)));
     }
 
     @Test
     void update() {
-        when(nonPersonalAccount.getName()).thenReturn(ACCOUNT_NAME);
-        when(nonPersonalAccount.getEmail()).thenReturn(EMAIL);
-        when(nonPersonalAccount.getParentLabelId()).thenReturn(PARENT_LABEL_ID);
-        when(nonPersonalAccountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.of(existingNonPersonalAccount));
-        assertThat(accountService.update(ACCOUNT_ID, nonPersonalAccount), is(Optional.of(existingNonPersonalAccount)));
-        verify(nonPersonalAccountRepository).update(existingNonPersonalAccount);
-        verify(existingNonPersonalAccount).setEmail(EMAIL);
-        verify(existingNonPersonalAccount).setName(ACCOUNT_NAME);
-        verify(existingNonPersonalAccount).setParentLabelId(PARENT_LABEL_ID);
+        when(serviceAccount.getName()).thenReturn(ACCOUNT_NAME);
+        when(serviceAccount.getEmail()).thenReturn(EMAIL);
+        when(serviceAccount.getParentLabelId()).thenReturn(PARENT_LABEL_ID);
+        when(serviceAccountRepository.findById(ACCOUNT_ID)).thenReturn(Optional.of(existingServiceAccount));
+        assertThat(accountService.update(ACCOUNT_ID, serviceAccount), is(Optional.of(existingServiceAccount)));
+        verify(serviceAccountRepository).update(existingServiceAccount);
+        verify(existingServiceAccount).setEmail(EMAIL);
+        verify(existingServiceAccount).setName(ACCOUNT_NAME);
+        verify(existingServiceAccount).setParentLabelId(PARENT_LABEL_ID);
     }
 
     @Test

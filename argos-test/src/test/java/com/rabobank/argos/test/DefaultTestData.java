@@ -31,7 +31,7 @@ public class DefaultTestData {
     private String adminToken;
     private Map<String, PersonalAccount> personalAccounts = new HashMap<>();
     private RestLabel defaultRootLabel;
-    private Map<String, NonPersonalAccount> nonPersonalAccount = new HashMap<>();
+    private Map<String, ServiceAccount> serviceAccount = new HashMap<>();
 
     @Builder
     @Getter
@@ -47,7 +47,7 @@ public class DefaultTestData {
     @Builder
     @Getter
     @Setter
-    public static class NonPersonalAccount {
+    public static class ServiceAccount {
         private String keyId;
         private String passphrase;
         private String hashedKeyPassphrase;

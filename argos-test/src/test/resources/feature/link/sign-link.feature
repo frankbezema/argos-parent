@@ -22,7 +22,7 @@ Feature: sign link
     * def linkToBeSigned = __arg.json
     * def keyNumber = __arg.keyNumber
     * def defaultTestData = call read('classpath:default-test-data.js')
-    * def keyPair = defaultTestData.nonPersonalAccount['default-npa'+keyNumber]
+    * def keyPair = defaultTestData.serviceAccount['default-sa'+keyNumber]
 
   Scenario: sign the layout should return 200
     Given path '/integration-test/signLinkMetaBlock'

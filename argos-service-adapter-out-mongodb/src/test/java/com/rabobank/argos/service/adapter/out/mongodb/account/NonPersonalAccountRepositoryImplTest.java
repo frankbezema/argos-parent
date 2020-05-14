@@ -17,7 +17,7 @@ package com.rabobank.argos.service.adapter.out.mongodb.account;
 
 import com.mongodb.client.result.UpdateResult;
 import com.rabobank.argos.domain.ArgosError;
-import com.rabobank.argos.domain.account.NonPersonalAccount;
+import com.rabobank.argos.domain.account.ServiceAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +33,7 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.Optional;
 
-import static com.rabobank.argos.service.adapter.out.mongodb.account.NonPersonalAccountRepositoryImpl.COLLECTION;
+import static com.rabobank.argos.service.adapter.out.mongodb.account.ServiceAccountRepositoryImpl.COLLECTION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class NonPersonalAccountRepositoryImplTest {
+class ServiceAccountRepositoryImplTest {
 
     private static final String ACCOUNT_ID = "accountId";
     private static final String ACCOUNT_NAME = "accountName";
@@ -55,10 +55,10 @@ class NonPersonalAccountRepositoryImplTest {
 
     @Mock
     private MongoTemplate template;
-    private NonPersonalAccountRepositoryImpl repository;
+    private ServiceAccountRepositoryImpl repository;
 
     @Mock
-    private NonPersonalAccount nonPersonalAccount;
+    private ServiceAccount serviceAccount;
 
     @Captor
     private ArgumentCaptor<Query> queryArgumentCaptor;
@@ -77,77 +77,77 @@ class NonPersonalAccountRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        repository = new NonPersonalAccountRepositoryImpl(template);
+        repository = new ServiceAccountRepositoryImpl(template);
     }
 
     @Test
     void save() {
-        repository.save(nonPersonalAccount);
-        verify(template).save(nonPersonalAccount, COLLECTION);
+        repository.save(serviceAccount);
+        verify(template).save(serviceAccount, COLLECTION);
     }
 
     @Test
     void saveDuplicateKeyException() {
-        when(nonPersonalAccount.getName()).thenReturn(ACCOUNT_NAME);
-        when(nonPersonalAccount.getParentLabelId()).thenReturn(PARENT_LABEL_ID);
-        doThrow(duplicateKeyException).when(template).save(nonPersonalAccount, COLLECTION);
-        ArgosError argosError = assertThrows(ArgosError.class, () -> repository.save(nonPersonalAccount));
-        assertThat(argosError.getMessage(), is("non personal account with name: accountName and parentLabelId: parentLabelId already exists"));
+        when(serviceAccount.getName()).thenReturn(ACCOUNT_NAME);
+        when(serviceAccount.getParentLabelId()).thenReturn(PARENT_LABEL_ID);
+        doThrow(duplicateKeyException).when(template).save(serviceAccount, COLLECTION);
+        ArgosError argosError = assertThrows(ArgosError.class, () -> repository.save(serviceAccount));
+        assertThat(argosError.getMessage(), is("service account with name: accountName and parentLabelId: parentLabelId already exists"));
         assertThat(argosError.getCause(), sameInstance(duplicateKeyException));
         assertThat(argosError.getLevel(), is(ArgosError.Level.WARNING));
     }
 
     @Test
     void findById() {
-        when(template.findOne(any(), eq(NonPersonalAccount.class), eq(COLLECTION))).thenReturn(nonPersonalAccount);
-        assertThat(repository.findById(ACCOUNT_ID), is(Optional.of(nonPersonalAccount)));
-        verify(template).findOne(queryArgumentCaptor.capture(), eq(NonPersonalAccount.class), eq(COLLECTION));
+        when(template.findOne(any(), eq(ServiceAccount.class), eq(COLLECTION))).thenReturn(serviceAccount);
+        assertThat(repository.findById(ACCOUNT_ID), is(Optional.of(serviceAccount)));
+        verify(template).findOne(queryArgumentCaptor.capture(), eq(ServiceAccount.class), eq(COLLECTION));
         assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"accountId\" : \"accountId\"}, Fields: {}, Sort: {}"));
     }
 
     @Test
     void updateFound() {
-        when(nonPersonalAccount.getAccountId()).thenReturn(ACCOUNT_ID);
+        when(serviceAccount.getAccountId()).thenReturn(ACCOUNT_ID);
         when(template.getConverter()).thenReturn(converter);
-        when(template.updateFirst(any(), any(), eq(NonPersonalAccount.class), eq(COLLECTION))).thenReturn(updateResult);
-        repository.update(nonPersonalAccount);
-        verify(template).updateFirst(queryArgumentCaptor.capture(), updateArgumentCaptor.capture(), eq(NonPersonalAccount.class), eq(COLLECTION));
+        when(template.updateFirst(any(), any(), eq(ServiceAccount.class), eq(COLLECTION))).thenReturn(updateResult);
+        repository.update(serviceAccount);
+        verify(template).updateFirst(queryArgumentCaptor.capture(), updateArgumentCaptor.capture(), eq(ServiceAccount.class), eq(COLLECTION));
         assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"accountId\" : \"accountId\"}, Fields: {}, Sort: {}"));
-        verify(converter).write(eq(nonPersonalAccount), any());
+        verify(converter).write(eq(serviceAccount), any());
         assertThat(updateArgumentCaptor.getValue().toString(), is("{}"));
     }
 
     @Test
     void updateDuplicateKeyException() {
-        when(nonPersonalAccount.getAccountId()).thenReturn(ACCOUNT_ID);
+        when(serviceAccount.getAccountId()).thenReturn(ACCOUNT_ID);
         when(template.getConverter()).thenReturn(converter);
-        when(template.updateFirst(any(), any(), eq(NonPersonalAccount.class), eq(COLLECTION))).thenThrow(duplicateKeyException);
-        ArgosError argosError = assertThrows(ArgosError.class, () -> repository.update(nonPersonalAccount));
+        when(template.updateFirst(any(), any(), eq(ServiceAccount.class), eq(COLLECTION))).thenThrow(duplicateKeyException);
+        ArgosError argosError = assertThrows(ArgosError.class, () -> repository.update(serviceAccount));
         assertThat(argosError.getCause(), sameInstance(duplicateKeyException));
     }
 
     @Test
     void activeKeyExists() {
-        when(template.exists(any(Query.class), eq(NonPersonalAccount.class), eq(COLLECTION))).thenReturn(true);
+        when(template.exists(any(Query.class), eq(ServiceAccount.class), eq(COLLECTION))).thenReturn(true);
         assertThat(repository.activeKeyExists(ACTIVE_KEY_ID), is(true));
-        verify(template).exists(queryArgumentCaptor.capture(), eq(NonPersonalAccount.class), eq(COLLECTION));
+        verify(template).exists(queryArgumentCaptor.capture(), eq(ServiceAccount.class), eq(COLLECTION));
         assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"activeKeyPair.keyId\" : \"activeKeyId\"}, Fields: {}, Sort: {}"));
     }
 
     @Test
     void findByActiveKeyId() {
-        when(template.findOne(any(Query.class), eq(NonPersonalAccount.class), eq(COLLECTION))).thenReturn(nonPersonalAccount);
-        assertThat(repository.findByActiveKeyId(ACTIVE_KEY_ID), equalTo(Optional.of(nonPersonalAccount)));
-        verify(template).findOne(queryArgumentCaptor.capture(), eq(NonPersonalAccount.class), eq(COLLECTION));
+        when(template.findOne(any(Query.class), eq(ServiceAccount.class), eq(COLLECTION))).thenReturn(serviceAccount);
+        assertThat(repository.findByActiveKeyId(ACTIVE_KEY_ID), equalTo(Optional.of(serviceAccount)));
+        verify(template).findOne(queryArgumentCaptor.capture(), eq(ServiceAccount.class), eq(COLLECTION));
         assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"activeKeyPair.keyId\" : \"activeKeyId\"}, Fields: {}, Sort: {}"));
     }
 
     @Test
     void findParentLabelIdByAccountId() {
-        when(nonPersonalAccount.getParentLabelId()).thenReturn(ACCOUNT_ID);
-        when(template.findOne(any(Query.class), eq(NonPersonalAccount.class), eq(COLLECTION))).thenReturn(nonPersonalAccount);
+        when(serviceAccount.getParentLabelId()).thenReturn(ACCOUNT_ID);
+        when(template.findOne(any(Query.class), eq(ServiceAccount.class), eq(COLLECTION))).thenReturn(serviceAccount);
         assertThat(repository.findParentLabelIdByAccountId(ACTIVE_KEY_ID), equalTo(Optional.of(ACCOUNT_ID)));
-        verify(template).findOne(queryArgumentCaptor.capture(), eq(NonPersonalAccount.class), eq(COLLECTION));
+        verify(template).findOne(queryArgumentCaptor.capture(), eq(ServiceAccount.class), eq(COLLECTION));
         assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"accountId\" : \"activeKeyId\"}, Fields: { \"parentLabelId\" : 1}, Sort: {}"));
     }
 }

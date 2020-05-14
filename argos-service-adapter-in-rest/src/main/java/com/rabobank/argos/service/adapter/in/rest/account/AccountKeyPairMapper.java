@@ -15,10 +15,10 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.account;
 
-import com.rabobank.argos.domain.account.NonPersonalAccountKeyPair;
+import com.rabobank.argos.domain.account.ServiceAccountKeyPair;
 import com.rabobank.argos.domain.key.KeyPair;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestKeyPair;
-import com.rabobank.argos.service.adapter.in.rest.api.model.RestNonPersonalAccountKeyPair;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestServiceAccountKeyPair;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -39,9 +39,9 @@ public abstract class AccountKeyPairMapper {
     private PasswordEncoder passwordEncoder;
 
     @Mapping(source = "hashedKeyPassphrase", target = "encryptedHashedKeyPassphrase", qualifiedByName = "encryptHashedKeyPassphrase")
-    public abstract NonPersonalAccountKeyPair convertFromRestKeyPair(RestNonPersonalAccountKeyPair restKeyPair);
+    public abstract ServiceAccountKeyPair convertFromRestKeyPair(RestServiceAccountKeyPair restKeyPair);
 
-    public abstract RestNonPersonalAccountKeyPair convertToRestKeyPair(NonPersonalAccountKeyPair keyPair);
+    public abstract RestServiceAccountKeyPair convertToRestKeyPair(ServiceAccountKeyPair keyPair);
 
     public abstract KeyPair convertFromRestKeyPair(RestKeyPair restKeyPair);
 

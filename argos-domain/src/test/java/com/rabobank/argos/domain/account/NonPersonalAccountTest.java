@@ -33,20 +33,20 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 
 @ExtendWith(MockitoExtension.class)
-class NonPersonalAccountTest {
+class ServiceAccountTest {
 
     private static final String PARENT_LABEL_ID = "parentLabelId";
     private static final String NAME = "name";
 
     @Mock
-    private NonPersonalAccountKeyPair activeKeyPair;
+    private ServiceAccountKeyPair activeKeyPair;
 
     @Mock
-    private NonPersonalAccountKeyPair keyPair;
+    private ServiceAccountKeyPair keyPair;
 
     @Test
     void builder() {
-        NonPersonalAccount account = NonPersonalAccount.builder().name(NAME)
+        ServiceAccount account = ServiceAccount.builder().name(NAME)
                 .parentLabelId(PARENT_LABEL_ID)
                 .activeKeyPair(activeKeyPair)
                 .inactiveKeyPairs(Collections.singletonList(keyPair))

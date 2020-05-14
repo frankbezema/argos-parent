@@ -28,7 +28,7 @@ Feature: Link
   Scenario: store link with valid specifications should return a 204
     * call read('create-link.feature') {supplyChainId:#(supplyChain.response.id), json:#(validLink), keyNumber:1}
 
-  Scenario: NPA can store a link with valid specifications and should return a 204
+  Scenario: SERVICE_ACCOUNT can store a link with valid specifications and should return a 204
     * def childLabelResult = call read('classpath:feature/label/create-label.feature') {name: child_label, parentLabelId: #(supplyChain.response.parentLabelId)}
     * def otherSupplyChain = call read('classpath:feature/supplychain/create-supplychain.feature') { supplyChainName: 'other', parentLabelId: #(childLabelResult.response.id)}
     * call read('create-link.feature') {supplyChainId:#(otherSupplyChain.response.id), json:#(validLink), keyNumber:1}
@@ -55,12 +55,12 @@ Feature: Link
     When method POST
     Then status 403
 
-  Scenario: NPA in other root label cannot store a link
+  Scenario: SERVICE_ACCOUNT in other root label cannot store a link
     * def otherRootLabel = call read('classpath:feature/label/create-label.feature') { name: 'other_root_label'}
     * def otherSupplyChain = call read('classpath:feature/supplychain/create-supplychain.feature') {supplyChainName: other-supply-chain, parentLabelId: #(otherRootLabel.response.id)}
     * def layoutToSign = read(validLink)
     * def signedLink = call read('classpath:feature/link/sign-link.feature') {json:#(layoutToSign),keyNumber:1}
-    * def keyPair = defaultTestData.nonPersonalAccount['default-npa1']
+    * def keyPair = defaultTestData.serviceAccount['default-sa1']
     * configure headers = call read('classpath:headers.js') { username: #(keyPair.keyId), password: #(keyPair.hashedKeyPassphrase)}
     Given path '/api/supplychain/'+ otherSupplyChain.response.id + '/link'
     And request signedLink.response

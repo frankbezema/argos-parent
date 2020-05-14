@@ -15,18 +15,18 @@
  */
 package com.rabobank.argos.service.domain.account;
 
-import com.rabobank.argos.domain.account.NonPersonalAccount;
+import com.rabobank.argos.domain.account.ServiceAccount;
 
 import java.util.Optional;
 
-public interface NonPersonalAccountRepository {
-    void save(NonPersonalAccount nonPersonalAccount);
+public interface ServiceAccountRepository {
+    void save(ServiceAccount serviceAccount);
 
-    Optional<NonPersonalAccount> findById(String accountId);
+    Optional<ServiceAccount> findById(String accountId);
 
-    Optional<NonPersonalAccount> findByActiveKeyId(String activeKeyId);
+    Optional<ServiceAccount> findByActiveKeyId(String activeKeyId);
 
-    void update(NonPersonalAccount nonPersonalAccount);
+    void update(ServiceAccount serviceAccount);
 
     boolean activeKeyExists(String activeKeyId);
 

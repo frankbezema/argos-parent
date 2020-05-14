@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.rabobank.argos.service.security.NonPersonalAccountAuthenticationToken.NonPersonalAccountCredentials;
+import static com.rabobank.argos.service.security.ServiceAccountAuthenticationToken.ServiceAccountCredentials;
 
 @Slf4j
 public class KeyIdBasicAuthenticationFilter extends OncePerRequestFilter {
@@ -42,16 +42,16 @@ public class KeyIdBasicAuthenticationFilter extends OncePerRequestFilter {
         UsernamePasswordAuthenticationToken parsedTokenFromBasicHeader = authenticationConverter.convert(request);
 
         if (parsedTokenFromBasicHeader != null) {
-            NonPersonalAccountCredentials nonPersonalAccountCredentials = NonPersonalAccountCredentials
+            ServiceAccountCredentials serviceAccountCredentials = ServiceAccountCredentials
                     .builder()
                     .keyId((String) parsedTokenFromBasicHeader.getPrincipal())
                     .password((String) parsedTokenFromBasicHeader.getCredentials())
                     .build();
 
-            NonPersonalAccountAuthenticationToken nonPersonalAccountAuthenticationToken = new NonPersonalAccountAuthenticationToken(nonPersonalAccountCredentials
+            ServiceAccountAuthenticationToken serviceAccountAuthenticationToken = new ServiceAccountAuthenticationToken(serviceAccountCredentials
                     , null);
-            nonPersonalAccountAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(nonPersonalAccountAuthenticationToken);
+            serviceAccountAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(serviceAccountAuthenticationToken);
             log.debug("successfully resolved basic token  {}", parsedTokenFromBasicHeader);
         }
 

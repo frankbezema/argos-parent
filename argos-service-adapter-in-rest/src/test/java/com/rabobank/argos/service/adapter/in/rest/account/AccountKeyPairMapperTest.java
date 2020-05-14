@@ -17,10 +17,10 @@ package com.rabobank.argos.service.adapter.in.rest.account;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabobank.argos.domain.account.NonPersonalAccountKeyPair;
+import com.rabobank.argos.domain.account.ServiceAccountKeyPair;
 import com.rabobank.argos.domain.key.KeyPair;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestKeyPair;
-import com.rabobank.argos.service.adapter.in.rest.api.model.RestNonPersonalAccountKeyPair;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestServiceAccountKeyPair;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,16 +68,16 @@ class AccountKeyPairMapperTest {
     }
 
     @Test
-    void nonPersonalAccountKeyPair() throws IOException, JSONException {
+    void serviceAccountKeyPair() throws IOException, JSONException {
         when(passwordEncoder.encode("hashedKeyPassphrase")).thenReturn("encodedHashedKeyPassphrase");
-        String npaPairJson = IOUtils.toString(getClass().getResourceAsStream("/npa-keypair.json"), UTF_8);
-        RestNonPersonalAccountKeyPair restNpaKeyPair = mapper.readValue(npaPairJson, RestNonPersonalAccountKeyPair.class);
-        NonPersonalAccountKeyPair npaKeyPair = converter.convertFromRestKeyPair(restNpaKeyPair);
-        assertThat(npaKeyPair.getEncryptedHashedKeyPassphrase(), is("encodedHashedKeyPassphrase"));
-        RestNonPersonalAccountKeyPair restNonPersonalAccountKeyPair = converter.convertToRestKeyPair(npaKeyPair);
-        assertThat(restNonPersonalAccountKeyPair.getHashedKeyPassphrase(), nullValue());
-        restNonPersonalAccountKeyPair.setHashedKeyPassphrase("hashedKeyPassphrase");
-        JSONAssert.assertEquals(npaPairJson, mapper.writeValueAsString(restNonPersonalAccountKeyPair), true);
+        String saPairJson = IOUtils.toString(getClass().getResourceAsStream("/sa-keypair.json"), UTF_8);
+        RestServiceAccountKeyPair restSaKeyPair = mapper.readValue(saPairJson, RestServiceAccountKeyPair.class);
+        ServiceAccountKeyPair saKeyPair = converter.convertFromRestKeyPair(restSaKeyPair);
+        assertThat(saKeyPair.getEncryptedHashedKeyPassphrase(), is("encodedHashedKeyPassphrase"));
+        RestServiceAccountKeyPair restServiceAccountKeyPair = converter.convertToRestKeyPair(saKeyPair);
+        assertThat(restServiceAccountKeyPair.getHashedKeyPassphrase(), nullValue());
+        restServiceAccountKeyPair.setHashedKeyPassphrase("hashedKeyPassphrase");
+        JSONAssert.assertEquals(saPairJson, mapper.writeValueAsString(restServiceAccountKeyPair), true);
 
     }
 

@@ -11,15 +11,15 @@
       "hasChildren": true,
       "children": [
         {
-          "name": "npa-1",
-          "type": "NON_PERSONAL_ACCOUNT",
+          "name": "sa-1",
+          "type": "SERVICE_ACCOUNT",
           "referenceId": "#uuid",
           "hasChildren": false,
           "children": [
           ],
           "permissions": [
-            "NPA_EDIT",
             "READ",
+            "SERVICE_ACCOUNT_EDIT",
             "TREE_EDIT"
           ]
         },
@@ -31,15 +31,15 @@
           "children": [
           ],
           "permissions": [
-            "NPA_EDIT",
             "READ",
+            "SERVICE_ACCOUNT_EDIT",
             "TREE_EDIT"
           ]
         }
       ],
       "permissions": [
-        "NPA_EDIT",
         "READ",
+        "SERVICE_ACCOUNT_EDIT",
         "TREE_EDIT"
       ]
     },
@@ -51,15 +51,15 @@
       "children": [
       ],
       "permissions": [
-        "NPA_EDIT",
         "READ",
+        "SERVICE_ACCOUNT_EDIT",
         "TREE_EDIT"
       ]
     }
   ],
   "permissions": [
-    "NPA_EDIT",
     "READ",
+    "SERVICE_ACCOUNT_EDIT",
     "TREE_EDIT"
   ]
 }

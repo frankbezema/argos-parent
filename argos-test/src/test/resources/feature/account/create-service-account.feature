@@ -19,11 +19,9 @@ Feature: using __arg
 
   Background:
     * url karate.properties['server.baseurl']
-    * def accountName = __arg.accountName
-    * def parentLabelId = __arg.parentLabelId;
-    * def keyFile = __arg.keyFile;
 
-  Scenario: create an npa account with active key
-    * def accountResponse = call read('classpath:feature/account/create-non-personal-account.feature') {name: #(accountName), parentLabelId: #(parentLabelId)}
-    * def key = read('classpath:testmessages/key/'+keyFile+'.json')
-    * call read('classpath:feature/account/create-non-personal-account-key.feature') {accountId: #(accountResponse.response.id),key: #(key)}
+  Scenario: create service account
+    Given path '/api/serviceaccount'
+    And request __arg
+    When method POST
+    Then status 201

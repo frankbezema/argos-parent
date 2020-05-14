@@ -55,17 +55,17 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     get:
-      summary: get supply chain by path to root
-      operationId: getSupplyChainByPathToRoot
+      summary: get supply chain by path
+      operationId: getSupplyChainByPath
       tags:
         - supplychain
       parameters:
-        - name: supplyChainName
+        - name: name
           in: query
           required: true
           schema:
             type: string
-        - name: pathToRoot
+        - name: path
           in: query
           style: simple
           explode: true
@@ -864,81 +864,81 @@ paths:
                   $ref: "#/components/schemas/LocalPermissions"
         '500':
           $ref: '#/components/responses/Error'
-  /nonpersonalaccount:
+  /serviceaccount:
     post:
-      summary: create a new non personal account
-      operationId: createNonPersonalAccount
+      summary: create a new service account
+      operationId: createServiceAccount
       tags:
-        - non personal account
+        - service account
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NonPersonalAccount"
+              $ref: "#/components/schemas/ServiceAccount"
       responses:
         '201':
           description: created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NonPersonalAccount"
+                $ref: "#/components/schemas/ServiceAccount"
           headers:
             Location:
               schema:
                 type: string
                 format: uri
-              description: location where the created non personal account can be found
+              description: location where the created service account can be found
         '400':
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
-  /nonpersonalaccount/me/activekey:
+  /serviceaccount/me/activekey:
     get:
       summary: return the active key pair
-      operationId: getNonPersonalAccountKey
+      operationId: getServiceAccountKey
       security:
         - basicAuth: []
       tags:
-        - non personal account
+        - service account
       responses:
         '200':
           description: active key
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NonPersonalAccountKeyPair"
+                $ref: "#/components/schemas/ServiceAccountKeyPair"
         '404':
           description: no active key exists
         '500':
           $ref: '#/components/responses/Error'
-  /nonpersonalaccount/{nonPersonalAccountId}:
+  /serviceaccount/{serviceAccountId}:
     get:
-      summary: find non personal account by id
-      operationId: getNonPersonalAccountById
+      summary: find service account by id
+      operationId: getServiceAccountById
       tags:
-        - non personal account
+        - service account
       parameters:
-        - name: nonPersonalAccountId
+        - name: serviceAccountId
           in: path
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: non personal account
+          description: service account
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NonPersonalAccount"
+                $ref: "#/components/schemas/ServiceAccount"
         '500':
           $ref: '#/components/responses/Error'
     put:
-      summary: update non personal account by id
-      operationId: updateNonPersonalAccountById
+      summary: update service account by id
+      operationId: updateServiceAccountById
       tags:
-        - non personal account
+        - service account
       parameters:
-        - name: nonPersonalAccountId
+        - name: serviceAccountId
           in: path
           required: true
           schema:
@@ -947,26 +947,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NonPersonalAccount"
+              $ref: "#/components/schemas/ServiceAccount"
       responses:
         '200':
-          description: updated non personal account
+          description: updated service account
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NonPersonalAccount"
+                $ref: "#/components/schemas/ServiceAccount"
         '400':
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
-  /nonpersonalaccount/{nonPersonalAccountId}/key:
+  /serviceaccount/{serviceAccountId}/key:
     post:
       summary: create a new active key the old key will be made inactive
-      operationId: createNonPersonalAccountKeyById
+      operationId: createServiceAccountKeyById
       tags:
-        - non personal account
+        - service account
       parameters:
-        - name: nonPersonalAccountId
+        - name: serviceAccountId
           in: path
           required: true
           schema:
@@ -975,31 +975,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NonPersonalAccountKeyPair"
+              $ref: "#/components/schemas/ServiceAccountKeyPair"
       responses:
         '201':
           description: created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NonPersonalAccountKeyPair"
+                $ref: "#/components/schemas/ServiceAccountKeyPair"
           headers:
             Location:
               schema:
                 type: string
                 format: uri
-              description: location where the created non personal account can be found
+              description: location where the created service account can be found
         '400':
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
     get:
       summary: return the active key pair
-      operationId: getNonPersonalAccountKeyById
+      operationId: getServiceAccountKeyById
       tags:
-        - non personal account
+        - service account
       parameters:
-        - name: nonPersonalAccountId
+        - name: serviceAccountId
           in: path
           required: true
           schema:
@@ -1010,7 +1010,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NonPersonalAccountKeyPair"
+                $ref: "#/components/schemas/ServiceAccountKeyPair"
         '404':
           description: no active key exists
         '500':
@@ -1183,7 +1183,7 @@ components:
         encryptedPrivateKey:
           type: string
           format: byte
-    NonPersonalAccountKeyPair:
+    ServiceAccountKeyPair:
       type: object
       required:
         - keyId
@@ -1199,7 +1199,7 @@ components:
         hashedKeyPassphrase:
           type: string
           writeOnly: true
-          description: used for authentication of a non personal account via http basic authentication
+          description: used for authentication of a service account via http basic authentication
         encryptedPrivateKey:
           type: string
           format: byte
@@ -1425,7 +1425,7 @@ components:
           enum:
             - LABEL
             - SUPPLY_CHAIN
-            - NON_PERSONAL_ACCOUNT
+            - SERVICE_ACCOUNT
         referenceId:
           type: string
         hasChildren:
@@ -1472,7 +1472,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Role"
-    NonPersonalAccount:
+    ServiceAccount:
       type: object
       required:
         - name
@@ -1517,7 +1517,7 @@ components:
         - LAYOUT_ADD
         - VERIFY
         - PERSONAL_ACCOUNT_READ
-        - NPA_EDIT
+        - SERVICE_ACCOUNT_EDIT
     LocalPermissions:
       type: object
       required:

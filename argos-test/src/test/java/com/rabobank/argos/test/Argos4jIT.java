@@ -50,7 +50,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class Argos4jIT {
 
     private static Properties properties = Properties.getInstance();
-    private DefaultTestData.NonPersonalAccount nonPersonalAccount;
+    private DefaultTestData.ServiceAccount serviceAccount;
     private DefaultTestData.PersonalAccount personalAccount;
 
     @BeforeAll
@@ -73,7 +73,7 @@ class Argos4jIT {
 
         String supplyChainId = getSupplychainApi(adminAccountToken).createSupplyChain(new RestSupplyChain().name("test-supply-chain").parentLabelId(childLabel.getId())).getId();
 
-        nonPersonalAccount = defaultTestData.getNonPersonalAccount().values().iterator().next();
+        serviceAccount = defaultTestData.getServiceAccount().values().iterator().next();
 
         personalAccount = defaultTestData.getPersonalAccounts().values().iterator().next();
 
@@ -83,15 +83,15 @@ class Argos4jIT {
         Argos4jSettings settings = Argos4jSettings.builder()
                 .argosServerBaseUrl(properties.getApiBaseUrl() + "/api")
                 .supplyChainName("test-supply-chain")
-                .pathToLabelRoot(List.of("child_label", "root_label"))
-                .signingKeyId(nonPersonalAccount.getKeyId())
+                .path(List.of("root_label", "child_label"))
+                .signingKeyId(serviceAccount.getKeyId())
                 .build();
         Argos4j argos4j = new Argos4j(settings);
         LinkBuilder linkBuilder = argos4j.getLinkBuilder(LinkBuilderSettings.builder().layoutSegmentName("layoutSegmentName").stepName("build").runId("runId").build());
         FileCollector fileCollector = LocalFileCollector.builder().path(new File(".").toPath()).basePath(new File(".").toPath()).build();
         linkBuilder.collectProducts(fileCollector);
         linkBuilder.collectMaterials(fileCollector);
-        linkBuilder.store(nonPersonalAccount.getPassphrase().toCharArray());
+        linkBuilder.store(serviceAccount.getPassphrase().toCharArray());
 
 
         VerifyBuilder verifyBuilder = argos4j.getVerifyBuilder();
@@ -109,7 +109,7 @@ class Argos4jIT {
     private RestLayout createLayout() {
         return new RestLayout()
                 .addKeysItem(new RestPublicKey().id(personalAccount.getKeyId()).key(personalAccount.getPublicKey()))
-                .addKeysItem(new RestPublicKey().id(nonPersonalAccount.getKeyId()).key(nonPersonalAccount.getPublicKey()))
+                .addKeysItem(new RestPublicKey().id(serviceAccount.getKeyId()).key(serviceAccount.getPublicKey()))
                 .addAuthorizedKeyIdsItem(personalAccount.getKeyId())
                 .addExpectedEndProductsItem(new RestMatchRule()
                         .destinationSegmentName("layoutSegmentName")
@@ -119,7 +119,7 @@ class Argos4jIT {
                         .pattern("karate-config.js"))
                 .addLayoutSegmentsItem(new RestLayoutSegment().name("layoutSegmentName")
                         .addStepsItem(new RestStep().requiredNumberOfLinks(1)
-                                .addAuthorizedKeyIdsItem(nonPersonalAccount.getKeyId())
+                                .addAuthorizedKeyIdsItem(serviceAccount.getKeyId())
                                 .addExpectedProductsItem(new RestRule().ruleType(RestRule.RuleTypeEnum.ALLOW).pattern("**"))
                                 .addExpectedMaterialsItem(new RestRule().ruleType(RestRule.RuleTypeEnum.ALLOW).pattern("**"))
                                 .name("build")));

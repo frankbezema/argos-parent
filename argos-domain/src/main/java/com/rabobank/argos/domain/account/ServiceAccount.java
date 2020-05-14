@@ -32,11 +32,11 @@ import static java.util.Collections.singletonList;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class NonPersonalAccount extends Account {
+public class ServiceAccount extends Account {
     private String parentLabelId;
 
     @Builder
-    public NonPersonalAccount(String name, NonPersonalAccountKeyPair activeKeyPair, List<NonPersonalAccountKeyPair> inactiveKeyPairs, String parentLabelId) {
+    public ServiceAccount(String name, ServiceAccountKeyPair activeKeyPair, List<ServiceAccountKeyPair> inactiveKeyPairs, String parentLabelId) {
         super(UUID.randomUUID().toString(), name, null, activeKeyPair, inactiveKeyPairs == null ? emptyList() : inactiveKeyPairs, singletonList(LocalPermissions.builder().labelId(parentLabelId)
                 .permissions(Arrays.asList(Permission.LINK_ADD, Permission.VERIFY)).build()));
         this.parentLabelId = parentLabelId;

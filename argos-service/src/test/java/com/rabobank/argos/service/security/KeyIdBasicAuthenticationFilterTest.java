@@ -69,11 +69,11 @@ class KeyIdBasicAuthenticationFilterTest {
                 .thenReturn(basicAuthPwToken);
         keyIdBasicAuthenticationFilter.doFilterInternal(request, response, filterChain);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        assertThat(authentication, instanceOf(NonPersonalAccountAuthenticationToken.class));
-        NonPersonalAccountAuthenticationToken nonPersonalAccountAuthenticationToken = (NonPersonalAccountAuthenticationToken) authentication;
-        assertThat(nonPersonalAccountAuthenticationToken.getNonPersonalAccountCredentials().getKeyId(), is("keyId"));
-        assertThat(nonPersonalAccountAuthenticationToken.getNonPersonalAccountCredentials().getPassword(), is("pw"));
-        assertThat(nonPersonalAccountAuthenticationToken.getDetails(), notNullValue());
+        assertThat(authentication, instanceOf(ServiceAccountAuthenticationToken.class));
+        ServiceAccountAuthenticationToken serviceAccountAuthenticationToken = (ServiceAccountAuthenticationToken) authentication;
+        assertThat(serviceAccountAuthenticationToken.getServiceAccountCredentials().getKeyId(), is("keyId"));
+        assertThat(serviceAccountAuthenticationToken.getServiceAccountCredentials().getPassword(), is("pw"));
+        assertThat(serviceAccountAuthenticationToken.getDetails(), notNullValue());
         verify(filterChain).doFilter(request, response);
     }
 

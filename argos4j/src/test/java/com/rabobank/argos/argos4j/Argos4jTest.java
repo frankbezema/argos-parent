@@ -89,7 +89,7 @@ class Argos4jTest {
         settings = Argos4jSettings.builder()
                 .argosServerBaseUrl("http://localhost:" + randomPort + "/api")
                 .supplyChainName("supplyChainName")
-                .pathToLabelRoot(Arrays.asList("rootLabel", "subLabel"))
+                .path(Arrays.asList("rootLabel", "subLabel"))
                 .signingKeyId(keyId)
                 .build();
 
@@ -106,10 +106,10 @@ class Argos4jTest {
 
     @Test
     void storeMetablockLinkForDirectory() {
-        wireMockServer.stubFor(get(urlEqualTo("/api/supplychain?supplyChainName=supplyChainName&pathToRoot=rootLabel&pathToRoot=subLabel"))
+        wireMockServer.stubFor(get(urlEqualTo("/api/supplychain?name=supplyChainName&path=rootLabel&path=subLabel"))
                 .willReturn(ok().withBody("{\"name\":\"supplyChainName\",\"id\":\"supplyChainId\",\"parentLabelId\":\"parentLabelId\"}")));
         wireMockServer.stubFor(post(urlEqualTo("/api/supplychain/supplyChainId/link")).willReturn(noContent()));
-        wireMockServer.stubFor(get(urlEqualTo("/api/nonpersonalaccount/me/activekey")).willReturn(ok().withBody(restKeyPairRest)));
+        wireMockServer.stubFor(get(urlEqualTo("/api/serviceaccount/me/activekey")).willReturn(ok().withBody(restKeyPairRest)));
         FileCollector fileCollector = LocalFileCollector.builder().path(sharedTempDir.toPath()).basePath(sharedTempDir.toPath()).build();
         linkBuilder.collectMaterials(fileCollector);
         linkBuilder.collectProducts(fileCollector);
@@ -121,9 +121,9 @@ class Argos4jTest {
 
     @Test
     void storeMetablockLinkForDirectoryFailed() {
-        wireMockServer.stubFor(get(urlEqualTo("/api/supplychain?supplyChainName=supplyChainName&pathToRoot=rootLabel&pathToRoot=subLabel"))
+        wireMockServer.stubFor(get(urlEqualTo("/api/supplychain?name=supplyChainName&path=rootLabel&path=subLabel"))
                 .willReturn(ok().withBody("{\"name\":\"supplyChainName\",\"id\":\"supplyChainId\",\"parentLabelId\":\"parentLabelId\"}")));
-        wireMockServer.stubFor(get(urlEqualTo("/api/nonpersonalaccount/me/activekey")).willReturn(ok().withBody(restKeyPairRest)));
+        wireMockServer.stubFor(get(urlEqualTo("/api/serviceaccount/me/activekey")).willReturn(ok().withBody(restKeyPairRest)));
         wireMockServer.stubFor(post(urlEqualTo("/api/supplychain/supplyChainId/link")).willReturn(serverError()));
         Argos4jError error = assertThrows(Argos4jError.class, () -> linkBuilder.store(KEY_PASSPHRASE));
         assertThat(error.getMessage(), containsString("500"));
@@ -131,8 +131,8 @@ class Argos4jTest {
 
     @Test
     void storeMetaBlockLinkForDirectoryUnexpectedResponse() {
-        wireMockServer.stubFor(get(urlEqualTo("/api/nonpersonalaccount/me/activekey")).willReturn(ok().withBody(restKeyPairRest)));
-        wireMockServer.stubFor(get(urlEqualTo("/api/supplychain?supplyChainName=supplyChainName&pathToRoot=rootLabel&pathToRoot=subLabel"))
+        wireMockServer.stubFor(get(urlEqualTo("/api/serviceaccount/me/activekey")).willReturn(ok().withBody(restKeyPairRest)));
+        wireMockServer.stubFor(get(urlEqualTo("/api/supplychain?name=supplyChainName&path=rootLabel&path=subLabel"))
                 .willReturn(badRequest()));
         Argos4jError error = assertThrows(Argos4jError.class, () -> linkBuilder.store(KEY_PASSPHRASE));
         assertThat(error.getMessage(), containsString("400"));
@@ -140,14 +140,14 @@ class Argos4jTest {
 
     @Test
     void storeMetaBlockLinkForDirectoryUnknownKeyId() {
-        wireMockServer.stubFor(get(urlEqualTo("/api/nonpersonalaccount/me/activekey")).willReturn(notFound()));
+        wireMockServer.stubFor(get(urlEqualTo("/api/serviceaccount/me/activekey")).willReturn(notFound()));
         Argos4jError error = assertThrows(Argos4jError.class, () -> linkBuilder.store(KEY_PASSPHRASE));
         assertThat(error.getMessage(), containsString("404"));
     }
 
     @Test
     void verify() {
-        wireMockServer.stubFor(get(urlEqualTo("/api/supplychain?supplyChainName=supplyChainName&pathToRoot=rootLabel&pathToRoot=subLabel"))
+        wireMockServer.stubFor(get(urlEqualTo("/api/supplychain?name=supplyChainName&path=rootLabel&path=subLabel"))
                 .willReturn(ok().withBody("{\"name\":\"supplyChainName\",\"id\":\"supplyChainId\",\"parentLabelId\":\"parentLabelId\"}")));
         wireMockServer.stubFor(post(urlEqualTo("/api/supplychain/supplyChainId/verification"))
                 .willReturn(ok().withBody("{\"runIsValid\":true}")));
@@ -162,7 +162,7 @@ class Argos4jTest {
 
     @Test
     void verifyNotUnauthorized() {
-        wireMockServer.stubFor(get(urlEqualTo("/api/supplychain?supplyChainName=supplyChainName&pathToRoot=rootLabel&pathToRoot=subLabel"))
+        wireMockServer.stubFor(get(urlEqualTo("/api/supplychain?name=supplyChainName&path=rootLabel&path=subLabel"))
                 .willReturn(ok().withBody("{\"name\":\"supplyChainName\",\"id\":\"supplyChainId\",\"parentLabelId\":\"parentLabelId\"}")));
         wireMockServer.stubFor(post(urlEqualTo("/api/supplychain/supplyChainId/verification"))
                 .willReturn(status(401)));

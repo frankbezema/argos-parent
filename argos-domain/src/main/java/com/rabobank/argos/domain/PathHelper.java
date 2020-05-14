@@ -15,13 +15,15 @@
  */
 package com.rabobank.argos.domain;
 
+import java.util.regex.Pattern;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PathHelper {
-
-    public static String normalizePath(String path) {
+	
+	public static String normalizePath(String path) {
         if (path == null) {
             return null;
         }

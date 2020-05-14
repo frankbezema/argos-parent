@@ -28,7 +28,7 @@ import java.util.List;
 public class Argos4jSettings implements Serializable {
 
     private final String supplyChainName;
-    private final List<String> pathToLabelRoot;
+    private final List<String> path;
     private final String signingKeyId;
     private final String argosServerBaseUrl;
 

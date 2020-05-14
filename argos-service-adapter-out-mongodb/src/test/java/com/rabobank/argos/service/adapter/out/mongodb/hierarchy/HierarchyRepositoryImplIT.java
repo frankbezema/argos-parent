@@ -18,14 +18,14 @@ package com.rabobank.argos.service.adapter.out.mongodb.hierarchy;
 import com.github.mongobee.Mongobee;
 import com.github.mongobee.exception.MongobeeException;
 import com.mongodb.client.MongoClients;
-import com.rabobank.argos.domain.account.NonPersonalAccount;
+import com.rabobank.argos.domain.account.ServiceAccount;
 import com.rabobank.argos.domain.hierarchy.HierarchyMode;
 import com.rabobank.argos.domain.hierarchy.Label;
 import com.rabobank.argos.domain.hierarchy.TreeNode;
 import com.rabobank.argos.domain.supplychain.SupplyChain;
-import com.rabobank.argos.service.adapter.out.mongodb.account.NonPersonalAccountRepositoryImpl;
+import com.rabobank.argos.service.adapter.out.mongodb.account.ServiceAccountRepositoryImpl;
 import com.rabobank.argos.service.adapter.out.mongodb.supplychain.SupplyChainRepositoryImpl;
-import com.rabobank.argos.service.domain.account.NonPersonalAccountRepository;
+import com.rabobank.argos.service.domain.account.ServiceAccountRepository;
 import com.rabobank.argos.service.domain.hierarchy.HierarchyRepository;
 import com.rabobank.argos.service.domain.hierarchy.LabelRepository;
 import com.rabobank.argos.service.domain.supplychain.SupplyChainRepository;
@@ -66,7 +66,7 @@ class HierarchyRepositoryImplIT {
     private HierarchyRepository hierarchyRepository;
     private LabelRepository labelRepository;
     private SupplyChainRepository supplyChainRepository;
-    private NonPersonalAccountRepository nonPersonalAccountRepository;
+    private ServiceAccountRepository serviceAccountRepository;
 
     private MongoTemplate mongoTemplate;
 
@@ -86,7 +86,7 @@ class HierarchyRepositoryImplIT {
         hierarchyRepository = new HierarchyRepositoryImpl(mongoTemplate);
         labelRepository = new LabelRepositoryImpl(mongoTemplate);
         supplyChainRepository = new SupplyChainRepositoryImpl(mongoTemplate);
-        nonPersonalAccountRepository = new NonPersonalAccountRepositoryImpl(mongoTemplate);
+        serviceAccountRepository = new ServiceAccountRepositoryImpl(mongoTemplate);
         Mongobee runner = new Mongobee(connectionString);
         runner.setChangeLogsScanPackage(SCAN_PACKAGE);
         runner.setMongoTemplate(mongoTemplate);
@@ -134,16 +134,16 @@ class HierarchyRepositoryImplIT {
         TreeNode team1 = department1.getChildren().iterator().next();
         assertThat(team1.getName(), is("team 1"));
         assertThat(team1.getChildren(), hasSize(3));
-        TreeNode npa = team1.getChildren().iterator().next();
-        assertThat(npa.getName(), is("team 1 npa 1"));
-        assertThat(npa.getIdPathToRoot().toArray(), arrayContaining(List.of(
+        TreeNode sa = team1.getChildren().iterator().next();
+        assertThat(sa.getName(), is("team 1 sa 1"));
+        assertThat(sa.getIdPathToRoot().toArray(), arrayContaining(List.of(
                 team1.getReferenceId(),
                 department1.getReferenceId(),
                 company1.getReferenceId(),
                 treeNode.getReferenceId()
                 ).toArray())
         );
-        assertThat(npa.getType(), is(TreeNode.Type.NON_PERSONAL_ACCOUNT));
+        assertThat(sa.getType(), is(TreeNode.Type.SERVICE_ACCOUNT));
     }
 
     void createDataSet() {
@@ -154,12 +154,12 @@ class HierarchyRepositoryImplIT {
         createLabel("team 2", department1.getLabelId());
         Label team1 = createLabel("team 1", department1.getLabelId());
         createLabel("team 1 supply chain", team1.getLabelId());
-        createNonPersonalAccount("team 1 npa 1", team1.getLabelId());
+        createServiceAccount("team 1 sa 1", team1.getLabelId());
         createSupplyChain("team 1 supply chain", team1.getLabelId());
     }
 
-    private void createNonPersonalAccount(String name, String parentLabelId) {
-        nonPersonalAccountRepository.save(NonPersonalAccount.builder().name(name).parentLabelId(parentLabelId).build());
+    private void createServiceAccount(String name, String parentLabelId) {
+        serviceAccountRepository.save(ServiceAccount.builder().name(name).parentLabelId(parentLabelId).build());
     }
 
     private Label createLabel(String name, String parentId) {

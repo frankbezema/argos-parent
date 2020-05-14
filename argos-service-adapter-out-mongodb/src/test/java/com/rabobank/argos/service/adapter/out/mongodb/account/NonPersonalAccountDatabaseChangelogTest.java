@@ -22,13 +22,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 
-import static com.rabobank.argos.service.adapter.out.mongodb.account.NonPersonalAccountRepositoryImpl.COLLECTION;
+import static com.rabobank.argos.service.adapter.out.mongodb.account.ServiceAccountRepositoryImpl.COLLECTION;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class NonPersonalAccountDatabaseChangelogTest {
+class ServiceAccountDatabaseChangelogTest {
 
     @Mock
     private MongoTemplate template;
@@ -39,14 +39,14 @@ class NonPersonalAccountDatabaseChangelogTest {
     @Test
     void addIndex() {
         when(template.indexOps(COLLECTION)).thenReturn(indexOperations);
-        new NonPersonalAccountDatabaseChangelog().addIndex(template);
+        new ServiceAccountDatabaseChangelog().addIndex(template);
         verify(template, times(2)).indexOps(COLLECTION);
     }
 
     @Test
     void addActiveKeyIndex() {
         when(template.indexOps(COLLECTION)).thenReturn(indexOperations);
-        new NonPersonalAccountDatabaseChangelog().addActiveKeyIndex(template);
+        new ServiceAccountDatabaseChangelog().addActiveKeyIndex(template);
         verify(template, times(1)).indexOps(COLLECTION);
     }
 }

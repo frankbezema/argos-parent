@@ -15,7 +15,7 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.account;
 
-import com.rabobank.argos.service.domain.account.NonPersonalAccountRepository;
+import com.rabobank.argos.service.domain.account.ServiceAccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,23 +29,23 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class NonPersonalAccountLabelIdExtractorTest {
+class ServiceAccountLabelIdExtractorTest {
 
     private static final String ACCOUNT_ID = "accountId";
     private static final String PARENT_LABEL_ID = "parentLabelId";
 
     @Mock
-    private NonPersonalAccountRepository nonPersonalAccountRepository;
-    private NonPersonalAccountLabelIdExtractor extractor;
+    private ServiceAccountRepository serviceAccountRepository;
+    private ServiceAccountLabelIdExtractor extractor;
 
     @BeforeEach
     void setUp() {
-        extractor = new NonPersonalAccountLabelIdExtractor(nonPersonalAccountRepository);
+        extractor = new ServiceAccountLabelIdExtractor(serviceAccountRepository);
     }
 
     @Test
     void extractLabelId() {
-        when(nonPersonalAccountRepository.findParentLabelIdByAccountId(ACCOUNT_ID)).thenReturn(Optional.of(PARENT_LABEL_ID));
+        when(serviceAccountRepository.findParentLabelIdByAccountId(ACCOUNT_ID)).thenReturn(Optional.of(PARENT_LABEL_ID));
         assertThat(extractor.extractLabelId(null, ACCOUNT_ID), is(Optional.of(PARENT_LABEL_ID)));
     }
 }
