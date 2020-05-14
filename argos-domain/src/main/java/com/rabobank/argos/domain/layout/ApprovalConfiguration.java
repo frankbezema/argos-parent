@@ -34,5 +34,5 @@ public class ApprovalConfiguration {
     private String stepName;
     private String segmentName;
     private String supplyChainId;
-    private List<ArtifactCollector> artifactCollectors;
+    private List<ArtifactCollectorSpecification> artifactCollectorSpecifications;
 }

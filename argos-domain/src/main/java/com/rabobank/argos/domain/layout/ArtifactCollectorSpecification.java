@@ -26,7 +26,7 @@ import java.net.URI;
 @Getter
 @Builder
 @ToString
-public class ArtifactCollector {
+public class ArtifactCollectorSpecification {
     private String name;
     private URI uri;
     private CollectorType type;

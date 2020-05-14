@@ -2,7 +2,7 @@
   "approvalConfigurationId": "x",
   "stepName": "stepName",
   "segmentName": "segmentName",
-  "artifactCollectors": [
+  "artifactCollectorSpecifications": [
     {
       "name": "xl deploy rabobank",
       "type": "XLDEPLOY",

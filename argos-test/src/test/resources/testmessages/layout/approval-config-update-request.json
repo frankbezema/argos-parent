@@ -1,7 +1,7 @@
 {
   "stepName": "stepName2",
-  "segmentName": "segment 1",
-  "artifactCollectors": [
+  "segmentName": "segment1",
+  "artifactCollectorSpecifications": [
     {
       "name": "xldeploy",
       "type": "XLDEPLOY",
