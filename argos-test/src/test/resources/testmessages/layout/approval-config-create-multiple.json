@@ -7,12 +7,18 @@
       {
         "name": "xldeploy1",
         "type": "XLDEPLOY",
-        "uri": "https://deploy.nl"
+        "uri": "https://deploy.nl",
+        "context": {
+          "applicationName": "argos"
+        }
       },
       {
         "name": "xkdeploy2",
         "type": "XLDEPLOY",
-        "uri": "http://xldeploy2.nl"
+        "uri": "http://xldeploy2.nl",
+        "context": {
+          "applicationName": "argos"
+        }
       }
     ]
   },
@@ -24,7 +30,10 @@
       {
         "name": "xldeploy1",
         "type": "XLDEPLOY",
-        "uri": "http://deploy.nl"
+        "uri": "http://deploy.nl",
+        "context": {
+          "applicationName": "argos"
+        }
       }
     ]
   }

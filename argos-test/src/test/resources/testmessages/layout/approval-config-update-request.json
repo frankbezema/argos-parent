@@ -5,7 +5,10 @@
     {
       "name": "xldeploy",
       "type": "XLDEPLOY",
-      "uri": "http://xldeploy.com"
+      "uri": "http://xldeploy.com",
+      "context": {
+        "applicationName": "argos"
+      }
     }
   ]
 }

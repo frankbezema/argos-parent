@@ -23,6 +23,8 @@ import com.rabobank.argos.domain.layout.Step;
 import com.rabobank.argos.domain.permission.Permission;
 import com.rabobank.argos.service.adapter.in.rest.api.handler.LayoutApi;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestApprovalConfiguration;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactCollectorSpecification;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactCollectorSpecification.TypeEnum;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage;
@@ -41,11 +43,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactCollectorSpecification.TypeEnum.XLDEPLOY;
 import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
 import static com.rabobank.argos.service.adapter.in.rest.supplychain.SupplyChainLabelIdExtractor.SUPPLY_CHAIN_LABEL_ID_EXTRACTOR;
 
@@ -61,6 +65,13 @@ public class LayoutRestService implements LayoutApi {
     private final LayoutValidatorService validator;
     private final ApprovalConfigurationRepository approvalConfigurationRepository;
     private final ApprovalConfigurationMapper approvalConfigurationConverter;
+
+    private static final Map<TypeEnum, Set<String>> artifactCollectorContextRequiredFieldMap;
+
+    static {
+        artifactCollectorContextRequiredFieldMap = new EnumMap<>(TypeEnum.class);
+        artifactCollectorContextRequiredFieldMap.put(XLDEPLOY, Set.of("applicationName"));
+    }
 
 
     @Override
@@ -104,12 +115,6 @@ public class LayoutRestService implements LayoutApi {
 
     }
 
-    private ApprovalConfiguration convertAndValidate(String supplyChainId, RestApprovalConfiguration restApprovalConfiguration) {
-        ApprovalConfiguration approvalConfiguration = approvalConfigurationConverter.convertFromRestApprovalConfiguration(restApprovalConfiguration);
-        approvalConfiguration.setSupplyChainId(supplyChainId);
-        verifyStepNameAndSegmentNameExistInLayout(approvalConfiguration);
-        return approvalConfiguration;
-    }
 
     @Override
     @PermissionCheck(permissions = Permission.READ)
@@ -124,9 +129,11 @@ public class LayoutRestService implements LayoutApi {
     @Override
     @PermissionCheck(permissions = Permission.LAYOUT_ADD)
     public ResponseEntity<RestApprovalConfiguration> updateApprovalConfiguration(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String approvalConfigurationId, @Valid RestApprovalConfiguration restApprovalConfiguration) {
+        checkArtifactCollectorsForRequiredContextFields(restApprovalConfiguration);
         ApprovalConfiguration approvalConfiguration = approvalConfigurationConverter.convertFromRestApprovalConfiguration(restApprovalConfiguration);
         approvalConfiguration.setSupplyChainId(supplyChainId);
         approvalConfiguration.setApprovalConfigurationId(approvalConfigurationId);
+
         verifyStepNameAndSegmentNameExistInLayout(approvalConfiguration);
         return approvalConfigurationRepository.update(approvalConfiguration)
                 .map(approvalConfigurationConverter::convertToRestApprovalConfiguration)
@@ -152,6 +159,42 @@ public class LayoutRestService implements LayoutApi {
                 .collect(Collectors.toList()));
     }
 
+    private void checkArtifactCollectorsForRequiredContextFields(RestApprovalConfiguration approvalConfiguration) {
+        approvalConfiguration.getArtifactCollectorSpecifications()
+                .forEach(specification -> {
+                    checkContextIsConfiguredForCollectorType(specification);
+                    checkForRequiredFieldsInContext(specification);
+                });
+    }
+
+    private void checkForRequiredFieldsInContext(RestArtifactCollectorSpecification restArtifactCollectorSpecification) {
+        if (!restArtifactCollectorSpecification
+                .getContext()
+                .keySet()
+                .containsAll(artifactCollectorContextRequiredFieldMap
+                        .get(restArtifactCollectorSpecification.getType()))) {
+            throwLayoutValidationException("context", "required fields : "
+                    + artifactCollectorContextRequiredFieldMap
+                    .get(restArtifactCollectorSpecification.getType()) +
+                    " not present for collector type: " +
+                    restArtifactCollectorSpecification.getType());
+        }
+    }
+
+    private void checkContextIsConfiguredForCollectorType(RestArtifactCollectorSpecification restArtifactCollectorSpecification) {
+        if (!artifactCollectorContextRequiredFieldMap.containsKey(restArtifactCollectorSpecification.getType())) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "no context field checks implemented for : " +
+                    restArtifactCollectorSpecification.getType());
+        }
+    }
+
+    private ApprovalConfiguration convertAndValidate(String supplyChainId, RestApprovalConfiguration restApprovalConfiguration) {
+        checkArtifactCollectorsForRequiredContextFields(restApprovalConfiguration);
+        ApprovalConfiguration approvalConfiguration = approvalConfigurationConverter.convertFromRestApprovalConfiguration(restApprovalConfiguration);
+        approvalConfiguration.setSupplyChainId(supplyChainId);
+        verifyStepNameAndSegmentNameExistInLayout(approvalConfiguration);
+        return approvalConfiguration;
+    }
 
     private void verifyStepNameAndSegmentNameExistInLayout(ApprovalConfiguration approvalConfiguration) {
         Map<String, Set<String>> segmentStepNameCombinations = getSegmentsAndSteps(approvalConfiguration);
