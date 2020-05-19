@@ -24,10 +24,8 @@ import com.rabobank.argos.domain.permission.Permission;
 import com.rabobank.argos.service.adapter.in.rest.api.handler.LayoutApi;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestApprovalConfiguration;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactCollectorSpecification;
-import com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactCollectorSpecification.TypeEnum;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
-import com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage;
 import com.rabobank.argos.service.domain.layout.ApprovalConfigurationRepository;
 import com.rabobank.argos.service.domain.layout.LayoutMetaBlockRepository;
 import com.rabobank.argos.service.domain.security.LabelIdCheckParam;
@@ -43,14 +41,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactCollectorSpecification.TypeEnum.XLDEPLOY;
 import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
+import static com.rabobank.argos.service.adapter.in.rest.layout.ValidationHelper.throwLayoutValidationException;
 import static com.rabobank.argos.service.adapter.in.rest.supplychain.SupplyChainLabelIdExtractor.SUPPLY_CHAIN_LABEL_ID_EXTRACTOR;
 
 @RestController
@@ -66,12 +63,7 @@ public class LayoutRestService implements LayoutApi {
     private final ApprovalConfigurationRepository approvalConfigurationRepository;
     private final ApprovalConfigurationMapper approvalConfigurationConverter;
 
-    private static final Map<TypeEnum, Set<String>> artifactCollectorContextRequiredFieldMap;
 
-    static {
-        artifactCollectorContextRequiredFieldMap = new EnumMap<>(TypeEnum.class);
-        artifactCollectorContextRequiredFieldMap.put(XLDEPLOY, Set.of("applicationName"));
-    }
 
 
     @Override
@@ -129,7 +121,7 @@ public class LayoutRestService implements LayoutApi {
     @Override
     @PermissionCheck(permissions = Permission.LAYOUT_ADD)
     public ResponseEntity<RestApprovalConfiguration> updateApprovalConfiguration(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String approvalConfigurationId, @Valid RestApprovalConfiguration restApprovalConfiguration) {
-        checkArtifactCollectorsForRequiredContextFields(restApprovalConfiguration);
+        validateContextFieldsForCollectorSpecification(restApprovalConfiguration);
         ApprovalConfiguration approvalConfiguration = approvalConfigurationConverter.convertFromRestApprovalConfiguration(restApprovalConfiguration);
         approvalConfiguration.setSupplyChainId(supplyChainId);
         approvalConfiguration.setApprovalConfigurationId(approvalConfigurationId);
@@ -159,37 +151,17 @@ public class LayoutRestService implements LayoutApi {
                 .collect(Collectors.toList()));
     }
 
-    private void checkArtifactCollectorsForRequiredContextFields(RestApprovalConfiguration approvalConfiguration) {
+    private void validateContextFieldsForCollectorSpecification(RestApprovalConfiguration approvalConfiguration) {
         approvalConfiguration.getArtifactCollectorSpecifications()
-                .forEach(specification -> {
-                    checkContextIsConfiguredForCollectorType(specification);
-                    checkForRequiredFieldsInContext(specification);
-                });
+                .forEach(this::validateContextFieldsForCollectorSpecification);
     }
 
-    private void checkForRequiredFieldsInContext(RestArtifactCollectorSpecification restArtifactCollectorSpecification) {
-        if (!restArtifactCollectorSpecification
-                .getContext()
-                .keySet()
-                .containsAll(artifactCollectorContextRequiredFieldMap
-                        .get(restArtifactCollectorSpecification.getType()))) {
-            throwLayoutValidationException("context", "required fields : "
-                    + artifactCollectorContextRequiredFieldMap
-                    .get(restArtifactCollectorSpecification.getType()) +
-                    " not present for collector type: " +
-                    restArtifactCollectorSpecification.getType());
-        }
-    }
-
-    private void checkContextIsConfiguredForCollectorType(RestArtifactCollectorSpecification restArtifactCollectorSpecification) {
-        if (!artifactCollectorContextRequiredFieldMap.containsKey(restArtifactCollectorSpecification.getType())) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "no context field checks implemented for : " +
-                    restArtifactCollectorSpecification.getType());
-        }
+    private void validateContextFieldsForCollectorSpecification(RestArtifactCollectorSpecification restArtifactCollectorSpecification) {
+        ContextInputValidator.of(restArtifactCollectorSpecification.getType()).validateContextFields(restArtifactCollectorSpecification);
     }
 
     private ApprovalConfiguration convertAndValidate(String supplyChainId, RestApprovalConfiguration restApprovalConfiguration) {
-        checkArtifactCollectorsForRequiredContextFields(restApprovalConfiguration);
+        validateContextFieldsForCollectorSpecification(restApprovalConfiguration);
         ApprovalConfiguration approvalConfiguration = approvalConfigurationConverter.convertFromRestApprovalConfiguration(restApprovalConfiguration);
         approvalConfiguration.setSupplyChainId(supplyChainId);
         verifyStepNameAndSegmentNameExistInLayout(approvalConfiguration);
@@ -200,11 +172,13 @@ public class LayoutRestService implements LayoutApi {
         Map<String, Set<String>> segmentStepNameCombinations = getSegmentsAndSteps(approvalConfiguration);
         if (segmentNameIsNotPresentInLayout(approvalConfiguration, segmentStepNameCombinations)) {
             throwLayoutValidationException(
+                    MODEL_CONSISTENCY,
                     SEGMENT_NAME,
                     "segment with name : " + approvalConfiguration.getSegmentName() + " does not exist in layout"
             );
         } else if (stepNameIsNotPresentInSegment(approvalConfiguration, segmentStepNameCombinations)) {
             throwLayoutValidationException(
+                    MODEL_CONSISTENCY,
                     "stepName",
                     "step with name: " + approvalConfiguration.getStepName() + " in segment: " + approvalConfiguration.getSegmentName() + " does not exist in layout"
             );
@@ -235,16 +209,5 @@ public class LayoutRestService implements LayoutApi {
         return !segmentStepNameCombinations.containsKey(approvalConfiguration.getSegmentName());
     }
 
-    private void throwLayoutValidationException(String field, String message) {
-        throw LayoutValidationException
-                .builder()
-                .validationMessages(List
-                        .of(new RestValidationMessage()
-                                .type(MODEL_CONSISTENCY)
-                                .field(field)
-                                .message(message)
-                        ))
-                .build();
-    }
 
 }
