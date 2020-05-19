@@ -431,6 +431,32 @@ paths:
           description: deleted successfully
         '500':
           $ref: '#/components/responses/Error'
+  /supplychain/{supplyChainId}/approval:
+    get:
+      summary: returns a list of approvals for the login user
+      operationId: getApprovals
+      tags:
+        - approval
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: supplyChainId
+          in: path
+          description: supply chain id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: array of approvals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApprovalConfiguration"
+        '500':
+          $ref: '#/components/responses/Error'
 
   /supplychain/{supplyChainId}/verification:
     post:
@@ -1054,6 +1080,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/Error'
+
 components:
   securitySchemes:
     bearerAuth:
