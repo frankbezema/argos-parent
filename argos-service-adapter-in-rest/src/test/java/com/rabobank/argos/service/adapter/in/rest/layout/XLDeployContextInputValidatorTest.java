@@ -55,6 +55,26 @@ class XLDeployContextInputValidatorTest {
     }
 
     @Test
+    void validateContextFieldsWithInvalidCharacterValueShouldThrowException() {
+        when(restArtifactCollectorSpecification.getContext()).thenReturn(Map.of("applicationName", "xlde*ploy"));
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> xlDeployContextInputValidator.validateContextFields(restArtifactCollectorSpecification));
+        assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("applicationName"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("(no `/`, `\\`, `:`, `[`, `]`, `|`, `,` or `*`) characters are allowed"));
+
+    }
+
+    @Test
+    void validateContextFieldsWithTooLongCharacterValueShouldThrowException() {
+        when(restArtifactCollectorSpecification.getContext()).thenReturn(Map.of("applicationName", "very long and boring name with also  many chars and blah                                                                                                                                                                                                       e"));
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> xlDeployContextInputValidator.validateContextFields(restArtifactCollectorSpecification));
+        assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("applicationName"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("applicationName is to long 256 only 255 is allowed"));
+
+    }
+
+    @Test
     void validateContextFieldsWithRequiredFields() {
         when(restArtifactCollectorSpecification.getContext()).thenReturn(Map.of("applicationName", "xldeploy"));
         xlDeployContextInputValidator.validateContextFields(restArtifactCollectorSpecification);
