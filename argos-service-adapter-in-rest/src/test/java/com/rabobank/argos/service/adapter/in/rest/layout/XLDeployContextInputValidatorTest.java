@@ -28,6 +28,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,6 +79,6 @@ class XLDeployContextInputValidatorTest {
     void validateContextFieldsWithRequiredFields() {
         when(restArtifactCollectorSpecification.getContext()).thenReturn(Map.of("applicationName", "xldeploy"));
         xlDeployContextInputValidator.validateContextFields(restArtifactCollectorSpecification);
-        verify(restArtifactCollectorSpecification).getContext();
+        verify(restArtifactCollectorSpecification, times(2)).getContext();
     }
 }
