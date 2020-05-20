@@ -15,9 +15,6 @@
  */
 package com.rabobank.argos.service.adapter.out.mongodb.layout;
 
-import com.mongodb.client.result.UpdateResult;
-import com.rabobank.argos.domain.ArgosError;
-import com.rabobank.argos.domain.hierarchy.Label;
 import com.rabobank.argos.domain.layout.ApprovalConfiguration;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,11 +24,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,9 +33,7 @@ import java.util.Optional;
 import static com.rabobank.argos.service.adapter.out.mongodb.layout.ApprovalConfigurationRepositoryImpl.COLLECTION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -59,31 +51,9 @@ class ApprovalConfigurationRepositoryImplTest {
     @Captor
     private ArgumentCaptor<Query> queryArgumentCaptor;
 
-    @Mock
-    private MongoConverter converter;
-
-    @Mock
-    private UpdateResult updateResult;
-
-    @Mock
-    private DuplicateKeyException duplicateKeyException;
-
-
-    @Captor
-    private ArgumentCaptor<Update> updateArgumentCaptor;
-
-
     @BeforeEach
     void setup() {
         approvalConfigurationRepository = new ApprovalConfigurationRepositoryImpl(template);
-
-    }
-
-    @Test
-    void save() {
-        approvalConfigurationRepository.save(approvalConfiguration);
-        verify(template).save(approvalConfiguration, COLLECTION);
-
     }
 
     @Test
@@ -94,49 +64,6 @@ class ApprovalConfigurationRepositoryImplTest {
         assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"supplyChainId\" : \"supplyChain\", \"$and\" : [{ \"segmentName\" : \"segmentName\"}, { \"stepName\" : \"stepName\"}]}, Fields: {}, Sort: {}"));
     }
 
-    @Test
-    void findById() {
-        when(template.findOne(any(), eq(ApprovalConfiguration.class), eq(COLLECTION))).thenReturn(approvalConfiguration);
-        assertThat(approvalConfigurationRepository.findById("id"), is(Optional.of(approvalConfiguration)));
-        verify(template).findOne(queryArgumentCaptor.capture(), eq(ApprovalConfiguration.class), eq(COLLECTION));
-        assertThat(queryArgumentCaptor.getValue().toString(), is("Query: { \"approvalConfigurationId\" : \"id\"}, Fields: {}, Sort: {}"));
-    }
-
-    @Test
-    void updateFound() {
-        when(template.getConverter()).thenReturn(converter);
-        when(template.updateFirst(any(), any(), eq(Label.class), eq(COLLECTION))).thenReturn(updateResult);
-        when(updateResult.getMatchedCount()).thenReturn(1L);
-        when(approvalConfiguration.getApprovalConfigurationId()).thenReturn("id");
-        Optional<ApprovalConfiguration> update = approvalConfigurationRepository.update(approvalConfiguration);
-        assertThat(update, Matchers.is(Optional.of(approvalConfiguration)));
-        verify(template).updateFirst(queryArgumentCaptor.capture(), updateArgumentCaptor.capture(), eq(Label.class), eq(COLLECTION));
-        assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"approvalConfigurationId\" : \"id\"}, Fields: {}, Sort: {}"));
-        verify(converter).write(eq(approvalConfiguration), any());
-        assertThat(updateArgumentCaptor.getValue().toString(), Matchers.is("{}"));
-    }
-
-    @Test
-    void updateNotFound() {
-        when(template.getConverter()).thenReturn(converter);
-        when(template.updateFirst(any(), any(), eq(Label.class), eq(COLLECTION))).thenReturn(updateResult);
-        when(updateResult.getMatchedCount()).thenReturn(0L);
-        when(approvalConfiguration.getApprovalConfigurationId()).thenReturn("id");
-        Optional<ApprovalConfiguration> update = approvalConfigurationRepository.update(approvalConfiguration);
-        assertThat(update.isEmpty(), Matchers.is(true));
-        verify(template).updateFirst(queryArgumentCaptor.capture(), updateArgumentCaptor.capture(), eq(Label.class), eq(COLLECTION));
-        assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"approvalConfigurationId\" : \"id\"}, Fields: {}, Sort: {}"));
-        verify(converter).write(eq(approvalConfiguration), any());
-        assertThat(updateArgumentCaptor.getValue().toString(), Matchers.is("{}"));
-    }
-
-    @Test
-    void updateDuplicateKeyException() {
-        when(template.getConverter()).thenReturn(converter);
-        when(template.updateFirst(any(), any(), eq(Label.class), eq(COLLECTION))).thenThrow(duplicateKeyException);
-        ArgosError argosError = assertThrows(ArgosError.class, () -> approvalConfigurationRepository.update(approvalConfiguration));
-        assertThat(argosError.getCause(), sameInstance(duplicateKeyException));
-    }
 
     @Test
     void findBySupplyChainId() {
@@ -153,14 +80,6 @@ class ApprovalConfigurationRepositoryImplTest {
         verify(template).remove(queryArgumentCaptor.capture(), eq(COLLECTION));
         verify(template).insert(List.of(approvalConfiguration), COLLECTION);
         assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"supplyChainId\" : \"supplyChain\"}, Fields: {}, Sort: {}"));
-    }
-
-
-    @Test
-    void deleteById() {
-        approvalConfigurationRepository.delete("id");
-        verify(template).remove(queryArgumentCaptor.capture(), eq(ApprovalConfiguration.class), eq(COLLECTION));
-        assertThat(queryArgumentCaptor.getValue().toString(), Matchers.is("Query: { \"approvalConfigurationId\" : \"id\"}, Fields: {}, Sort: {}"));
     }
 
 }

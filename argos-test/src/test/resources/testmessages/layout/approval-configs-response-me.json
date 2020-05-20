@@ -4,9 +4,9 @@
     "segmentName": "segment1",
     "artifactCollectorSpecifications": [
       {
-        "name": "xldeploy",
+        "name": "xldeploy1",
         "type": "XLDEPLOY",
-        "uri": "http://xldeploy.com",
+        "uri": "http://deploy.nl",
         "context": {
           "applicationName": "argos"
         }

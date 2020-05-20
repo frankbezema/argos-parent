@@ -39,7 +39,6 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import static com.rabobank.argos.service.adapter.out.mongodb.layout.ApprovalConfigurationRepositoryImpl.COLLECTION;
 import static de.flapdoodle.embed.process.config.io.ProcessOutput.getDefaultInstanceSilent;
@@ -77,34 +76,23 @@ class ApprovalConfigurationRepositoryIT {
         runner.execute();
     }
 
-    @Test
-    void findBySupplyChainIdSegmentNameAndStepName() {
-        loadData();
-        Optional<ApprovalConfiguration> approvalConfiguration = approvalConfigurationRepository
-                .findBySupplyChainIdSegmentNameAndStepName(SUPPLY_CHAIN_ID, SEGMENT_NAME, STEP_NAME);
-        assertThat(approvalConfiguration.isPresent(), is(true));
-        clearData();
-    }
-
 
     @Test
     void saveAll() {
         loadData();
-        approvalConfigurationRepository.save(ApprovalConfiguration
+        approvalConfigurationRepository.saveAll(SUPPLY_CHAIN_ID, List.of(ApprovalConfiguration
                 .builder()
-                .approvalConfigurationId("uuid2")
                 .segmentName("segment2")
                 .stepName("step2")
                 .supplyChainId(SUPPLY_CHAIN_ID)
-                .build());
+                .build()));
 
-        approvalConfigurationRepository.save(ApprovalConfiguration
+        approvalConfigurationRepository.saveAll(SUPPLY_CHAIN_ID, List.of(ApprovalConfiguration
                 .builder()
-                .approvalConfigurationId("uuid3")
                 .segmentName(SEGMENT_NAME)
                 .stepName(STEP_NAME)
                 .supplyChainId("otherSupplyChainId")
-                .build());
+                .build()));
 
         approvalConfigurationRepository.saveAll(SUPPLY_CHAIN_ID, List.of(ApprovalConfiguration
                 .builder()
@@ -118,30 +106,15 @@ class ApprovalConfigurationRepositoryIT {
         clearData();
     }
 
-    @Test
-    void testUpdate() {
-        loadData();
-        Optional<ApprovalConfiguration> approvalConfiguration = approvalConfigurationRepository
-                .findById("uuid");
-        assertThat(approvalConfiguration.isPresent(), is(true));
-        ApprovalConfiguration approvalForUpdate = approvalConfiguration.get();
-        approvalForUpdate.setSegmentName("updatedSegmentName");
-        Optional<ApprovalConfiguration> updatedApproval = approvalConfigurationRepository.update(approvalForUpdate);
-        assertThat(updatedApproval, is(Optional.of(approvalForUpdate)));
-        Optional<ApprovalConfiguration> checkForUpdate = approvalConfigurationRepository
-                .findById("uuid");
-        assertThat(checkForUpdate.get().getSegmentName(), is("updatedSegmentName"));
-        clearData();
-    }
+
 
     private void loadData() {
-        approvalConfigurationRepository.save(ApprovalConfiguration
+        approvalConfigurationRepository.saveAll(SUPPLY_CHAIN_ID, List.of(ApprovalConfiguration
                 .builder()
-                .approvalConfigurationId("uuid")
                 .segmentName(SEGMENT_NAME)
                 .stepName(STEP_NAME)
                 .supplyChainId(SUPPLY_CHAIN_ID)
-                .build());
+                .build()));
     }
 
     private void clearData() {

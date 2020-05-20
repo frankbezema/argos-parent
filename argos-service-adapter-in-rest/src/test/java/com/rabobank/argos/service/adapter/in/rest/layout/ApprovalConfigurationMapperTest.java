@@ -25,10 +25,8 @@ import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.skyscreamer.jsonassert.RegularExpressionValueMatcher;
 import org.skyscreamer.jsonassert.comparator.CustomComparator;
 
 import java.io.IOException;
@@ -40,7 +38,6 @@ class ApprovalConfigurationMapperTest {
     private ApprovalConfigurationMapper approvalConfigMapper;
     private ObjectMapper mapper;
     private String approvalConfigJson;
-    final RegularExpressionValueMatcher reMatcher = new RegularExpressionValueMatcher();
 
 
     @BeforeEach
@@ -57,9 +54,7 @@ class ApprovalConfigurationMapperTest {
         ApprovalConfiguration approvalConfiguration = approvalConfigMapper.convertFromRestApprovalConfiguration(mapper.readValue(approvalConfigJson, RestApprovalConfiguration.class));
         RestApprovalConfiguration restApprovalConfiguration = approvalConfigMapper.convertToRestApprovalConfiguration(approvalConfiguration);
         JSONAssert.assertEquals(approvalConfigJson, mapper.writeValueAsString(restApprovalConfiguration), new CustomComparator(
-                JSONCompareMode.STRICT,
-                new Customization("approvalConfigurationId",
-                        new RegularExpressionValueMatcher<Object>(restApprovalConfiguration.getApprovalConfigurationId())))
+                JSONCompareMode.STRICT)
         );
     }
 }

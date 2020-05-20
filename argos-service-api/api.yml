@@ -341,102 +341,12 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/Error'
-  /supplychain/{supplyChainId}/layout/approvalconfig/{approvalConfigurationId}:
-    get:
-      summary: updates an approval configuration for a segment step
-      operationId: getApprovalConfiguration
-      tags:
-        - layout
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: supplyChainId
-          in: path
-          description: supply chain id
-          required: true
-          schema:
-            type: string
-        - name: approvalConfigurationId
-          in: path
-          description: approval configuration id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApprovalConfiguration'
-        '500':
-          $ref: '#/components/responses/Error'
-    put:
-      summary: updates an approval configuration for a segment step
-      operationId: updateApprovalConfiguration
-      tags:
-        - layout
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: supplyChainId
-          in: path
-          description: supply chain id
-          required: true
-          schema:
-            type: string
-        - name: approvalConfigurationId
-          in: path
-          description: approval configuration id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ApprovalConfiguration"
-      responses:
-        '200':
-          description: updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApprovalConfiguration'
-        '400':
-          $ref: '#/components/responses/ValidationError'
-        '500':
-          $ref: '#/components/responses/Error'
-    delete:
-      summary: deletes an approvalconfiguration
-      operationId: deleteApprovalConfiguration
-      tags:
-        - layout
-      parameters:
-        - name: supplyChainId
-          in: path
-          description: supply chain id
-          required: true
-          schema:
-            type: string
-        - name: approvalConfigurationId
-          in: path
-          description: approval configuration id
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: deleted successfully
-        '500':
-          $ref: '#/components/responses/Error'
-  /supplychain/{supplyChainId}/approval:
+  /supplychain/{supplyChainId}/layout/approvalconfig/me:
     get:
       summary: returns a list of approvals for the login user
-      operationId: getApprovals
+      operationId: getApprovalsForAccount
       tags:
-        - approval
+        - layout
       security:
         - bearerAuth: []
       parameters:
@@ -457,7 +367,6 @@ paths:
                   $ref: "#/components/schemas/ApprovalConfiguration"
         '500':
           $ref: '#/components/responses/Error'
-
   /supplychain/{supplyChainId}/verification:
     post:
       summary: creates a verification run
@@ -1565,9 +1474,6 @@ components:
         - segmentName
         - artifactCollectorSpecifications
       properties:
-        approvalConfigurationId:
-          type: string
-          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}?$'
         stepName:
           type: string
           pattern: '^([A-Za-z0-9_-]*)?$'

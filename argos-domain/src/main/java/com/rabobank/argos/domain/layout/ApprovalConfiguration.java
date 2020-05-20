@@ -22,15 +22,11 @@ import lombok.ToString;
 
 import java.util.List;
 
-import static java.util.UUID.randomUUID;
-
 @Getter
 @Setter
 @Builder
 @ToString
 public class ApprovalConfiguration {
-    @Builder.Default
-    private String approvalConfigurationId = randomUUID().toString();
     private String stepName;
     private String segmentName;
     private String supplyChainId;
