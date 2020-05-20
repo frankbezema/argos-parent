@@ -18,13 +18,21 @@ package com.rabobank.argos.service.adapter.in.rest.layout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactCollectorSpecification;
 
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.DATA_INPUT;
+import static com.rabobank.argos.service.adapter.in.rest.layout.ValidationHelper.throwLayoutValidationException;
 
 public class XLDeployContextInputValidator extends ContextInputValidator {
 
 
     private static final String APPLICATION_NAME = "applicationName";
+    //(no `/`, `\`, `:`, `[`, `]`, `|`, `,` or `*`)
+    private static final Pattern invalidCharacters = Pattern.compile("[/\\\\:\\[\\]|,*\\]]");
+    private static final int MAX_LENGTH = 255;
 
-    protected XLDeployContextInputValidator() {
+    XLDeployContextInputValidator() {
     }
 
     @Override
@@ -34,6 +42,19 @@ public class XLDeployContextInputValidator extends ContextInputValidator {
 
     @Override
     protected void checkFieldsForInputConsistencyRules(RestArtifactCollectorSpecification restArtifactCollectorSpecification) {
-        //no checks for now tbd
+        String applicationNameValue = restArtifactCollectorSpecification.getContext().get(APPLICATION_NAME);
+        Matcher m = invalidCharacters.matcher(applicationNameValue);
+        if (m.find()) {
+            throwLayoutValidationException(DATA_INPUT, APPLICATION_NAME,
+                    "(no `/`, `\\`, `:`, `[`, `]`, `|`, `,` or `*`) characters are allowed");
+        }
+        if (applicationNameValue.length() > MAX_LENGTH) {
+            throwLayoutValidationException(DATA_INPUT, APPLICATION_NAME,
+                    "applicationName is to long "
+                            + applicationNameValue.length() +
+                            " only "
+                            + MAX_LENGTH + " is allowed");
+
+        }
     }
 }
