@@ -8,6 +8,7 @@
     ],
     "permissions": [
       "LAYOUT_ADD",
+      "LINK_ADD",
       "READ",
       "SERVICE_ACCOUNT_EDIT",
       "VERIFY"

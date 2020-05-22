@@ -15,6 +15,9 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.layout;
 
+import com.rabobank.argos.domain.ArgosError;
+import com.rabobank.argos.domain.account.Account;
+import com.rabobank.argos.domain.key.KeyPair;
 import com.rabobank.argos.domain.layout.ApprovalConfiguration;
 import com.rabobank.argos.domain.layout.Layout;
 import com.rabobank.argos.domain.layout.LayoutMetaBlock;
@@ -27,6 +30,7 @@ import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
 import com.rabobank.argos.service.domain.layout.ApprovalConfigurationRepository;
 import com.rabobank.argos.service.domain.layout.LayoutMetaBlockRepository;
 import com.rabobank.argos.service.domain.security.AccountSecurityContext;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +51,8 @@ import static com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactC
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
@@ -103,6 +109,18 @@ class LayoutRestServiceTest {
 
     @Mock
     private AccountSecurityContext accountSecurityContext;
+
+    @Mock
+    private Account account;
+
+    @Mock
+    private KeyPair keyPair;
+
+    @Mock
+    private LayoutSegment layoutSegment;
+
+    @Mock
+    private Step step;
 
     @BeforeEach
     void setUp() {
@@ -242,6 +260,66 @@ class LayoutRestServiceTest {
         ResponseEntity<List<RestApprovalConfiguration>> responseEntity = service.getApprovalConfigurations(SUPPLY_CHAIN_ID);
         assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
         assertThat(responseEntity.getBody(), hasSize(1));
+    }
+
+    @Test
+    void getApprovalsForAccount() {
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
+        when(layoutMetaBlock.getLayout()).thenReturn(layout);
+        when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment));
+        when(layoutSegment.getSteps()).thenReturn(List.of(step));
+
+
+        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
+        when(account.getActiveKeyPair()).thenReturn(keyPair);
+
+        when(approvalConfigurationRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(List.of(approvalConfiguration));
+        when(approvalConfigurationMapper.convertToRestApprovalConfiguration(approvalConfiguration))
+                .thenReturn(restApprovalConfiguration);
+
+
+        when(approvalConfiguration.getSegmentName()).thenReturn("seg1");
+        when(approvalConfiguration.getStepName()).thenReturn("step1");
+        when(keyPair.getKeyId()).thenReturn("accountKeyId");
+
+        when(step.getName()).thenReturn("step1");
+        when(layoutSegment.getName()).thenReturn("seg1");
+        when(step.getAuthorizedKeyIds()).thenReturn(List.of("accountKeyId"));
+
+        ResponseEntity<List<RestApprovalConfiguration>> responseEntity = service.getApprovalsForAccount(SUPPLY_CHAIN_ID);
+        assertThat(responseEntity.getStatusCodeValue(), is(200));
+        assertThat(responseEntity.getBody(), contains(restApprovalConfiguration));
+
+        when(step.getName()).thenReturn("step1");
+        when(layoutSegment.getName()).thenReturn("seg1");
+        when(step.getAuthorizedKeyIds()).thenReturn(List.of("otherAccountKeyId"));
+        assertThat(service.getApprovalsForAccount(SUPPLY_CHAIN_ID).getBody(), empty());
+
+        when(step.getName()).thenReturn("step2");
+        when(layoutSegment.getName()).thenReturn("seg1");
+        assertThat(service.getApprovalsForAccount(SUPPLY_CHAIN_ID).getBody(), empty());
+
+
+        when(layoutSegment.getName()).thenReturn("seg2");
+        assertThat(service.getApprovalsForAccount(SUPPLY_CHAIN_ID).getBody(), empty());
+    }
+
+    @Test
+    void getApprovalsForAccountNoLayout() {
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.empty());
+        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
+        when(account.getActiveKeyPair()).thenReturn(keyPair);
+        ResponseEntity<List<RestApprovalConfiguration>> responseEntity = service.getApprovalsForAccount(SUPPLY_CHAIN_ID);
+        assertThat(responseEntity.getStatusCodeValue(), is(200));
+        assertThat(responseEntity.getBody(), empty());
+
+    }
+
+    @Test
+    void getApprovalsForAccountNoAccount() {
+        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.empty());
+        ArgosError exception = assertThrows(ArgosError.class, () -> service.getApprovalsForAccount(SUPPLY_CHAIN_ID));
+        assertThat(exception.getMessage(), Is.is("not logged in"));
     }
 
 
