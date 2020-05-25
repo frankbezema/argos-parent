@@ -184,6 +184,12 @@
 			<version>1.2.3</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>3.1.0</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
 			<artifactId>wiremock</artifactId>
@@ -199,13 +205,6 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>${junit-jupiter.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-params</artifactId>
-			<version>${junit-jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -215,6 +214,18 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<dependencyManagement>
+    <dependencies>
+	    <dependency>
+            <groupId>org.junit</groupId>
+	        <artifactId>junit-bom</artifactId>
+	        <version>${junit-jupiter.version}</version>
+	        <type>pom</type>
+	        <scope>import</scope>
+	    </dependency>
+    </dependencies>
+    </dependencyManagement>
 
 	<distributionManagement>
 		<snapshotRepository>
