@@ -51,7 +51,6 @@ class ArgosServiceTestIT {
 
     }
 
-
     @Karate.Test
     Karate link() {
         return new Karate().feature("classpath:feature/link/link.feature");

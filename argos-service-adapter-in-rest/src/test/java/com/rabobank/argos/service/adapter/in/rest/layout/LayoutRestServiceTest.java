@@ -21,6 +21,7 @@ import com.rabobank.argos.domain.layout.LayoutMetaBlock;
 import com.rabobank.argos.domain.layout.LayoutSegment;
 import com.rabobank.argos.domain.layout.Step;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestApprovalConfiguration;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactCollectorSpecification;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
 import com.rabobank.argos.service.domain.layout.ApprovalConfigurationRepository;
@@ -41,6 +42,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactCollectorSpecification.TypeEnum.XLDEPLOY;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -95,7 +98,8 @@ class LayoutRestServiceTest {
 
     @Mock
     private ApprovalConfiguration approvalConfiguration;
-
+    @Mock
+    private RestArtifactCollectorSpecification restArtifactCollectorSpecification;
     @BeforeEach
     void setUp() {
         service = new LayoutRestService(converter, layoutMetaBlockRepository, validator, approvalConfigurationRepository, approvalConfigurationMapper);
@@ -180,7 +184,7 @@ class LayoutRestServiceTest {
     }
 
     @Test
-    void createApprovalConfigurationWithIncorrectStepNameShouldThrowValidationError() {
+    void createApprovalConfigurationsWithIncorrectStepNameShouldThrowValidationError() {
         when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
         when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
 
@@ -200,7 +204,7 @@ class LayoutRestServiceTest {
 
 
     @Test
-    void createApprovalConfigurationWithoutExistingLayoutShouldThrowValidationError() {
+    void createApprovalConfigurationsWithoutExistingLayoutShouldThrowValidationError() {
         when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.empty());
         when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
         when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
@@ -211,6 +215,29 @@ class LayoutRestServiceTest {
         );
         assertThat(responseStatusException.getStatus(), is(HttpStatus.NOT_FOUND));
         assertThat(responseStatusException.getMessage(), is("404 NOT_FOUND \"layout not found\""));
+    }
+
+
+    @Test
+    void createApprovalConfigurationsWithIncorrectArtifactSpecificationShouldThrowValidationError() {
+        when(restArtifactCollectorSpecification.getContext()).thenReturn(emptyMap());
+        when(restArtifactCollectorSpecification.getType()).thenReturn(XLDEPLOY);
+        when(restApprovalConfiguration.getArtifactCollectorSpecifications()).thenReturn(singletonList(restArtifactCollectorSpecification));
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> service.createApprovalConfigurations(SUPPLY_CHAIN_ID, List.of(restApprovalConfiguration)));
+        assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("context"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("required fields : [applicationName] not present for collector type: XLDEPLOY"));
+    }
+
+    @Test
+    void upApprovalConfigurationWithIncorrectArtifactSpecificationShouldThrowValidationError() {
+        when(restArtifactCollectorSpecification.getContext()).thenReturn(emptyMap());
+        when(restArtifactCollectorSpecification.getType()).thenReturn(XLDEPLOY);
+        when(restApprovalConfiguration.getArtifactCollectorSpecifications()).thenReturn(singletonList(restArtifactCollectorSpecification));
+        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> service.updateApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID, restApprovalConfiguration));
+        assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("context"));
+        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("required fields : [applicationName] not present for collector type: XLDEPLOY"));
     }
 
     @Test

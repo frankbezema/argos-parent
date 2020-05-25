@@ -21,14 +21,18 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @Setter
 @Getter
 @Builder
 @ToString
 public class ArtifactCollectorSpecification {
+    public enum CollectorType {XLDEPLOY}
     private String name;
     private URI uri;
     private CollectorType type;
-    public enum CollectorType {XLDEPLOY}
+    @Builder.Default
+    private Map<String, String> context = new HashMap<>();
 }

@@ -6,7 +6,10 @@
     {
       "name": "xl deploy rabobank",
       "type": "XLDEPLOY",
-      "uri": "http://xldeploy.nl"
+      "uri": "http://xldeploy.nl",
+      "context": {
+        "applicationName": "applicationName"
+      }
     }
   ]
 }

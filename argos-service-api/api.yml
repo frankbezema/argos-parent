@@ -1536,7 +1536,7 @@ components:
       required:
         - stepName
         - segmentName
-        - artifactCollectors
+        - artifactCollectorSpecifications
       properties:
         approvalConfigurationId:
           type: string
@@ -1551,12 +1551,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ArtifactCollectorSpecification"
+          minItems: 1
     ArtifactCollectorSpecification:
       type: object
       required:
         - name
         - type
         - uri
+        - context
       properties:
         name:
           type: string
@@ -1569,6 +1571,11 @@ components:
           description: base url of the artifact collector server
           type: string
           format: uri
+        context:
+          description: additional key value pair attributes that can very per collector type for XLDEPLOY the key is 'applicationName'
+          type: object
+          additionalProperties:
+            type: string
     Error:
       type: object
       required:

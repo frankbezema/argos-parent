@@ -16,12 +16,15 @@
 package com.rabobank.argos.service.adapter.in.rest.layout;
 
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestApprovalConfiguration;
+import com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactCollectorSpecification;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import static com.rabobank.argos.service.adapter.in.rest.ValidateHelper.expectedErrors;
 import static com.rabobank.argos.service.adapter.in.rest.ValidateHelper.validate;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 
@@ -29,13 +32,19 @@ public class RestApprovalConfigurationTest {
     @Test
     void emptyRestLayoutMetaBlock() {
         assertThat(validate(new RestApprovalConfiguration()), contains(expectedErrors(
+                "artifactCollectorSpecifications", "size must be between 1 and 2147483647",
                 "segmentName", "must not be null",
                 "stepName", "must not be null")));
     }
 
     @Test
     void incorrectStepName() throws URISyntaxException {
-        assertThat(validate(new RestApprovalConfiguration().stepName("name%").segmentName("segment")
+        assertThat(validate(new RestApprovalConfiguration()
+                .stepName("name%")
+                .segmentName("segment").
+                        artifactCollectorSpecifications(singletonList(new RestArtifactCollectorSpecification()
+                                .name("xldeploy").type(RestArtifactCollectorSpecification.TypeEnum.XLDEPLOY)
+                                .uri(new URI("http://xldeploy.nl"))))
         ), contains(expectedErrors(
                 "stepName", "must match \"^([A-Za-z0-9_-]*)?$\"")));
 
@@ -44,6 +53,10 @@ public class RestApprovalConfigurationTest {
     @Test
     void incorrectSegmentName() throws URISyntaxException {
         assertThat(validate(new RestApprovalConfiguration().stepName("name").segmentName("&segment")
+                .artifactCollectorSpecifications(singletonList(new RestArtifactCollectorSpecification()
+                        .name("xldeploy")
+                        .type(RestArtifactCollectorSpecification.TypeEnum.XLDEPLOY)
+                        .uri(new URI("http://xldeploy.nl"))))
         ), contains(expectedErrors(
                 "segmentName", "must match \"^([A-Za-z0-9_-]*)?$\"")));
 
