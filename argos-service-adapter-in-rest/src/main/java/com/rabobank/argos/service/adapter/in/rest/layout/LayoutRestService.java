@@ -15,6 +15,9 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.layout;
 
+import com.rabobank.argos.domain.ArgosError;
+import com.rabobank.argos.domain.account.Account;
+import com.rabobank.argos.domain.key.KeyPair;
 import com.rabobank.argos.domain.layout.ApprovalConfiguration;
 import com.rabobank.argos.domain.layout.Layout;
 import com.rabobank.argos.domain.layout.LayoutMetaBlock;
@@ -28,6 +31,7 @@ import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
 import com.rabobank.argos.service.domain.layout.ApprovalConfigurationRepository;
 import com.rabobank.argos.service.domain.layout.LayoutMetaBlockRepository;
+import com.rabobank.argos.service.domain.security.AccountSecurityContext;
 import com.rabobank.argos.service.domain.security.LabelIdCheckParam;
 import com.rabobank.argos.service.domain.security.PermissionCheck;
 import lombok.RequiredArgsConstructor;
@@ -39,16 +43,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.validation.Valid;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.rabobank.argos.service.adapter.in.rest.api.model.RestValidationMessage.TypeEnum.MODEL_CONSISTENCY;
 import static com.rabobank.argos.service.adapter.in.rest.layout.ValidationHelper.throwLayoutValidationException;
 import static com.rabobank.argos.service.adapter.in.rest.supplychain.SupplyChainLabelIdExtractor.SUPPLY_CHAIN_LABEL_ID_EXTRACTOR;
+import static java.util.Collections.emptyList;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @Slf4j
@@ -62,8 +69,7 @@ public class LayoutRestService implements LayoutApi {
     private final LayoutValidatorService validator;
     private final ApprovalConfigurationRepository approvalConfigurationRepository;
     private final ApprovalConfigurationMapper approvalConfigurationConverter;
-
-
+    private final AccountSecurityContext accountSecurityContext;
 
 
     @Override
@@ -96,7 +102,7 @@ public class LayoutRestService implements LayoutApi {
 
     @Override
     @PermissionCheck(permissions = Permission.LAYOUT_ADD)
-    public ResponseEntity<List<RestApprovalConfiguration>> createApprovalConfigurations(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, @Valid List<RestApprovalConfiguration> restApprovalConfigurations) {
+    public ResponseEntity<List<RestApprovalConfiguration>> createApprovalConfigurations(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, List<RestApprovalConfiguration> restApprovalConfigurations) {
         List<ApprovalConfiguration> approvalConfigurations = restApprovalConfigurations.stream()
                 .map(restApprovalConfiguration -> convertAndValidate(supplyChainId, restApprovalConfiguration))
                 .collect(Collectors.toList());
@@ -107,40 +113,6 @@ public class LayoutRestService implements LayoutApi {
 
     }
 
-
-    @Override
-    @PermissionCheck(permissions = Permission.READ)
-    public ResponseEntity<RestApprovalConfiguration> getApprovalConfiguration(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String approvalConfigurationId) {
-        return approvalConfigurationRepository.findById(approvalConfigurationId)
-                .map(approvalConfigurationConverter::convertToRestApprovalConfiguration)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "approval configuration not found"));
-
-    }
-
-    @Override
-    @PermissionCheck(permissions = Permission.LAYOUT_ADD)
-    public ResponseEntity<RestApprovalConfiguration> updateApprovalConfiguration(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String approvalConfigurationId, @Valid RestApprovalConfiguration restApprovalConfiguration) {
-        validateContextFieldsForCollectorSpecification(restApprovalConfiguration);
-        ApprovalConfiguration approvalConfiguration = approvalConfigurationConverter.convertFromRestApprovalConfiguration(restApprovalConfiguration);
-        approvalConfiguration.setSupplyChainId(supplyChainId);
-        approvalConfiguration.setApprovalConfigurationId(approvalConfigurationId);
-
-        verifyStepNameAndSegmentNameExistInLayout(approvalConfiguration);
-        return approvalConfigurationRepository.update(approvalConfiguration)
-                .map(approvalConfigurationConverter::convertToRestApprovalConfiguration)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "approval configuration not found"));
-
-    }
-
-    @Override
-    @PermissionCheck(permissions = Permission.LAYOUT_ADD)
-    public ResponseEntity<Void> deleteApprovalConfiguration(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId, String approvalConfigurationId) {
-        approvalConfigurationRepository.delete(approvalConfigurationId);
-        return ResponseEntity.noContent().build();
-    }
-
     @Override
     @PermissionCheck(permissions = Permission.READ)
     public ResponseEntity<List<RestApprovalConfiguration>> getApprovalConfigurations(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId) {
@@ -149,6 +121,34 @@ public class LayoutRestService implements LayoutApi {
                 .stream()
                 .map(approvalConfigurationConverter::convertToRestApprovalConfiguration)
                 .collect(Collectors.toList()));
+    }
+
+    @Override
+    @PermissionCheck(permissions = Permission.LINK_ADD)
+    public ResponseEntity<List<RestApprovalConfiguration>> getApprovalsForAccount(@LabelIdCheckParam(dataExtractor = SUPPLY_CHAIN_LABEL_ID_EXTRACTOR) String supplyChainId) {
+
+        Account account = accountSecurityContext.getAuthenticatedAccount().orElseThrow(() -> new ArgosError("not logged in"));
+
+        Optional<KeyPair> optionalKeyPair = Optional.ofNullable(account.getActiveKeyPair());
+        Optional<LayoutMetaBlock> optionalLayoutMetaBlock = layoutMetaBlockRepository.findBySupplyChainId(supplyChainId);
+
+        if (optionalKeyPair.isPresent() && optionalLayoutMetaBlock.isPresent()) {
+            String activeAccountKeyId = optionalKeyPair.get().getKeyId();
+            Layout layout = optionalLayoutMetaBlock.get().getLayout();
+            return ok(approvalConfigurationRepository.findBySupplyChainId(supplyChainId).stream().filter(approvalConf -> canApprove(approvalConf, activeAccountKeyId, layout)
+            ).map(approvalConfigurationConverter::convertToRestApprovalConfiguration).collect(Collectors.toList()));
+        } else {
+            return ok(emptyList());
+        }
+    }
+
+    private boolean canApprove(ApprovalConfiguration approvalConf, String activeAccountKeyId, Layout layout) {
+        return layout.getLayoutSegments().stream()
+                .filter(layoutSegment -> layoutSegment.getName().equals(approvalConf.getSegmentName()))
+                .map(LayoutSegment::getSteps).flatMap(Collection::stream)
+                .filter(step -> step.getName().equals(approvalConf.getStepName()))
+                .map(Step::getAuthorizedKeyIds).flatMap(Collection::stream)
+                .anyMatch(authorizedKeyId -> authorizedKeyId.equals(activeAccountKeyId));
     }
 
     private void validateContextFieldsForCollectorSpecification(RestApprovalConfiguration approvalConfiguration) {

@@ -41,6 +41,6 @@ class ApprovalConfigurationDatabaseChangelogTest {
     void addIndex() {
         when(template.indexOps(COLLECTION)).thenReturn(indexOperations);
         new ApprovalConfigurationDatabaseChangelog().addIndex(template);
-        verify(template, times(3)).indexOps(COLLECTION);
+        verify(template, times(2)).indexOps(COLLECTION);
     }
 }

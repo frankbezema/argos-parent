@@ -15,6 +15,9 @@
  */
 package com.rabobank.argos.service.adapter.in.rest.layout;
 
+import com.rabobank.argos.domain.ArgosError;
+import com.rabobank.argos.domain.account.Account;
+import com.rabobank.argos.domain.key.KeyPair;
 import com.rabobank.argos.domain.layout.ApprovalConfiguration;
 import com.rabobank.argos.domain.layout.Layout;
 import com.rabobank.argos.domain.layout.LayoutMetaBlock;
@@ -26,6 +29,8 @@ import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayout;
 import com.rabobank.argos.service.adapter.in.rest.api.model.RestLayoutMetaBlock;
 import com.rabobank.argos.service.domain.layout.ApprovalConfigurationRepository;
 import com.rabobank.argos.service.domain.layout.LayoutMetaBlockRepository;
+import com.rabobank.argos.service.domain.security.AccountSecurityContext;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +51,8 @@ import static com.rabobank.argos.service.adapter.in.rest.api.model.RestArtifactC
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
@@ -59,7 +66,6 @@ class LayoutRestServiceTest {
     private static final String SEGMENT_NAME = "segmentName";
     private static final String STEP_NAME = "stepName";
     private static final String SUPPLY_CHAIN_ID = "supplyChainId";
-    private static final String APPROVAL_CONFIG_ID = "approvalConfigId";
 
     @Mock
     private LayoutMetaBlockMapper converter;
@@ -100,9 +106,25 @@ class LayoutRestServiceTest {
     private ApprovalConfiguration approvalConfiguration;
     @Mock
     private RestArtifactCollectorSpecification restArtifactCollectorSpecification;
+
+    @Mock
+    private AccountSecurityContext accountSecurityContext;
+
+    @Mock
+    private Account account;
+
+    @Mock
+    private KeyPair keyPair;
+
+    @Mock
+    private LayoutSegment layoutSegment;
+
+    @Mock
+    private Step step;
+
     @BeforeEach
     void setUp() {
-        service = new LayoutRestService(converter, layoutMetaBlockRepository, validator, approvalConfigurationRepository, approvalConfigurationMapper);
+        service = new LayoutRestService(converter, layoutMetaBlockRepository, validator, approvalConfigurationRepository, approvalConfigurationMapper, accountSecurityContext);
     }
 
     @Test
@@ -229,82 +251,6 @@ class LayoutRestServiceTest {
         assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("required fields : [applicationName] not present for collector type: XLDEPLOY"));
     }
 
-    @Test
-    void upApprovalConfigurationWithIncorrectArtifactSpecificationShouldThrowValidationError() {
-        when(restArtifactCollectorSpecification.getContext()).thenReturn(emptyMap());
-        when(restArtifactCollectorSpecification.getType()).thenReturn(XLDEPLOY);
-        when(restApprovalConfiguration.getArtifactCollectorSpecifications()).thenReturn(singletonList(restArtifactCollectorSpecification));
-        LayoutValidationException layoutValidationException = assertThrows(LayoutValidationException.class, () -> service.updateApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID, restApprovalConfiguration));
-        assertThat(layoutValidationException.getValidationMessages().isEmpty(), is(false));
-        assertThat(layoutValidationException.getValidationMessages().get(0).getField(), is("context"));
-        assertThat(layoutValidationException.getValidationMessages().get(0).getMessage(), is("required fields : [applicationName] not present for collector type: XLDEPLOY"));
-    }
-
-    @Test
-    void getApprovalConfigurationWithValidIdShouldReturn200() {
-        when(approvalConfigurationRepository
-                .findById(APPROVAL_CONFIG_ID))
-                .thenReturn(Optional.of(approvalConfiguration));
-        when(approvalConfigurationMapper.convertToRestApprovalConfiguration(approvalConfiguration))
-                .thenReturn(restApprovalConfiguration);
-        ResponseEntity<RestApprovalConfiguration> responseEntity = service.getApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID);
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-        assertThat(responseEntity.getBody(), is(restApprovalConfiguration));
-    }
-
-    @Test
-    void getApprovalConfigurationWithInValidIdShouldReturn404() {
-        when(approvalConfigurationRepository
-                .findById(APPROVAL_CONFIG_ID))
-                .thenReturn(Optional.empty());
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
-                service.getApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID)
-        );
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.NOT_FOUND));
-        assertThat(responseStatusException.getMessage(), is("404 NOT_FOUND \"approval configuration not found\""));
-    }
-
-    @Test
-    void updateApprovalConfigurationShouldReturn200() {
-        when(approvalConfigurationRepository
-                .update(approvalConfiguration))
-                .thenReturn(Optional.of(approvalConfiguration));
-        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
-        when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
-        when(layoutMetaBlock.getLayout()).thenReturn(layout);
-        when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
-        when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
-        when(approvalConfiguration.getStepName()).thenReturn(STEP_NAME);
-        when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
-                .thenReturn(approvalConfiguration);
-        when(approvalConfigurationMapper.convertToRestApprovalConfiguration(approvalConfiguration))
-                .thenReturn(restApprovalConfiguration);
-        ResponseEntity<RestApprovalConfiguration> responseEntity = service.updateApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID, restApprovalConfiguration);
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-        verify(approvalConfigurationRepository).update(approvalConfiguration);
-        verify(approvalConfiguration).setSupplyChainId(SUPPLY_CHAIN_ID);
-        verify(approvalConfiguration).setApprovalConfigurationId(APPROVAL_CONFIG_ID);
-    }
-
-    @Test
-    void updateApprovalConfigurationWithInvalidIdShouldReturn403() {
-        when(approvalConfigurationRepository
-                .update(approvalConfiguration))
-                .thenReturn(Optional.empty());
-        when(approvalConfigurationMapper.convertFromRestApprovalConfiguration(restApprovalConfiguration))
-                .thenReturn(approvalConfiguration);
-        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
-        when(approvalConfiguration.getSupplyChainId()).thenReturn(SUPPLY_CHAIN_ID);
-        when(layoutMetaBlock.getLayout()).thenReturn(layout);
-        when(layout.getLayoutSegments()).thenReturn(createSegmentAndStep());
-        when(approvalConfiguration.getSegmentName()).thenReturn(SEGMENT_NAME);
-        when(approvalConfiguration.getStepName()).thenReturn(STEP_NAME);
-        ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
-                service.updateApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID, restApprovalConfiguration)
-        );
-        assertThat(responseStatusException.getStatus(), is(HttpStatus.NOT_FOUND));
-        assertThat(responseStatusException.getMessage(), is("404 NOT_FOUND \"approval configuration not found\""));
-    }
 
     @Test
     void getApprovalConfigurations() {
@@ -317,12 +263,65 @@ class LayoutRestServiceTest {
     }
 
     @Test
-    void deleteApprovalConfiguration() {
-        ResponseEntity<Void> responseEntity = service.deleteApprovalConfiguration(SUPPLY_CHAIN_ID, APPROVAL_CONFIG_ID);
-        verify(approvalConfigurationRepository).delete(APPROVAL_CONFIG_ID);
-        assertThat(responseEntity.getStatusCode(), is(HttpStatus.NO_CONTENT));
+    void getApprovalsForAccount() {
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.of(layoutMetaBlock));
+        when(layoutMetaBlock.getLayout()).thenReturn(layout);
+        when(layout.getLayoutSegments()).thenReturn(List.of(layoutSegment));
+        when(layoutSegment.getSteps()).thenReturn(List.of(step));
+
+
+        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
+        when(account.getActiveKeyPair()).thenReturn(keyPair);
+
+        when(approvalConfigurationRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(List.of(approvalConfiguration));
+        when(approvalConfigurationMapper.convertToRestApprovalConfiguration(approvalConfiguration))
+                .thenReturn(restApprovalConfiguration);
+
+
+        when(approvalConfiguration.getSegmentName()).thenReturn("seg1");
+        when(approvalConfiguration.getStepName()).thenReturn("step1");
+        when(keyPair.getKeyId()).thenReturn("accountKeyId");
+
+        when(step.getName()).thenReturn("step1");
+        when(layoutSegment.getName()).thenReturn("seg1");
+        when(step.getAuthorizedKeyIds()).thenReturn(List.of("accountKeyId"));
+
+        ResponseEntity<List<RestApprovalConfiguration>> responseEntity = service.getApprovalsForAccount(SUPPLY_CHAIN_ID);
+        assertThat(responseEntity.getStatusCodeValue(), is(200));
+        assertThat(responseEntity.getBody(), contains(restApprovalConfiguration));
+
+        when(step.getName()).thenReturn("step1");
+        when(layoutSegment.getName()).thenReturn("seg1");
+        when(step.getAuthorizedKeyIds()).thenReturn(List.of("otherAccountKeyId"));
+        assertThat(service.getApprovalsForAccount(SUPPLY_CHAIN_ID).getBody(), empty());
+
+        when(step.getName()).thenReturn("step2");
+        when(layoutSegment.getName()).thenReturn("seg1");
+        assertThat(service.getApprovalsForAccount(SUPPLY_CHAIN_ID).getBody(), empty());
+
+
+        when(layoutSegment.getName()).thenReturn("seg2");
+        assertThat(service.getApprovalsForAccount(SUPPLY_CHAIN_ID).getBody(), empty());
+    }
+
+    @Test
+    void getApprovalsForAccountNoLayout() {
+        when(layoutMetaBlockRepository.findBySupplyChainId(SUPPLY_CHAIN_ID)).thenReturn(Optional.empty());
+        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.of(account));
+        when(account.getActiveKeyPair()).thenReturn(keyPair);
+        ResponseEntity<List<RestApprovalConfiguration>> responseEntity = service.getApprovalsForAccount(SUPPLY_CHAIN_ID);
+        assertThat(responseEntity.getStatusCodeValue(), is(200));
+        assertThat(responseEntity.getBody(), empty());
 
     }
+
+    @Test
+    void getApprovalsForAccountNoAccount() {
+        when(accountSecurityContext.getAuthenticatedAccount()).thenReturn(Optional.empty());
+        ArgosError exception = assertThrows(ArgosError.class, () -> service.getApprovalsForAccount(SUPPLY_CHAIN_ID));
+        assertThat(exception.getMessage(), Is.is("not logged in"));
+    }
+
 
     private static List<LayoutSegment> createSegmentAndStep() {
         return singletonList(LayoutSegment

@@ -25,7 +25,6 @@ import org.springframework.data.mongodb.core.index.IndexDefinition;
 
 import java.util.Map;
 
-import static com.rabobank.argos.service.adapter.out.mongodb.layout.ApprovalConfigurationRepositoryImpl.APPROVAL_CONFIG_ID_FIELD;
 import static com.rabobank.argos.service.adapter.out.mongodb.layout.ApprovalConfigurationRepositoryImpl.COLLECTION;
 import static com.rabobank.argos.service.adapter.out.mongodb.layout.ApprovalConfigurationRepositoryImpl.SEGMENT_NAME_FIELD;
 import static com.rabobank.argos.service.adapter.out.mongodb.layout.ApprovalConfigurationRepositoryImpl.STEP_NAME_FIELD;
@@ -36,10 +35,8 @@ public class ApprovalConfigurationDatabaseChangelog {
 
     @ChangeSet(order = "001", id = "ApprovalConfigurationChangelog-1-1", author = "michel")
     public void addIndex(MongoTemplate template) {
-        createIndex(template, HashedIndex.hashed(APPROVAL_CONFIG_ID_FIELD));
         createIndex(template, HashedIndex.hashed(SUPPLYCHAIN_ID_FIELD));
         createCompoundIndexOnSupplyChainAndSegmentNameAndStepName(template);
-
     }
 
     private void createIndex(MongoTemplate template, IndexDefinition indexDefinition) {

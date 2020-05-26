@@ -1,6 +1,5 @@
 [
   {
-    "approvalConfigurationId": "#uuid",
     "stepName": "stepName2",
     "segmentName": "segment1",
     "artifactCollectorSpecifications": [
@@ -23,7 +22,6 @@
     ]
   },
   {
-    "approvalConfigurationId": "#uuid",
     "stepName": "build",
     "segmentName": "segment1",
     "artifactCollectorSpecifications": [
