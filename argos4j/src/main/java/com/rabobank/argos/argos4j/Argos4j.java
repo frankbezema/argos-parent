@@ -15,6 +15,7 @@
  */
 package com.rabobank.argos.argos4j;
 
+import com.rabobank.argos.argos4j.internal.ArtifactListBuilderImpl;
 import com.rabobank.argos.argos4j.internal.LinkBuilderImpl;
 import com.rabobank.argos.argos4j.internal.VerifyBuilderImpl;
 
@@ -36,7 +37,11 @@ public class Argos4j implements Serializable {
     }
 
     public VerifyBuilder getVerifyBuilder() {
-        return new VerifyBuilderImpl(settings);
+        return new VerifyBuilderImpl(settings, getArtifactListBuilder());
+    }
+    
+    public static ArtifactListBuilder getArtifactListBuilder() {
+        return new ArtifactListBuilderImpl();
     }
 
     public static String getVersion() {

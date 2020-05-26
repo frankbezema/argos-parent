@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.matching.RequestPattern;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
+import com.rabobank.argos.argos4j.internal.ArtifactListBuilderImpl;
 import com.rabobank.argos.argos4j.rest.api.model.RestKeyPair;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -50,6 +51,7 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Argos4jTest {
 
@@ -171,6 +173,11 @@ class Argos4jTest {
                 .path(sharedTempDir.toPath()).basePath(sharedTempDir.toPath()).build())
                 .verify("test".toCharArray()));
         assertThat(error.getMessage(), startsWith("[401 Unauthorized] during [POST] to "));
+    }
+    
+    @Test
+    void getArtifactListBuilder() {
+        assertTrue(Argos4j.getArtifactListBuilder() instanceof ArtifactListBuilderImpl);
     }
 
     @Test

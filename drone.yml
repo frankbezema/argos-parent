@@ -62,7 +62,7 @@ steps:
     password:
       from_secret: docker_login_token
     repo: argosnotary/argos-integration-test-service
-    tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
+    tags: ${DRONE_BRANCH/\//_}
     username:
       from_secret: docker_login_user
   depends_on:
@@ -77,7 +77,7 @@ steps:
     password:
       from_secret: docker_login_token
     repo: argosnotary/argos-integration-test-stub
-    tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
+    tags: ${DRONE_BRANCH/\//_}
     username:
       from_secret: docker_login_user
   depends_on:
@@ -92,7 +92,7 @@ steps:
     password:
       from_secret: docker_login_token
     repo: argosnotary/argos-jenkins-snapshot
-    tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
+    tags: ${DRONE_BRANCH/\//_}
     username:
       from_secret: docker_login_user
   depends_on:
