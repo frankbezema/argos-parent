@@ -433,7 +433,7 @@
 						<exclude>target/**</exclude>
 					</excludes>
 					<useDefaultExcludes>true</useDefaultExcludes>
-					<header>https://raw.github.com/argosnotary/argos-parent/master/docs/header.txt</header>
+					<header>https://raw.github.com/argosnotary/argos/master/docs/header.txt</header>
 					<properties>
 						<lic.year>2020</lic.year>
 					</properties>

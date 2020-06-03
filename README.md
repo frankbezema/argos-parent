@@ -1,59 +1,18 @@
+
 ARGOS Supply Chain Notary Parent Project [![Build Status](https://cloud.drone.io/api/badges/argosnotary/argos-parent/status.svg)](https://cloud.drone.io/argosnotary/argos-parent) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=argosnotary_argos-parent&metric=alert_status)](https://sonarcloud.io/dashboard?id=argosnotary_argos-parent)
 ============
- Argos provides a framework to protect the integrity of a
- [**software supply chain**](docs/terminology/terminology.md#ssc). It
- provides a [**REST API**](docs/terminology/terminology.md#restAPI)
- implemented as a [**SAAS**](docs/terminology/terminology.md#saas) and
- client libraries in order to protect the integrity of
- [**artifacts**](docs/terminology/terminology.md#artifact) produced by a
- [**software supply chain**](docs/terminology/terminology.md#ssc).
  
-It does so by verifying that each
-[**step**](docs/terminology/terminology.md#step) in the chain is carried
-out as planned, by authorized systems or personnel, and that the product
-is not tampered with in transit.
+## Documentation
+ 
+ All documentation can be found on our [website](https://argosnotary.github.io/docs/00_overview/10_overview).
+ 
+## Contributing
 
-It allows a
-[**project owner**](docs/terminology/terminology.md#productOwner) to
-create a layout. A [**layout**](docs/terminology/terminology.md#layout)
-lists the sequence of steps of the software supply chain, and the
-[**functionaries**](docs/terminology/terminology.md#functionary)
-authorized to perform these steps.
+See the [contribution guidelines](https://argosnotary.github.io/docs/80_contributing/10_contributing)
 
-When a [**functionary**](docs/terminology/terminology.md#functionary)
-performs a [**step**](docs/terminology/terminology.md#step) it gathers
-information about the used commands and the related files and sends it
-to the **ARGOS service** in a
-[**link**](docs/terminology/terminology.md#link) metadata file. As a
-consequence [**link**](docs/terminology/terminology.md#link) files
-provide the required evidence to establish a continuous chain that can
-be [**verified**](docs/terminology/terminology.md#verification) against
-the steps defined in the
-[**layout**](docs/terminology/terminology.md#layout)
+## Code of Conduct
 
-The [**layout**](docs/terminology/terminology.md#layout), signed by the
-[**project owners**](docs/terminology/terminology.md#productOwner)
-together with the links, signed by the designated
-[**functionaries**](docs/terminology/terminology.md#functionary) for a
-particular [**supply chain run**](docs/terminology/terminology.md#scr),
-can be verified by the service.
-
-## <a name="architecture"/> Argos service architecture
-In order to allow other parties to easily add in their own storage and
-api implementations into the service. The architecture is organized
-around the so called hexagonal architecture pattern.
-
-The hexagonal architecture is based on three principles and techniques:
-
-- Explicitly separate Application, Domain, and Infrastructure
-- Dependencies are going from Application and Infrastructure to the Domain
-- We isolate the boundaries by using Ports and Adapters
-
-See also these articles for more information about this architectural pattern:
-
-* [ports and adapters architecture](https://www.thinktocode.com/2018/07/19/ports-and-adapters-architecture/)
-* [hexagonal architecture](https://blog.octo.com/en/hexagonal-architecture-three-principles-and-an-implementation-example/)
-
+See the [Code of Conduct](https://argosnotary.github.io/docs/80_contributing/20_code_of_conduct)
 
 ## Modules
 -   argos4j
@@ -118,12 +77,5 @@ drone pipeline.
 ## How to run
 See [developer documentation](docs/DEVELOPER.md)
 
-
-## Decisions
-
-See [ADRs](docs/adr/index.md)
-
-## Contributing 
-
-See [contributing to Argos](CONTRIBUTING.md)
+See [contributing to Argos Notary](https://argosnotary.github.io/docs/80_contributing/10_contributing)
 

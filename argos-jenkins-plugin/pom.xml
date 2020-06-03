@@ -205,7 +205,7 @@
                         <exclude>**/bob</exclude>
                         <exclude>**/*.pem</exclude>
                     </excludes>
-                    <header>https://raw.github.com/argosnotary/argos-parent/master/docs/header.txt</header>
+                    <header>https://raw.github.com/argosnotary/argos/master/docs/header.txt</header>
                     <useDefaultExcludes>true</useDefaultExcludes>
                     <properties>
                         <lic.year>2020</lic.year>
