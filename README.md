@@ -77,5 +77,3 @@ drone pipeline.
 ## How to run
 See [developer documentation](docs/DEVELOPER.md)
 
-See [contributing to Argos Notary](https://argosnotary.github.io/docs/80_contributing/10_contributing)
-
