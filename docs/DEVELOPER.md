@@ -28,6 +28,40 @@ following products on your development machine:
 
 * [Docker](https://www.docker.com).
 
+* jdk8 and jdk11 installation
+
+* [Toolchain](https://maven.apache.org/guides/mini/guide-using-toolchains.html)
+
+For Toolchain add the file `toolchain.xml` with the following content to `M2_HOME`. Change the jdkHome paths to
+your own Java installation paths.
+
+```xml
+<toolchains xmlns="http://maven.apache.org/TOOLCHAINS/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/TOOLCHAINS/1.1.0 http://maven.apache.org/xsd/toolchains-1.1.0.xsd">
+ <!-- JDK toolchains -->
+ <toolchain>
+   <type>jdk</type>
+   <provides>
+     <version>1.8</version>
+     <vendor>openjdk</vendor>
+   </provides>
+   <configuration>
+     <jdkHome>jdk 8 Java Home</jdkHome>
+   </configuration>
+ </toolchain>
+ <toolchain>
+   <type>jdk</type>
+   <provides>
+     <version>11</version>
+     <vendor>openjdk</vendor>
+   </provides>
+   <configuration>
+     <jdkHome>jdk 11 Java Home</jdkHome>
+   </configuration>
+ </toolchain>
+</toolchains>
+```
+
 
 ## Getting the Sources
 
