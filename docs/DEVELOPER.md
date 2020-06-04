@@ -8,7 +8,6 @@ It also explains the basic mechanics of using `git`, `maven`.
 * [Building](#building)
 * [Running Tests Locally](#running-tests-locally)
 * [Create a Release](#create-a-release)
-* [Adminstrator recovery](#administrator)
 
 See the [contribution guidelines](https://argosnotary.github.io/docs/80_contributing/10_contributing)
 if you'd like to contribute to Argos.
@@ -69,16 +68,16 @@ Fork and clone the the Argos Parent repository:
 
 1. Login to your GitHub account or create one by following the instructions given
    [here](https://github.com/signup/free).
-2. [Fork](http://help.github.com/forking) the [main Argos
+2. [Fork](http://help.github.com/forking) the [Argos Parent
    repository](https://github.com/argosnotary/argos-parent).
-3. Clone your fork of the Argos repository and define an `upstream` remote pointing back to
-   the Argos repository that you forked in the first place.
+3. Clone your fork of the Argos Parent repository and define an `upstream` remote pointing back to
+   the Argos Parent repository that you forked in the first place.
 
 ```shell
 # Clone your GitHub repository:
 git clone git@github.com:<github username>/argos-parent.git
 
-# Go to the Argos directory:
+# Go to the Argos Parent directory:
 cd argos-parent
 
 # Add the main Argos repository as an upstream remote to your repository:
@@ -116,7 +115,6 @@ merged if the code is formatted properly and all tests are passing.
 
 A release creates the following artifacts:
 * docker.io/argosnotary/argos-service:[version]
-* docker.io/argosnotary/argos-frontend:[version]
 * com.rabobank.argos.argos4j in Maven Central
 * com.rabobank.argos.argos-service in Maven Central
 
