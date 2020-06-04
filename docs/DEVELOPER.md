@@ -36,19 +36,19 @@ Fork and clone the the Argos Parent repository:
 1. Login to your GitHub account or create one by following the instructions given
    [here](https://github.com/signup/free).
 2. [Fork](http://help.github.com/forking) the [main Argos
-   repository](https://github.com/argosnotary/argos).
+   repository](https://github.com/argosnotary/argos-parent).
 3. Clone your fork of the Argos repository and define an `upstream` remote pointing back to
    the Argos repository that you forked in the first place.
 
 ```shell
 # Clone your GitHub repository:
-git clone git@github.com:<github username>/argos.git
+git clone git@github.com:<github username>/argos-parent.git
 
 # Go to the Argos directory:
 cd argos-parent
 
 # Add the main Argos repository as an upstream remote to your repository:
-git remote add upstream https://github.com/argosnotary/argos.git
+git remote add upstream https://github.com/argosnotary/argos-parent.git
 ```
 
 ## Building
@@ -92,18 +92,18 @@ To make a release perform the following actions:
 * When necessary change the version
 
 ```
-    tools/change_project_version.sh [version]
+tools/change_project_version.sh [version]
 ```
 * Create a tag and push to github:
 
 ```
-    tools/release_with_tag.sh [version]
+tools/release_with_tag.sh [version]
 ```
 After this drone.io will create and publish a release.
 * Change the version to the possible future version.
 
 ```
-    tools/change_project_version.sh [future version]
+tools/change_project_version.sh [future version]
 ```
 This version can always be changed in a future release.
 
