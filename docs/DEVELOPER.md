@@ -28,6 +28,7 @@ following products on your development machine:
 
 * [Docker](https://www.docker.com).
 
+* [Java 8 and 11](https://adoptopenjdk.net)
 
 ## Getting the Sources
 
@@ -58,6 +59,36 @@ To build Argos run:
 ```shell
 mvn clean install
 ```
+
+Maven example ~/.m2/toolchains.xml config for macOSX, make sure jdkHomes exist:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<toolchains>
+  <toolchain>
+    <type>jdk</type>
+    <provides>
+      <version>11</version>
+      <vendor>AdoptOpenJDK</vendor>
+    </provides>
+    <configuration>
+      <jdkHome>/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home</jdkHome>
+    </configuration>
+  </toolchain>
+  <toolchain>
+    <type>jdk</type>
+    <provides>
+      <version>1.8</version>
+      <vendor>AdoptOpenJDK</vendor>
+    </provides>
+    <configuration>
+      <jdkHome>/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home</jdkHome>
+    </configuration>
+  </toolchain>
+</toolchains>
+```
+
+
 
 * Results are put in the diverse `target` folders.
 
